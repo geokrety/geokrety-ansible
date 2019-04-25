@@ -1,0 +1,13 @@
+---
+
+- name: Deploy mole name config
+  template:
+    src: "mole_name_config.conf.j2"
+    dest: "{{ geokrety_home }}/configs/the-mole-name/custom.conf"
+    owner: "{{ geokrety_username }}"
+    group: "{{ geokrety_group }}"
+    mode: 0660
+  notify:
+    - deploy mole_name stack
+
+...

@@ -1,0 +1,47 @@
+---
+version: '3.7'
+
+services:
+
+  service:
+    image: geokrety/cdn:latest
+    volumes:
+      - {{ geokrety_home }}/www/cdn-prod/content:/usr/share/nginx/html
+      - {{ geokrety_data_dir_base }}-prod/obrazki:/usr/share/nginx/html/images/obrazki:ro
+      - {{ geokrety_data_dir_base }}-prod/obrazki-male:/usr/share/nginx/html/images/obrazki-male:ro
+      - {{ geokrety_data_dir_base }}-prod/statpics:/usr/share/nginx/html/images/statpics:ro
+      - {{ geokrety_data_dir_base }}-prod/templates/wykresy:/usr/share/nginx/html/images/wykresy:ro
+      - {{ geokrety_data_dir_base }}-prod/mapki/csv:/usr/share/nginx/html/maps/csv:ro
+      - {{ geokrety_data_dir_base }}-prod/mapki/gpx:/usr/share/nginx/html/maps/gpx:ro
+      - {{ geokrety_data_dir_base }}-prod/mapki/map:/usr/share/nginx/html/maps/map:ro
+      - {{ geokrety_data_dir_base }}-prod/rzeczy/xml/:/usr/share/nginx/html/exports:ro
+{% for instance in geokrety_environments | rejectattr("name", "equalto", 'prod') | list %}
+
+      - {{ geokrety_home }}/www/cdn-{{ instance.name }}/content:/usr/share/nginx/html/{{ instance.name }}
+      - {{ geokrety_data_dir_base }}-{{ instance.name }}-aufs/obrazki:/usr/share/nginx/html/{{ instance.name }}/images/obrazki:ro
+      - {{ geokrety_data_dir_base }}-{{ instance.name }}-aufs/obrazki-male:/usr/share/nginx/html/{{ instance.name }}/images/obrazki-male:ro
+      - {{ geokrety_data_dir_base }}-{{ instance.name }}-aufs/statpics:/usr/share/nginx/html/{{ instance.name }}/images/statpics:ro
+      - {{ geokrety_data_dir_base }}-{{ instance.name }}-aufs/templates/wykresy:/usr/share/nginx/html/{{ instance.name }}/images/wykresy:ro
+      - {{ geokrety_data_dir_base }}-{{ instance.name }}-aufs/mapki/csv:/usr/share/nginx/html/{{ instance.name }}/maps/csv:ro
+      - {{ geokrety_data_dir_base }}-{{ instance.name }}-aufs/mapki/gpx:/usr/share/nginx/html/{{ instance.name }}/maps/gpx:ro
+      - {{ geokrety_data_dir_base }}-{{ instance.name }}-aufs/mapki/map:/usr/share/nginx/html/{{ instance.name }}/maps/map:ro
+      - {{ geokrety_data_dir_base }}-{{ instance.name }}-aufs/rzeczy/xml/:/usr/share/nginx/html/{{ instance.name }}/exports:ro
+{% endfor %}
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:{{ geokrety_params.cdn_server_url }}"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 80
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
+
+networks:
+  default:
+  traefik_default:
+    external: true

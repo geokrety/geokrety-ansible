@@ -1,0 +1,54 @@
+---
+
+- name: "Define parms for instance {{ item }}"
+  set_fact:
+    params: '{{ geokrety_environments | selectattr("name", "equalto", item) | list | first }}'
+
+- name: "{{ item }} - Checkout legacy website base image code - (branch: {{ params.base_image_tag | default(geokrety_base_image.git_branch) }})"
+  git:
+    repo: "{{ geokrety_base_image.git_url }}"
+    dest: "{{ geokrety_home }}/www/legacy-base-image"
+    separate_git_dir: "{{ geokrety_home }}/www/legacy-base-image.git"
+    version: "{{ params.base_image_tag | default(geokrety_base_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+
+- name: "{{ item }} - Checkout legacy website code environments - (branch:{{ params.git_branch }})"
+  git:
+    repo: "{{ params.git_url }}"
+    dest: "{{ geokrety_home }}/www/legacy-{{ item }}"
+    separate_git_dir: "{{ geokrety_home }}/www/legacy-{{ item }}.git"
+    version: "{{ params.git_branch }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+  register: git_result
+  when: params.localdir is not defined
+
+- name: "{{ item }} - Build base image - (tag:{{ params.base_image_tag | default(geokrety_base_image.tag) }})"
+  docker_image:
+    name: "{{ geokrety_docker_legacy_website_base_image }}:{{ params.base_image_tag | default(geokrety_base_image.tag) }}"
+    source: build
+    force_source: yes
+    build:
+      path: "{{ geokrety_home }}/www/legacy-base-image"
+      pull: yes
+
+- name: "{{ item }} - Build legacy website images environments - (basetag:{{ params.base_image_tag | default(geokrety_base_image.tag) }} tag:{{ item }})"
+  docker_image:
+    name: "{{ geokrety_docker_legacy_website_image }}:{{ item }}"
+    source: build
+    force_source: yes
+    build:
+      path: "{% if params.localdir is defined %}{{ params.localdir }}{% else %}{{ geokrety_home }}/www/legacy-{{ item }}{% endif %}"
+      pull: "{{ not geokrety_build_base_locally }}"
+      args:
+        BASE_IMAGE: "{{ geokrety_docker_legacy_website_base_image }}"
+        BASE_TAG: "{{ params.base_image_tag | default(geokrety_base_image.tag) }}"
+        GIT_COMMIT: "{{ git_result.after | default('undef') | truncate(8, True, '') }}"
+  register: img_result
+
+- name: Store image sha256
+  set_fact:
+    geokrety_legacy_image_sha256: "{{ geokrety_legacy_image_sha256 | combine( { item: img_result.image.Id } ) }}"
+
+...

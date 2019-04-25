@@ -1,0 +1,128 @@
+---
+version: '3.7'
+
+services:
+
+{% for instance in geokrety_legacy_image_sha256.keys() %}
+{%- set params = geokrety_environments | selectattr("name", "equalto", instance) | list | first %}
+{%- if instance != 'prod' %}{% set base_dir_suffix = '-aufs' %}{% else %}{% set base_dir_suffix = '' %}{% endif %}
+  {{ instance }}:
+    image: {{ geokrety_legacy_image_sha256[instance] }}
+    depends_on:
+      - db
+    environment:
+      TIMEZONE: "{{ geokrety_tz }}"
+      DB_HOSTNAME: "{{ params.db_host | default(geokrety_params.db_host) }}"
+      DB_USERNAME: "{{ params.db_user }}"
+      DB_PASSWORD: "{{ params.db_password }}"
+      DB_NAME: "{{ params.db_name }}"
+      DB_CHARSET: "{{ params.db_charset | default(geokrety_params.db_charset) }}"
+      PROD_SERVER_NAME: "{{ params.uri }}"
+      PROD_SERVER_URL: "https://{{ params.uri }}"
+      CDN_SERVER_URL: "https://{{ params.cdn_server_url | default(geokrety_params.cdn_server_url) }}"
+      GOOGLE_MAP_KEY: "{{ params.google_map_key | default(geokrety_params.google_map_key) }}"
+      GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google_recaptcha_public_key | default(geokrety_params.google_recaptcha_public_key) }}"
+      GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google_recaptcha_secret_key | default(geokrety_params.google_recaptcha_secret_key) }}"
+      PASSWORD_HASH: "{{ params.password_hash | default(geokrety_params.password_hash) }}"
+      PASSWORD_HASH_LEGACY: "{{ params.password_hash_legacy | default(geokrety_params.password_hash_legacy) }}"
+      API2LOGIN_MD5_STR1: "{{ params.api2login_md5_str1 | default(geokrety_params.api2login_md5_str1) }}"
+      API2LOGIN_MD5_STR2: "{{ params.api2login_md5_str2 | default(geokrety_params.api2login_md5_str2) }}"
+      SWISTAK_KEY: "{{ params.swistak_key | default(geokrety_params.swistak_key) }}"
+      SWISTAK_IV32: "{{ params.swistak_iv32 | default(geokrety_params.swistak_iv32) }}"
+      NEWS_PASSWORD: "{{ params.news_password | default(geokrety_params.news_password) }}"
+      EXPORT_BYPASS_TOKEN: "{{ params.export_bypass_token | default(geokrety_params.export_bypass_token) }}"
+      JRATING_TOKEN: "{{ params.jrating_token | default(geokrety_params.jrating_token) }}"
+      POP_HOSTNAME: "{{ params.pop_hostname | default(geokrety_params.pop_hostname) }}"
+      POP_PORT: "{{ params.pop_port | default(geokrety_params.pop_port) }}"
+      POP_TLS: "{{ params.pop_tls | default(geokrety_params.pop_tls) }}"
+      mail_username: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
+      mail_password: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
+      SENTRY_DSN: "{{ params.sentry_dsn | default(geokrety_params.sentry_dsn) }}"
+      SENTRY_ENV: "{{ params.sentry_env | default(geokrety_params.sentry_env) }}"
+      PIWIK_URL: "{{ params.piwik_url | default(geokrety_params.piwik_url) }}"
+      PIWIK_SITE_ID: "{{ params.piwik_site_id | default(geokrety_params.piwik_site_id) }}"
+      PIWIK_TOKEN: "{{ params.piwik_token | default(geokrety_params.piwik_token) }}"
+    volumes:
+{% if 'localdir' in params.keys() %}
+      # Mount local dir as html root
+      - {{ params.localdir }}/website:/var/www/html/
+{% endif %}
+{% if 'localconf' in params.keys() %}
+      # Mount local config files
+      - {{ params.localconf }}/konfig-mysql.php:/var/www/html/templates/konfig-mysql.php:ro
+      - {{ params.localconf }}/konfig-local.php:/var/www/html/templates/konfig-local.php:ro
+{% endif %}
+      # persistent vars
+      - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/obrazki/:/var/www/html/obrazki/
+      - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/obrazki-dowonu/:/var/www/html/obrazki-dowonu/
+      - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/obrazki-male/:/var/www/html/obrazki-male/
+      - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/statpics/:/var/www/html/statpics/
+      - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/mapki/:/var/www/html/mapki/
+      # generated vars
+      - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/files/:/var/www/html/files/
+      - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/templates/wykresy/:/var/www/html/templates/wykresy/
+      - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/rzeczy/xml/:/var/www/html/rzeczy/xml/
+      - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/mapa-f/:/var/www/html/rzeczy/mapa-f/out/
+      - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/year-stats/:/var/www/html/templates/stats/year/
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:{{ params.uri }}"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 80
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
+
+{% endfor %}
+  db:
+    image: mariadb
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+      - "--max-connections=800"
+      - "--max_allowed_packet=1024M"
+      - "--wait-timeout=28800"
+      - "--innodb-buffer-pool-size=8G"
+      - "--innodb-buffer-pool-instances=8"
+    volumes:
+      - {{ geokrety_database_dir }}:/var/lib/mysql:rw
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      TZ: {{ geokrety_tz }}
+      MYSQL_ROOT_PASSWORD: {{ geokrety_org_mysql_root_password }}
+    deploy:
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+
+  adminer:
+    image: adminer
+    depends_on:
+      - db
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:{{ geokrety_environments | map(attribute='uri') | list | join(',') }}; PathPrefix:/adminer"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 8080
+        traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',')}}"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
+
+networks:
+  default:
+  traefik_default:
+    external: true

@@ -1,0 +1,28 @@
+---
+# vim:set ts=2 sw=2 ai et bg=dark:
+version: '3.7'
+services:
+
+  service:
+    image: kumy/srtm-server:latest
+    volumes:
+      # TODO move to another dir like data
+      - "{{ geokrety_home }}/www/srtm-data:/root/.cache/srtm"
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:geo.geokrety.org,geo.kumy.org"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 5000
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
+
+networks:
+  default:
+  traefik_default:
+    external: true

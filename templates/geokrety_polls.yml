@@ -1,0 +1,27 @@
+---
+version: '3.7'
+
+services:
+
+  service:
+    image: nginx:latest
+    volumes:
+      - "{{ geokrety_home }}/www/the-mole-name/html:/usr/share/nginx/html"
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:polls.geokrety.org"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 80
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
+
+networks:
+  default:
+  traefik_default:
+    external: true

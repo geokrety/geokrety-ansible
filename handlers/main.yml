@@ -1,0 +1,31 @@
+---
+
+- name: deploy legacy stack
+  docker_stack:
+    state: present
+    name: geokrety_legacy
+    compose:
+      - /srv/docker/geokrety_legacy.yml
+
+- name: deploy mole_name stack
+  docker_stack:
+    state: present
+    name: geokrety_mole_name
+    compose:
+      - /srv/docker/geokrety_mole_name.yml
+
+- name: deploy polls stack
+  docker_stack:
+    state: present
+    name: geokrety_polls
+    compose:
+      - /srv/docker/geokrety_polls.yml
+
+- name: deploy srtm stack
+  docker_stack:
+    state: present
+    name: geokrety_srtm
+    compose:
+      - /srv/docker/geokrety_srtm.yml
+
+...

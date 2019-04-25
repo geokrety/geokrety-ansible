@@ -1,0 +1,28 @@
+---
+version: '3.7'
+
+services:
+
+  service:
+    image: geokrety/the-mole-name:latest
+    volumes:
+      - "{{ geokrety_database_dir_base }}/the-mole-name:/opt/flask/database:rw"
+      - "{{ geokrety_configs_dir_base }}/the-mole-name:/opt/flask/config:rw"
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:polls.geokrety.org; PathPrefix:/molename"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 8000
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
+
+networks:
+  default:
+  traefik_default:
+    external: true

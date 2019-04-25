@@ -1,0 +1,35 @@
+---
+
+- name: Deploy docker-compose
+  template:
+    src: "geokrety_{{ item }}.yml"
+    dest: /srv/docker/
+    owner: root
+    group: root
+    mode: 0660
+  with_items:
+    - polls
+    - mole_name
+    - srtm
+  notify:
+    - "deploy {{item}} stack"
+
+- name: Checkout polls landing page code
+  git:
+    repo: https://github.com/geokrety/GeoKrety-Polls-Landing-Page.git
+    dest: "{{ geokrety_home }}/www/the-mole-name"
+    separate_git_dir: "{{ geokrety_home }}/www/the-mole-name.git"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+  notify:
+    - deploy polls stack
+
+- name: Deploy docker-compose
+  template:
+    src: "geokrety_cdn.yml"
+    dest: /srv/docker/
+    owner: root
+    group: root
+    mode: 0660
+
+...

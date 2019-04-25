@@ -1,0 +1,79 @@
+---
+
+# # See https://docs.traefik.io/configuration/entrypoints/#basic-authentication
+# # Don't forget double all $ signs
+# # $ echo $(htpasswd -nb user password) | sed -e s/\\$/\\$\\$/g
+# geokrety_adminer_users:
+#   - user:hashedpassword...
+
+geokrety_build_locally: true
+geokrety_build_base_locally: true
+
+geokrety_username: geokrety
+geokrety_group: geokrety
+geokrety_home: /home/geokrety
+
+geokrety_docker_legacy_website_base_image: geokrety/website-legacy-base
+geokrety_docker_legacy_website_image: geokrety/website-legacy
+
+geokrety_tz: Europe/Paris
+geokrety_data_dir_base: "{{ geokrety_home }}/www/data"
+geokrety_configs_dir_base: "{{ geokrety_home }}/configs"
+geokrety_database_dir_base: "{{ geokrety_home }}/databases"
+
+geokrety_database_dir: "{{ geokrety_database_dir_base }}/legacy"
+
+geokrety_cdn_git_branch: master
+
+geokrety_base_image:
+  git_url: https://github.com/geokrety/geokrety-website-docker-base.git
+  git_branch: master
+  tag: latest
+
+geokrety_params:
+  db_host: db
+  db_charset: utf-8
+  cdn_server_url: cdn.geokrety.org
+  # google_map_key: xxx
+  # google_recaptcha_public_key: xxx
+  # google_recaptcha_secret_key: xxx
+  # password_hash: xxx
+  # password_hash_legacy: xxx
+  # api2login_md5_str1: xxx
+  # api2login_md5_str2: xxx
+  # swistak_key: xxx
+  # swistak_iv32: xxx
+  # news_password: xxx
+  # export_bypass_token: xxx
+  # jrating_token: xxx
+  smtp_hostname: smtp.gmail.com
+  smtp_port: 587
+  pop_hostname: pop.gmail.com
+  pop_port: 995
+  pop_tls: True
+  mail_domain: gmail.com
+  mail_email: geokrety@gmail.com
+  # mail_username: xxx
+  # mail_password: xxx
+  # sentry_dsn: https://xxx:xxx@xxx/xxx
+  sentry_env: undefined
+  # piwik_url: https://xxx
+  # piwik_site_id: 000
+  # piwik_token: xxx
+  # geonames_username: xxx
+
+# geokrety_environments:
+#   - name: xxx
+#     cdn_server_url: cdn.geokrety.org/xxx
+#     cdn_git_branch: xxx
+#     uri: xxx.staging.geokrety.org
+#     git_url: https://github.com/geokrety/geokrety-website.git
+#     git_branch: xxx
+#     db_name: xxx
+#     db_user: xxx
+#     db_password:
+# geokrety_org_mysql_root_password:
+# geokrety_email_password:
+# geokrety_mole_name_admin_password:
+
+...

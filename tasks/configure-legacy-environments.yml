@@ -1,0 +1,23 @@
+---
+
+- name: "Define parms for instance {{ item }}"
+  set_fact:
+    params: '{{ geokrety_environments | selectattr("name", "equalto", item) | list | first }}'
+
+- name: "Deploy legacy local {{ item }}"
+  template:
+    src: "configs/{{ file }}"
+    dest: "{{ geokrety_home }}/configs/legacy-{{ item }}/"
+    owner: "www-data"
+    group: "www-data"
+    mode: 0660
+  with_items:
+    - 'konfig-mysql.php'
+    - 'konfig-local.php'
+  loop_control:
+    loop_var: file
+  notify:
+    - deploy legacy stack
+
+
+...

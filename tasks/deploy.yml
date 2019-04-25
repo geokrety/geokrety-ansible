@@ -1,0 +1,21 @@
+---
+
+- name: Deploy docker-compose
+  template:
+    src: "geokrety_{{ item }}.yml"
+    dest: /srv/docker/
+    owner: root
+    group: root
+    mode: 0660
+  with_items:
+    - legacy
+
+- name: Deploy 'geokrety-legacy' stack
+  docker_stack:
+    state: present
+    name: geokrety_legacy
+    resolve_image: changed
+    compose:
+      - /srv/docker/geokrety_legacy.yml
+
+...
