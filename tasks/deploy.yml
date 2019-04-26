@@ -1,6 +1,6 @@
 ---
 
-- name: Deploy docker-compose
+- name: Ensure docker-compose files present
   template:
     src: "geokrety_{{ item }}.yml"
     dest: /srv/docker/
@@ -10,7 +10,7 @@
   with_items:
     - legacy
 
-- name: Deploy 'geokrety-legacy' stack
+- name: Deploy 'geokrety-legacy' docker stack
   docker_stack:
     state: present
     name: geokrety_legacy
