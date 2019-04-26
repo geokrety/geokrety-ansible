@@ -1,9 +1,18 @@
 ---
 
+- name: Create config directory
+  file:
+    path: gk_ansible_webhook_dir
+    dest: "{{ geokrety_configs_dir_base }}/the-mole-name/"
+    owner: "www-data"
+    group: "www-data"
+    mode: 0750
+    state: directory
+
 - name: Deploy mole name config
   template:
     src: "mole_name_config.conf.j2"
-    dest: "{{ geokrety_home }}/configs/the-mole-name/custom.conf"
+    dest: "{{ geokrety_configs_dir_base }}/the-mole-name/custom.conf"
     owner: "{{ geokrety_username }}"
     group: "{{ geokrety_group }}"
     mode: 0660

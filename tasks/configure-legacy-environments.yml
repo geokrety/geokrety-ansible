@@ -4,10 +4,19 @@
   set_fact:
     params: '{{ geokrety_environments | selectattr("name", "equalto", item) | list | first }}'
 
+- name: Create config directory
+  file:
+    path: gk_ansible_webhook_dir
+    dest: "{{ geokrety_configs_dir_base }}/legacy-{{ item }}/"
+    owner: "www-data"
+    group: "www-data"
+    mode: 0750
+    state: directory
+
 - name: "Deploy legacy local {{ item }}"
   template:
     src: "configs/{{ file }}"
-    dest: "{{ geokrety_home }}/configs/legacy-{{ item }}/"
+    dest: "{{ geokrety_configs_dir_base }}/legacy-{{ item }}/"
     owner: "www-data"
     group: "www-data"
     mode: 0660
