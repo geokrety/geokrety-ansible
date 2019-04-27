@@ -21,6 +21,6 @@
     dest: "{{ geokrety_configs_dir_base }}/ssmtp.conf"
     owner: root
     group: root
-    mode: 0640
+    mode: 0644
 
 ...

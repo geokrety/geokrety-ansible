@@ -20,7 +20,7 @@
       state: directory
       owner: www-data
       group: www-data
-      mode: 0770
+      mode: 0755
 
   - name: "{{ item }} - Create user AUFS mount directory"
     file:
@@ -28,7 +28,7 @@
       state: directory
       owner: www-data
       group: www-data
-      mode: 0770
+      mode: 0755
 
   - name: "{{ item }} - Mount AUFS"
     mount:

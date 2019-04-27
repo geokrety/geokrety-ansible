@@ -13,13 +13,13 @@
     name:
       - jsondiff
 
-- name: Ensure directories present
+- name: Ensure www directories present
   file:
     path: "{{ item }}"
     state: directory
     owner: www-data
     group: www-data
-    mode: 0750
+    mode: 0755
   with_items:
     - "{{ geokrety_home }}/www/data-prod"
     - "{{ geokrety_home }}/www/data-prod/files"
@@ -41,8 +41,6 @@
     - "{{ geokrety_home }}/www/data-prod/year-stats"
     - "{{ geokrety_home }}/www/srtm-data"
     - "{{ geokrety_home }}/www/the-mole-name"
-    - "{{ geokrety_database_dir_base }}/the-mole-name"
-    - "{{ geokrety_configs_dir_base }}/the-mole-name"
 
 - name: Ensure databases directories present
   file:
@@ -51,5 +49,6 @@
     mode: 0770
   with_items:
     - "{{ geokrety_database_dir }}"
+    - "{{ geokrety_database_dir_base }}/the-mole-name"
 
 ...
