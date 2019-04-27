@@ -1,5 +1,12 @@
 ---
 
+- name: Install admin ssh keys
+  authorized_key:
+    user: "{{ geokrety_username }}"
+    state: present
+    key: "{{ lookup('file', 'pubkeys/' + item) }}"
+  with_items: "{{ geokrety_admin_ssh_keys }}"
+
 - name: Install usefull python libraries
   pip:
     executable: /usr/bin/pip

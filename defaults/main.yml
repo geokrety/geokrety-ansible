@@ -6,6 +6,10 @@
 # geokrety_adminer_users:
 #   - user:hashedpassword...
 
+geokrety_admin_ssh_keys:
+  - boly38_key_rsa.pub
+  - kumy_key_rsa.pub
+
 geokrety_build_locally: true
 geokrety_build_base_locally: true
 
@@ -74,6 +78,7 @@ geokrety_params:
 #     db_name: xxx
 #     db_user: xxx
 #     db_password:
+
 # geokrety_org_mysql_root_password:
 # geokrety_email_password:
 # geokrety_mole_name_admin_password:
