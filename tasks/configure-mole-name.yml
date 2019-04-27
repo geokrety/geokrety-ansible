@@ -1,15 +1,24 @@
 ---
 
-- name: Create config directory
+- name: polls - Checkout landing page
+  git:
+    repo: https://github.com/geokrety/GeoKrety-Polls-Landing-Page.git
+    dest: "{{ geokrety_home }}/www/the-mole-name"
+    separate_git_dir: "{{ geokrety_home }}/www/the-mole-name.git"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+  notify:
+    - deploy polls stack
+
+- name: mole-name - Create config directory
   file:
-    path: gk_ansible_webhook_dir
-    dest: "{{ geokrety_configs_dir_base }}/the-mole-name/"
+    path: "{{ geokrety_configs_dir_base }}/the-mole-name/"
     owner: "www-data"
     group: "www-data"
     mode: 0750
     state: directory
 
-- name: Deploy mole name config
+- name: mole-name - Deploy config
   template:
     src: "mole_name_config.conf.j2"
     dest: "{{ geokrety_configs_dir_base }}/the-mole-name/custom.conf"

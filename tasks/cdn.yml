@@ -1,10 +1,10 @@
 ---
 
-- name: "Define parms for instance {{ item }}"
+- name: "{{ item }} - Define params for instance"
   set_fact:
     params: '{{ geokrety_environments | selectattr("name", "equalto", item) | list | first }}'
 
-- name: Checkout cdn code
+- name: "{{ item }} - Checkout cdn code"
   git:
     repo: https://github.com/geokrety/GeoKrety-Static.git
     dest: "{{ geokrety_home }}/www/cdn-{{ item }}"
@@ -40,7 +40,7 @@
 
   when: "item != 'prod'"
 
-- name: deploy cdn stack
+- name: "{{ item }} - Deploy cdn stack"
   docker_stack:
     state: present
     name: geokrety_cdn

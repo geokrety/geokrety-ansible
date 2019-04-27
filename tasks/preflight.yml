@@ -10,9 +10,9 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ geokrety_username }}"
-    group: "{{ geokrety_group }}"
-    mode: 0775
+    owner: www-data
+    group: www-data
+    mode: 0750
   with_items:
     - "{{ geokrety_home }}/www/data-prod"
     - "{{ geokrety_home }}/www/data-prod/files"
@@ -34,8 +34,8 @@
     - "{{ geokrety_home }}/www/data-prod/year-stats"
     - "{{ geokrety_home }}/www/srtm-data"
     - "{{ geokrety_home }}/www/the-mole-name"
-    - "{{ geokrety_home }}/databases/the-mole-name"
-    - "{{ geokrety_home }}/configs/the-mole-name"
+    - "{{ geokrety_database_dir_base }}/the-mole-name"
+    - "{{ geokrety_configs_dir_base }}/the-mole-name"
 
 - name: Ensure databases directories present
   file:

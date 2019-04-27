@@ -15,6 +15,7 @@ geokrety_home: /home/geokrety
 
 geokrety_docker_legacy_website_base_image: geokrety/website-legacy-base
 geokrety_docker_legacy_website_image: geokrety/website-legacy
+geokrety_docker_legacy_cron_image: geokrety/cron-legacy
 
 geokrety_tz: Europe/Paris
 geokrety_data_dir_base: "{{ geokrety_home }}/www/data"
@@ -24,6 +25,7 @@ geokrety_database_dir_base: "{{ geokrety_home }}/databases"
 geokrety_database_dir: "{{ geokrety_database_dir_base }}/legacy"
 
 geokrety_cdn_git_branch: master
+geokrety_cron_git_branch: master
 
 geokrety_base_image:
   git_url: https://github.com/geokrety/geokrety-website-docker-base.git

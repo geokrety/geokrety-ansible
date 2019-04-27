@@ -1,19 +1,18 @@
 ---
 
-- name: "Define parms for instance {{ item }}"
+- name: "{{ item }} - Define params for instance"
   set_fact:
     params: '{{ geokrety_environments | selectattr("name", "equalto", item) | list | first }}'
 
-- name: Create config directory
+- name: "{{ item }} - Create config directory"
   file:
-    path: gk_ansible_webhook_dir
-    dest: "{{ geokrety_configs_dir_base }}/legacy-{{ item }}/"
+    path: "{{ geokrety_configs_dir_base }}/legacy-{{ item }}/"
     owner: "www-data"
     group: "www-data"
     mode: 0750
     state: directory
 
-- name: "Deploy legacy local {{ item }}"
+- name: "{{ item }} - Deploy legacy local"
   template:
     src: "configs/{{ file }}"
     dest: "{{ geokrety_configs_dir_base }}/legacy-{{ item }}/"

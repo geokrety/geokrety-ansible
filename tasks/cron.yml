@@ -1,0 +1,22 @@
+---
+
+- name: Checkout scripts/cron source code
+  git:
+    repo: https://github.com/geokrety/geokrety-scripts.git
+    dest: "{{ geokrety_home }}/www/scripts"
+    separate_git_dir: "{{ geokrety_home }}/www/scripts.git"
+    force: yes
+    version: "{{ geokrety_cron_git_branch }}"
+  become_user: "{{ geokrety_username }}"
+
+- name: "Build legacy cron image"
+  docker_image:
+    name: "{{ geokrety_docker_legacy_cron_image }}:prod"
+    source: build
+    force_source: yes
+    build:
+      path: "{{ geokrety_home }}/www/scripts"
+      pull: no
+      args:
+        IMAGE: "{{ geokrety_docker_legacy_website_image }}:prod"
+  register: cron_img_result

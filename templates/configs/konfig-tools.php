@@ -8,5 +8,3 @@ $kocham_kaczynskiego = '{{ params.export_bypass_token | default(geokrety_params.
 //~ geonames
 $geonamesEndpoint='http://api.geonames.org';
 $geonamesUsername='{{ params.geonames_username | default(geokrety_params.geonames_username) }}';
-
-?>
