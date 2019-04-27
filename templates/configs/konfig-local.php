@@ -37,8 +37,8 @@ $GOOGLE_RECAPTCHA_SECRET_KEY = '{{ params.google_recaptcha_secret_key | default(
 $config['pop_hostname'] = '{{ params.pop_hostname | default(geokrety_params.pop_hostname) }}';
 $config['pop_port'] = {{ params.pop_port | default(geokrety_params.pop_port) }};
 $config['pop_tls'] = {{ params.pop_tls | default(geokrety_params.pop_tls) }};
-$config['mail_username'] = '{{ params.mail_username | default(geokrety_params.mail_username) }}';
-$config['mail_password'] = '{{ params.mail_password | default(geokrety_params.mail_password) }}';
+$config['pop_username'] = '{{ params.mail_username | default(geokrety_params.mail_username) }}';
+$config['pop_password'] = '{{ params.mail_password | default(geokrety_params.mail_password) }}';
 
 // Sentry integration
 $config['sentry_dsn'] = '{{ params.sentry_dsn | default(geokrety_params.sentry_dsn) }}';
@@ -50,4 +50,4 @@ $config['piwik_site_id'] = '{{ params.piwik_site_id | default(geokrety_params.pi
 $config['piwik_token'] = '{{ params.piwik_token | default(geokrety_params.piwik_token) }}';
 
 // Disable errors
-// error_reporting(0);
+error_reporting(0);
