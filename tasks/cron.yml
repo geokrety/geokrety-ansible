@@ -18,5 +18,5 @@
       path: "{{ geokrety_home }}/www/scripts"
       pull: no
       args:
-        IMAGE: "{{ geokrety_docker_legacy_website_image }}:prod"
+        IMAGE: "{{ geokrety_legacy_image_sha256['prod'] }}"
   register: cron_img_result
