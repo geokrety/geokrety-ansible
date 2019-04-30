@@ -17,7 +17,7 @@ x-{{ instance }}: &{{ instance }}
     DB_NAME: "{{ params.db_name }}"
     DB_CHARSET: "{{ params.db_charset | default(geokrety_params.db_charset) }}"
     PROD_SERVER_NAME: "{{ params.uri }}"
-    PROD_SERVER_URL: "https://{{ params.uri }}"
+    PROD_SERVER_URL: "https://{{ params.uri }}/"
     CDN_SERVER_URL: "https://{{ params.cdn_server_url | default(geokrety_params.cdn_server_url) }}"
     GOOGLE_MAP_KEY: "{{ params.google_map_key | default(geokrety_params.google_map_key) }}"
     GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google_recaptcha_public_key | default(geokrety_params.google_recaptcha_public_key) }}"
