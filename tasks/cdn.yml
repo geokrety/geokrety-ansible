@@ -9,7 +9,7 @@
     repo: https://github.com/geokrety/GeoKrety-Static.git
     dest: "{{ geokrety_home }}/www/cdn-{{ item }}"
     separate_git_dir: "{{ geokrety_home }}/www/cdn-{{ item }}.git"
-    version: "{{ params.geokrety_cdn_git_branch | default(geokrety_cdn_git_branch) }}"
+    version: "{{ params.cdn_git_branch | default(geokrety_cdn_git_branch) }}"
     force: yes
   become_user: "{{ geokrety_username }}"
 

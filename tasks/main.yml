@@ -12,17 +12,17 @@
   set_fact:
     geokrety_legacy_image_sha256: {}
 
-- include_tasks: configure-legacy-environments.yml
-  with_items: "{{ geokrety_environments | map(attribute='name') | list }}"
+# - include_tasks: configure-legacy-environments.yml
+#   with_items: "{{ geokrety_environments | map(attribute='name') | list }}"
 
 - include_tasks: build.yml
   with_items: "{{ geokrety_environments | map(attribute='name') | list }}"
   when: geokrety_build_locally|bool
 
-- include_tasks: pull.yml
-  with_items: "{{ geokrety_environments | map(attribute='name') | list }}"
-  when: not geokrety_build_locally|bool
-
+# - include_tasks: pull.yml
+#   with_items: "{{ geokrety_environments | map(attribute='name') | list }}"
+#   when: not geokrety_build_locally|bool
+#
 - include_tasks: cron.yml
 - include_tasks: deploy.yml
 

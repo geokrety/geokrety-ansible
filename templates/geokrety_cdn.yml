@@ -6,6 +6,7 @@ services:
   service:
     image: geokrety/cdn:latest
     volumes:
+      # prod
       - {{ geokrety_home }}/www/cdn-prod/content:/usr/share/nginx/html
       - {{ geokrety_data_dir_base }}-prod/obrazki:/usr/share/nginx/html/images/obrazki:ro
       - {{ geokrety_data_dir_base }}-prod/obrazki-male:/usr/share/nginx/html/images/obrazki-male:ro
@@ -17,6 +18,7 @@ services:
       - {{ geokrety_data_dir_base }}-prod/rzeczy/xml/:/usr/share/nginx/html/exports:ro
 {% for instance in geokrety_environments | rejectattr("name", "equalto", 'prod') | list %}
 
+      # {{ instance.name }}
       - {{ geokrety_home }}/www/cdn-{{ instance.name }}/content:/usr/share/nginx/html/{{ instance.name }}
       - {{ geokrety_data_dir_base }}-{{ instance.name }}-aufs/obrazki:/usr/share/nginx/html/{{ instance.name }}/images/obrazki:ro
       - {{ geokrety_data_dir_base }}-{{ instance.name }}-aufs/obrazki-male:/usr/share/nginx/html/{{ instance.name }}/images/obrazki-male:ro

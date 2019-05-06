@@ -67,12 +67,13 @@ geokrety_params:
   # piwik_site_id: 000
   # piwik_token: xxx
   # geonames_username: xxx
+  uri: []
 
 # geokrety_environments:
 #   - name: xxx
 #     cdn_server_url: cdn.geokrety.org/xxx
 #     cdn_git_branch: xxx
-#     uri: xxx.staging.geokrety.org
+#     uri: [xxx.staging.geokrety.org]
 #     git_url: https://github.com/geokrety/geokrety-website.git
 #     git_branch: xxx
 #     db_name: xxx

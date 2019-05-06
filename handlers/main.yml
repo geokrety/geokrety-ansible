@@ -1,5 +1,12 @@
 ---
 
+- name: deploy cdn stack
+  docker_stack:
+    state: present
+    name: geokrety_cdn
+    compose:
+      - /srv/docker/geokrety_cdn.yml
+
 - name: deploy legacy stack
   docker_stack:
     state: present

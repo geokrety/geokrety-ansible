@@ -81,7 +81,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.docker.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.uri }}"
+        traefik.frontend.rule: "Host:{{ params.uri | join(',') }}"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 80
@@ -136,11 +136,11 @@ services:
       labels:
         traefik.enable: "true"
         traefik.docker.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ geokrety_environments | map(attribute='uri') | list | join(',') }}; PathPrefix:/adminer"
+        traefik.frontend.rule: "Host:{{ geokrety_environments.0.uri | join(',') }}; PathPrefix:/adminer"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 8080
-        traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',')}}"
+        traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
       restart_policy:
         condition: any
     networks:

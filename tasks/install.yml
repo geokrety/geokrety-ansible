@@ -15,12 +15,4 @@
   notify:
     - "deploy {{item}} stack"
 
-- name: Deploy ssmtp.conf
-  template:
-    src: configs/ssmtp.conf
-    dest: "{{ geokrety_configs_dir_base }}/ssmtp.conf"
-    owner: root
-    group: root
-    mode: 0644
-
 ...
