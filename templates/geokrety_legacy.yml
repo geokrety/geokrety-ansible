@@ -13,7 +13,7 @@ x-variables: &variables
     DB_CHARSET: "{{ params.db.charset | default(geokrety_params.db.charset) }}"
     PROD_SERVER_NAME: "{{ geokrety_uri }}"
     SERVER_URL: "https://{{ params.website.uri.0 }}/"
-    CDN_SERVER_URL: "https://{{ params.cdn.uri }}"
+    CDN_SERVER_URL: "https://{{ params.cdn.uri | default(geokrety_params.cdn_uri) }}"
     GOOGLE_MAP_KEY: "{{ params.google.map_key | default(geokrety_params.google.map_key) }}"
     GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
     GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google.recaptcha_secret_key | default(geokrety_params.google.recaptcha_secret_key) }}"
@@ -121,7 +121,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.docker.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.cdn.uri }}"
+        traefik.frontend.rule: "Host:{{ params.cdn.uri | default(geokrety_params.cdn_uri) }}"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 80
