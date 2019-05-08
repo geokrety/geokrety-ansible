@@ -1,29 +1,23 @@
 ---
 
 - include_tasks: preflight.yml
-- include_tasks: install.yml
 
-- include_tasks: configure-mole-name.yml
+- include_tasks: minisites.yml
 
-- include_tasks: cdn.yml
-  with_items: "{{ geokrety_environments | map(attribute='name') | list }}"
 
-- name: Create dict for storing images hashes
-  set_fact:
-    geokrety_legacy_image_sha256: {}
+- block:
+  - name: Filter environments to build using 'extra-variable'
+    set_fact:
+      environments: "{{ [instance] if instance|default(false) else geokrety_environments | map(attribute='name') | list }}"
 
-# - include_tasks: configure-legacy-environments.yml
-#   with_items: "{{ geokrety_environments | map(attribute='name') | list }}"
+  - debug:
+      msg: "Will process environment(s): {{ environments | join(', ') }}"
 
-- include_tasks: build.yml
-  with_items: "{{ geokrety_environments | map(attribute='name') | list }}"
-  when: geokrety_build_locally|bool
+  - name: Process environments
+    include_tasks: 00-process.yml
+    with_items: "{{ environments }}"
 
-# - include_tasks: pull.yml
-#   with_items: "{{ geokrety_environments | map(attribute='name') | list }}"
-#   when: not geokrety_build_locally|bool
-#
-- include_tasks: cron.yml
-- include_tasks: deploy.yml
+  tags:
+    - legacy
 
 ...

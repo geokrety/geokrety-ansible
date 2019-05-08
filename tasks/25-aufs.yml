@@ -1,0 +1,30 @@
+---
+
+
+
+- name: "'{{ item }}' - Create cdn directory"
+  file:
+    path: "{{ geokrety_base_dir }}/data/cdn"
+    state: directory
+    owner: www-data
+    group: "{{ geokrety_group }}"
+    mode: 0755
+
+- block:
+  - name: "'{{ item }}' - Create cdn overlay directory"
+    file:
+      path: "{{ geokrety_base_dir }}/data/cdn-overlay"
+      state: directory
+      owner: "www-data"
+      group: "{{ geokrety_group }}"
+      mode: 0755
+
+  - name: "'{{ item }}' - Mount cdn using AUFS"
+    mount:
+      path: "{{ geokrety_base_dir }}/data/cdn"
+      src: none
+      fstype: aufs
+      opts: "br={{ geokrety_base_dir }}/data/cdn-overlay:{{ geokrety_home }}/instances/prod/data/cdn"
+      state: mounted
+
+  when: "item != 'prod'"

@@ -1,27 +1,22 @@
 ---
 version: '3.7'
 
-services:
-
-{% for instance in geokrety_legacy_image_sha256.keys() %}
-{%- set params = geokrety_environments | selectattr("name", "equalto", instance) | list | first %}
-{%- if instance != 'prod' %}{% set base_dir_suffix = '-aufs' %}{% else %}{% set base_dir_suffix = '' %}{% endif %}
-x-{{ instance }}: &{{ instance }}
+x-variables: &variables
   depends_on:
     - db
   environment:
     TIMEZONE: "{{ geokrety_tz }}"
-    DB_HOSTNAME: "{{ params.db_host | default(geokrety_params.db_host) }}"
-    DB_USERNAME: "{{ params.db_user }}"
-    DB_PASSWORD: "{{ params.db_password }}"
-    DB_NAME: "{{ params.db_name }}"
-    DB_CHARSET: "{{ params.db_charset | default(geokrety_params.db_charset) }}"
-    PROD_SERVER_NAME: "{{ params.uri }}"
-    PROD_SERVER_URL: "https://{{ params.uri }}/"
-    CDN_SERVER_URL: "https://{{ params.cdn_server_url | default(geokrety_params.cdn_server_url) }}"
-    GOOGLE_MAP_KEY: "{{ params.google_map_key | default(geokrety_params.google_map_key) }}"
-    GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google_recaptcha_public_key | default(geokrety_params.google_recaptcha_public_key) }}"
-    GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google_recaptcha_secret_key | default(geokrety_params.google_recaptcha_secret_key) }}"
+    DB_HOSTNAME: "{{ params.db.host | default(geokrety_params.db.host) }}"
+    DB_USERNAME: "{{ params.db.user | default(geokrety_params.db.user) }}"
+    DB_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
+    DB_NAME: "{{ params.db.name | default(geokrety_params.db.name) }}"
+    DB_CHARSET: "{{ params.db.charset | default(geokrety_params.db.charset) }}"
+    PROD_SERVER_NAME: "{{ geokrety_uri }}"
+    SERVER_URL: "https://{{ params.website.uri.0 }}/"
+    CDN_SERVER_URL: "https://{{ params.cdn.uri }}"
+    GOOGLE_MAP_KEY: "{{ params.google.map_key | default(geokrety_params.google.map_key) }}"
+    GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
+    GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google.recaptcha_secret_key | default(geokrety_params.google.recaptcha_secret_key) }}"
     PASSWORD_HASH: "{{ params.password_hash | default(geokrety_params.password_hash) }}"
     PASSWORD_HASH_LEGACY: "{{ params.password_hash_legacy | default(geokrety_params.password_hash_legacy) }}"
     API2LOGIN_MD5_STR1: "{{ params.api2login_md5_str1 | default(geokrety_params.api2login_md5_str1) }}"
@@ -36,52 +31,74 @@ x-{{ instance }}: &{{ instance }}
     POP_TLS: "{{ params.pop_tls | default(geokrety_params.pop_tls) }}"
     POP_USERNAME: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
     POP_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
-    SENTRY_DSN: "{{ params.sentry_dsn | default(geokrety_params.sentry_dsn) }}"
-    SENTRY_ENV: "{{ params.sentry_env | default(geokrety_params.sentry_env) }}"
-    PIWIK_URL: "{{ params.piwik_url | default(geokrety_params.piwik_url) }}"
-    PIWIK_SITE_ID: "{{ params.piwik_site_id | default(geokrety_params.piwik_site_id) }}"
-    PIWIK_TOKEN: "{{ params.piwik_token | default(geokrety_params.piwik_token) }}"
+    SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
+    SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
+    PIWIK_URL: "{{ params.piwik.url | default(geokrety_params.piwik.url) }}"
+    PIWIK_SITE_ID: "{{ params.piwik.site_id | default(geokrety_params.piwik.site_id) }}"
+    PIWIK_TOKEN: "{{ params.piwik.token | default(geokrety_params.piwik.token) }}"
     GEONAMES_ENDPOINT: "http://api.geonames.org"
     GEONAMES_USERNAME: "{{ params.geonames_username | default(geokrety_params.geonames_username) }}"
+
+x-volumes-website: &volumes-website
   volumes:
 {% if 'localdir' in params.keys() %}
     # Mount local dir as html root
     - {{ params.localdir }}/website:/var/www/html/
 {% endif %}
-{% if 'localconf' in params.keys() %}
-    # Mount local config files
-    - {{ params.localconf }}/konfig-mysql.php:/var/www/html/templates/konfig-mysql.php:ro
-    - {{ params.localconf }}/konfig-local.php:/var/www/html/templates/konfig-local.php:ro
+    # Configure mail forwarder
+    - {{ geokrety_base_dir }}/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
+    # persistent vars
+    - {{ geokrety_base_dir }}/data/cdn/obrazki/:/var/www/html/obrazki/
+    - {{ geokrety_base_dir }}/data/cdn/obrazki-dowonu/:/var/www/html/obrazki-dowonu/
+    - {{ geokrety_base_dir }}/data/cdn/obrazki-male/:/var/www/html/obrazki-male/
+    - {{ geokrety_base_dir }}/data/cdn/statpics/:/var/www/html/statpics/
+    - {{ geokrety_base_dir }}/data/cdn/mapki/:/var/www/html/mapki/
+    # generated vars
+    - {{ geokrety_base_dir }}/data/cdn/files/:/var/www/html/files/
+    - {{ geokrety_base_dir }}/data/cdn/templates/wykresy/:/var/www/html/templates/wykresy/
+    - {{ geokrety_base_dir }}/data/cdn/rzeczy/xml/:/var/www/html/rzeczy/xml/
+    - {{ geokrety_base_dir }}/data/cdn/mapa-f/:/var/www/html/rzeczy/mapa-f/out/
+    - {{ geokrety_base_dir }}/data/cdn/year-stats/:/var/www/html/templates/stats/year/
+
+x-volumes-cdn: &volumes-cdn
+  volumes:
+{% if 'localdir' in params.keys() %}
+    # Mount local dir as html root
+    - {{ params.localdir }}/website:/var/www/html/
 {% endif %}
     # Configure mail forwarder
-    - {{ geokrety_configs_dir_base }}/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
+    - {{ geokrety_base_dir }}/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
+    # The cdn data
+    - {{ geokrety_base_dir }}/git/cdn/content:/usr/share/nginx/html
     # persistent vars
-    - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/obrazki/:/var/www/html/obrazki/
-    - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/obrazki-dowonu/:/var/www/html/obrazki-dowonu/
-    - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/obrazki-male/:/var/www/html/obrazki-male/
-    - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/statpics/:/var/www/html/statpics/
-    - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/mapki/:/var/www/html/mapki/
+    - {{ geokrety_base_dir }}/data/cdn/obrazki/:/usr/share/nginx/html/obrazki/
+    - {{ geokrety_base_dir }}/data/cdn/obrazki-dowonu/:/usr/share/nginx/html/obrazki-dowonu/
+    - {{ geokrety_base_dir }}/data/cdn/obrazki-male/:/usr/share/nginx/html/obrazki-male/
+    - {{ geokrety_base_dir }}/data/cdn/statpics/:/usr/share/nginx/html/statpics/
+    - {{ geokrety_base_dir }}/data/cdn/mapki/:/usr/share/nginx/html/mapki/
     # generated vars
-    - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/files/:/var/www/html/files/
-    - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/templates/wykresy/:/var/www/html/templates/wykresy/
-    - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/rzeczy/xml/:/var/www/html/rzeczy/xml/
-    - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/mapa-f/:/var/www/html/rzeczy/mapa-f/out/
-    - {{ geokrety_data_dir_base }}-{{ instance }}{{ base_dir_suffix }}/year-stats/:/var/www/html/templates/stats/year/
-
-{% endfor %}
+    - {{ geokrety_base_dir }}/data/cdn/files/:/usr/share/nginx/html/files/
+    - {{ geokrety_base_dir }}/data/cdn/templates/wykresy/:/usr/share/nginx/html/templates/wykresy/
+    - {{ geokrety_base_dir }}/data/cdn/rzeczy/xml/:/usr/share/nginx/html/rzeczy/xml/
+    - {{ geokrety_base_dir }}/data/cdn/mapa-f/:/usr/share/nginx/html/rzeczy/mapa-f/out/
+    - {{ geokrety_base_dir }}/data/cdn/year-stats/:/usr/share/nginx/html/templates/stats/year/
 
 services:
 
-{% for instance in geokrety_legacy_image_sha256.keys() %}
-{%- set params = geokrety_environments | selectattr("name", "equalto", instance) | list | first %}
-  {{ instance }}:
-    image: {{ geokrety_legacy_image_sha256[instance] }}
-    <<: *{{ instance }}
+  website:
+    image: {{ geokrety_docker_image_website_image }}:{{ item }}
+    <<: *variables
+    <<: *volumes-website
     deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
       labels:
         traefik.enable: "true"
         traefik.docker.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.uri | join(',') }}"
+        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 80
@@ -91,11 +108,35 @@ services:
       default:
       traefik_default:
 
-{% endfor %}
+  cdn:
+    image: {{ geokrety_docker_image_cdn_image }}:{{ item }}
+    <<: *volumes-cdn
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+        order: start-first
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:{{ params.cdn.uri }}"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 80
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
 
-  prod-cron:
-    image: {{ cron_img_result.image.Id }}
-    <<: *prod
+{% if params.cron is defined %}
+  cron:
+    image: {{ geokrety_docker_image_cron_image }}:{{ instance }}
+    <<: *variables
+    volumes:
+      <<: *volumes
     deploy:
       labels:
         traefik.enable: "false"
@@ -103,6 +144,7 @@ services:
         condition: any
     networks:
       default:
+{% endif %}
 
   db:
     image: mariadb:10.1
@@ -115,12 +157,17 @@ services:
       - "--innodb-buffer-pool-size=8G"
       - "--innodb-buffer-pool-instances=8"
     volumes:
-      - {{ geokrety_database_dir }}:/var/lib/mysql:rw
+      - {{ geokrety_base_dir }}/mysql:/var/lib/mysql:rw
       - /etc/localtime:/etc/localtime:ro
+      - {{ geokrety_home }}/instances/prod/dbdump/database.sql:/docker-entrypoint-initdb.d/database.sql:ro
     environment:
       TZ: {{ geokrety_tz }}
       MYSQL_ROOT_PASSWORD: {{ geokrety_org_mysql_root_password }}
+      MYSQL_DATABASE: "{{ params.db.name | default(geokrety_params.db.name) }}"
+      MYSQL_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
+      MYSQL_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
     deploy:
+      replicas: 1
       labels:
         traefik.enable: "false"
       restart_policy:
@@ -136,7 +183,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.docker.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ geokrety_environments.0.uri | join(',') }}; PathPrefix:/adminer"
+        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefix:/adminer"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 8080

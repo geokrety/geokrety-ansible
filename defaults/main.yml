@@ -6,43 +6,56 @@
 # geokrety_adminer_users:
 #   - user:hashedpassword...
 
+# The production instance, generally no change needed here
+geokrety_uri: geokrety.org
+
 geokrety_admin_ssh_keys:
   - boly38_key_rsa.pub
   - kumy_key_rsa.pub
-
-geokrety_build_locally: true
-geokrety_build_base_locally: true
 
 geokrety_username: geokrety
 geokrety_group: geokrety
 geokrety_home: /home/geokrety
 
-geokrety_docker_legacy_website_base_image: geokrety/website-legacy-base
-geokrety_docker_legacy_website_image: geokrety/website-legacy
-geokrety_docker_legacy_cron_image: geokrety/cron-legacy
+geokrety_docker_image_cdn_image: geokrety/cdn
+geokrety_docker_image_website_base_image: geokrety/website-legacy-base
+geokrety_docker_image_website_image: geokrety/website-legacy
+geokrety_docker_image_cron_image: geokrety/cron-legacy
+geokrety_docker_stack_base_name: geokrety-legacy
 
 geokrety_tz: Europe/Paris
-geokrety_data_dir_base: "{{ geokrety_home }}/www/data"
-geokrety_configs_dir_base: "{{ geokrety_home }}/configs"
-geokrety_database_dir_base: "{{ geokrety_home }}/databases"
-
-geokrety_database_dir: "{{ geokrety_database_dir_base }}/legacy"
-
-geokrety_cdn_git_branch: master
-geokrety_cron_git_branch: master
 
 geokrety_base_image:
   git_url: https://github.com/geokrety/geokrety-website-docker-base.git
   git_branch: master
-  tag: latest
+  docker_tag: latest
+
+geokrety_website_image:
+  git_url: https://github.com/geokrety/geokrety-website.git
+  git_branch: master
+  docker_tag: latest
+
+geokrety_cdn_image:
+  git_url: https://github.com/geokrety/GeoKrety-Static.git
+  git_branch: master
+  docker_tag: latest
+
+geokrety_cron_image:
+  git_url: https://github.com/geokrety/geokrety-scripts.git
+  git_branch: master
+  docker_tag: latest
 
 geokrety_params:
-  db_host: db
-  db_charset: utf-8
-  cdn_server_url: cdn.geokrety.org
-  # google_map_key: xxx
-  # google_recaptcha_public_key: xxx
-  # google_recaptcha_secret_key: xxx
+  db:
+    host: db
+    user: xxx
+    password: xxx
+    name: xxx
+    charset: utf-8
+  # google:
+  #    map_key: xxx
+  #    recaptcha_public_key: xxx
+  #    recaptcha_secret_key: xxx
   # password_hash: xxx
   # password_hash_legacy: xxx
   # api2login_md5_str1: xxx
@@ -61,24 +74,34 @@ geokrety_params:
   mail_email: geokrety@gmail.com
   # mail_username: xxx
   # mail_password: xxx
-  # sentry_dsn: https://xxx:xxx@xxx/xxx
-  sentry_env: undefined
-  # piwik_url: https://xxx
-  # piwik_site_id: 000
-  # piwik_token: xxx
+  # sentry:
+  #  dsn: https://xxx:xxx@xxx/xxx
+  #  env: undefined
+  # piwik:
+  #  url: https://xxx
+  #  site_id: 000
+  #  token: xxx
   # geonames_username: xxx
   uri: []
 
 # geokrety_environments:
 #   - name: xxx
-#     cdn_server_url: cdn.geokrety.org/xxx
-#     cdn_git_branch: xxx
-#     uri: [xxx.staging.geokrety.org]
-#     git_url: https://github.com/geokrety/geokrety-website.git
-#     git_branch: xxx
-#     db_name: xxx
-#     db_user: xxx
-#     db_password:
+#     db:
+#       name: xxx
+#       user: xxx
+#       password: xxx
+#     sentry:
+#       env: undefined
+#     cdn:
+#       git_branch: xxx
+#       uri: xxx.cdn.geokrety.org
+#     base:
+#       git_branch: smarty3
+#     website:
+#       git_branch: xxx
+#       uri: [xxx.staging.geokrety.org]
+#     cron: # Not built if missing
+#       git_branch: xxx
 
 # geokrety_org_mysql_root_password:
 # geokrety_email_password:

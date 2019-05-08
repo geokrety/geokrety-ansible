@@ -1,0 +1,35 @@
+---
+
+- name: "'{{ item }}' - Build and push CDN image"
+  docker_image:
+    name: "{{ geokrety_docker_image_cdn_image }}:{{ item }}"
+    source: build
+    force_source: yes
+    push: yes
+    build:
+      path: "{{ geokrety_base_dir }}/git/cdn"
+      pull: yes
+
+- name: "'{{ item }}' - Build and push BASE image"
+  docker_image:
+    name: "{{ geokrety_docker_image_website_base_image }}:{{ params.base.git_branch }}"
+    source: build
+    force_source: yes
+    push: yes
+    build:
+      path: "{{ geokrety_base_dir }}/git/base"
+      pull: yes
+
+- name: "'{{ item }}' - Build and push WEBSITE image"
+  docker_image:
+    name: "{{ geokrety_docker_image_website_image }}:{{ item }}"
+    source: build
+    force_source: yes
+    push: yes
+    build:
+      path: "{{ geokrety_base_dir }}/git/website"
+      pull: yes
+      args:
+        BASE_IMAGE: "{{ geokrety_docker_image_website_base_image }}"
+        BASE_TAG: "{{ params.base.git_branch }}"
+        GIT_COMMIT: "{{ git_result.after | default('undef') | truncate(8, True, '') }}"

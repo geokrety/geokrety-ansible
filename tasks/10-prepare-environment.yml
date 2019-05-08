@@ -1,0 +1,41 @@
+---
+
+- name: "'{{ item }}' - Create base directory"
+  file:
+    path: "{{ geokrety_base_dir }}"
+    state: directory
+    owner: "{{ geokrety_username }}"
+    group: "{{ geokrety_group }}"
+    mode: 0750
+
+- name: "'{{ item }}' - Create mysql directory"
+  file:
+    path: "{{ geokrety_base_dir }}/mysql"
+    state: directory
+    owner: "999"
+    group: "0"
+    mode: 0750
+
+- name: "'{{ item }}' - Create cdn PROD directory"
+  file:
+    path: "{{ geokrety_home }}/instances/prod/data/cdn"
+    state: directory
+    owner: "www-data"
+    group: "{{ geokrety_group }}"
+    mode: 0750
+
+- name: "'{{ item }}' - Create dbdump PROD directory"
+  file:
+    path: "{{ geokrety_home }}/instances/prod/dbdump"
+    state: directory
+    owner: "{{ geokrety_username }}"
+    group: "{{ geokrety_group }}"
+    mode: 0750
+
+- name: "'{{ item }}' - Create 'ssmtp.conf'"
+  template:
+    src: configs/ssmtp.conf
+    dest: "{{ geokrety_base_dir }}/ssmtp.conf"
+    owner: root
+    group: root
+    mode: 0644

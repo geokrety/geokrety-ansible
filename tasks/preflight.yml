@@ -12,51 +12,6 @@
     executable: /usr/bin/pip
     name:
       - jsondiff
-
-- name: Ensure www directories present
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: 0755
-  with_items:
-    - "{{ geokrety_home }}/www/data-prod"
-    - "{{ geokrety_home }}/www/data-prod/files"
-    - "{{ geokrety_home }}/www/data-prod/generated"
-    - "{{ geokrety_home }}/www/data-prod/logs"
-    - "{{ geokrety_home }}/www/data-prod/mapa-f"
-    - "{{ geokrety_home }}/www/data-prod/mapka"
-    - "{{ geokrety_home }}/www/data-prod/mapki/gpx"
-    - "{{ geokrety_home }}/www/data-prod/mapki/csv"
-    - "{{ geokrety_home }}/www/data-prod/mapki/map"
-    - "{{ geokrety_home }}/www/data-prod/obrazki"
-    - "{{ geokrety_home }}/www/data-prod/obrazki-dowonu"
-    - "{{ geokrety_home }}/www/data-prod/obrazki-male"
-    - "{{ geokrety_home }}/www/data-prod/rzeczy"
-    - "{{ geokrety_home }}/www/data-prod/rzeczy/xml"
-    - "{{ geokrety_home }}/www/data-prod/statpics"
-    - "{{ geokrety_home }}/www/data-prod/templates"
-    - "{{ geokrety_home }}/www/data-prod/templates/wykresy"
-    - "{{ geokrety_home }}/www/data-prod/year-stats"
-    - "{{ geokrety_home }}/www/srtm-data"
-    - "{{ geokrety_home }}/www/the-mole-name"
-
-- name: Ensure databases directories present
-  file:
-    path: "{{ item }}"
-    state: directory
-    mode: 0770
-  with_items:
-    - "{{ geokrety_database_dir }}"
-    - "{{ geokrety_database_dir_base }}/the-mole-name"
-
-- name: Deploy ssmtp.conf
-  template:
-    src: configs/ssmtp.conf
-    dest: "{{ geokrety_configs_dir_base }}/ssmtp.conf"
-    owner: root
-    group: root
-    mode: 0644
+      - ansible==2.8.0rc2
 
 ...

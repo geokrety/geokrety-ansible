@@ -1,0 +1,27 @@
+---
+- name: "'{{ item }}' - Select params from configs"
+  set_fact:
+    params: '{{ geokrety_environments | selectattr("name", "equalto", item) | list | first }}'
+
+- name: "'{{ item }}' Define instance base directory"
+  set_fact:
+    geokrety_base_dir: "{{ geokrety_home }}/instances/{{ item }}"
+
+- debug:
+    msg: "Base directory for instance '{{ item }}' is {{ geokrety_base_dir }}"
+
+- name: "'{{ item }}' Prepare environment"
+  include_tasks: 10-prepare-environment.yml
+
+- name: "'{{ item }}' Clone git repositories"
+  include_tasks: 20-clone-git.yml
+
+- name: "'{{ item }}' Mount CDN directories over AUFS"
+  include_tasks: 25-aufs.yml
+  when: "item != 'prod'"
+
+- name: "'{{ item }}' Build images"
+  include_tasks: 30-build-images.yml
+
+- name: "'{{ item }}' Deploy stack"
+  include_tasks: 40-deploy-images.yml

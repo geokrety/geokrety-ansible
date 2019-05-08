@@ -1,19 +1,5 @@
 ---
 
-- name: deploy cdn stack
-  docker_stack:
-    state: present
-    name: geokrety_cdn
-    compose:
-      - /srv/docker/geokrety_cdn.yml
-
-- name: deploy legacy stack
-  docker_stack:
-    state: present
-    name: geokrety_legacy
-    compose:
-      - /srv/docker/geokrety_legacy.yml
-
 - name: deploy mole_name stack
   docker_stack:
     state: present

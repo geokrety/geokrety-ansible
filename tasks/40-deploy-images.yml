@@ -1,0 +1,16 @@
+---
+
+- name: "'{{ item }}' - Generate docker-compose file"
+  template:
+    src: geokrety_legacy.yml
+    dest: "{{ geokrety_base_dir }}/geokrety_legacy.yml"
+    owner: "{{ geokrety_username }}"
+    group: "{{ geokrety_group }}"
+    mode: 0640
+
+- name: "'{{ item }}' - Deploy stack"
+  docker_stack:
+    state: present
+    name: "{{ geokrety_docker_stack_base_name }}-{{ item }}"
+    compose:
+      - "{{ geokrety_base_dir }}/geokrety_legacy.yml"

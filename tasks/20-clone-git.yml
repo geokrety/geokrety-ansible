@@ -1,0 +1,47 @@
+---
+
+- name: "'{{ item }}' - Create git base directory"
+  file:
+    path: "{{ geokrety_base_dir }}/git"
+    state: directory
+    owner: "{{ geokrety_username }}"
+    group: "{{ geokrety_group }}"
+    mode: 0750
+
+- name: "'{{ item }}' - Clone: CDN - (branch: {{ params.cdn.git_branch | default(geokrety_cdn_image.git_branch) }})"
+  git:
+    repo: "{{ geokrety_cdn_image.git_url }}"
+    dest: "{{ geokrety_base_dir }}/git/cdn"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/cdn.git"
+    version: "{{ params.cdn.git_branch | default(geokrety_cdn_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+
+- name: "'{{ item }}' - Clone: BASE IMAGE - (branch: {{ params.base.git_branch | default(geokrety_base_image.git_branch) }})"
+  git:
+    repo: "{{ geokrety_base_image.git_url }}"
+    dest: "{{ geokrety_base_dir }}/git/base"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/base.git"
+    version: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+
+- name: "'{{ item }}' - Clone WEBSITE - (branch:{{ params.website.git_branch | default(geokrety_website_image.git_branch) }})"
+  git:
+    repo: "{{ geokrety_website_image.git_url }}"
+    dest: "{{ geokrety_base_dir }}/git/website"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/website.git"
+    version: "{{ params.website.git_branch | default(geokrety_website_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+  register: git_result
+
+- name: "'{{ item }}' - Clone CRON - (branch:{{ params.cron.git_branch | default(geokrety_cron_image.git_branch) }})"
+  git:
+    repo: "{{ geokrety_cron_image.git_url }}"
+    dest: "{{ geokrety_base_dir }}/git/cron"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/cron.git"
+    version: "{{ params.cron.git_branch | default(geokrety_cron_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+  when: params.cron is defined
