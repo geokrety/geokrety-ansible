@@ -1,6 +1,6 @@
 ---
 
-- name: 'minisites' - Ensure directories present
+- name: "'minisites' - Ensure directories present"
   file:
     path: "{{ item }}"
     state: directory
@@ -14,17 +14,17 @@
     - "{{ geokrety_home }}/minisites/the-mole-name/database"
     - "{{ geokrety_home }}/minisites/the-mole-name/www"
 
-- name: 'minisites' - polls - Checkout landing page
+- name: "'minisites' - polls - Checkout landing page"
   git:
     repo: https://github.com/geokrety/GeoKrety-Polls-Landing-Page.git
-    dest: "{{ geokrety_home }}/minisites/www"/the-mole-name"
-    separate_git_dir: "{{ geokrety_home }}/minisites/www"/the-mole-name.git"
+    dest: "{{ geokrety_home }}/minisites/www/the-mole-name"
+    separate_git_dir: "{{ geokrety_home }}/minisites/www/the-mole-name.git"
     force: yes
   become_user: "{{ geokrety_username }}"
   notify:
     - deploy polls stack
 
-- name: 'minisites' - mole-name - Deploy config
+- name: "'minisites' - mole-name - Deploy config"
   template:
     src: "mole_name_config.conf.j2"
     dest: "{{ geokrety_home }}/minisites/the-mole-name/configs/custom.conf"
@@ -34,7 +34,7 @@
   notify:
     - deploy mole_name stack
 
-- name: 'minisites' - Deploy docker-compose files
+- name: "'minisites' - Deploy docker-compose files"
   template:
     src: "geokrety_{{ item }}.yml"
     dest: /srv/docker/

@@ -135,8 +135,7 @@ services:
   cron:
     image: {{ geokrety_docker_image_cron_image }}:{{ instance }}
     <<: *variables
-    volumes:
-      <<: *volumes
+    <<: *volumes-website
     deploy:
       labels:
         traefik.enable: "false"
