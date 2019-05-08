@@ -13,5 +13,6 @@
     name:
       - jsondiff
       - ansible==2.8.0rc2
+      - sh
 
 ...
