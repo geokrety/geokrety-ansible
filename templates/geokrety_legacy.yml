@@ -71,14 +71,14 @@ x-volumes-cdn: &volumes-cdn
     # The cdn data
     - {{ geokrety_base_dir }}/git/cdn/content:/usr/share/nginx/html
     # persistent vars
-    - {{ geokrety_base_dir }}/data/cdn/obrazki/:/usr/share/nginx/html/obrazki/
-    - {{ geokrety_base_dir }}/data/cdn/obrazki-dowonu/:/usr/share/nginx/html/obrazki-dowonu/
-    - {{ geokrety_base_dir }}/data/cdn/obrazki-male/:/usr/share/nginx/html/obrazki-male/
-    - {{ geokrety_base_dir }}/data/cdn/statpics/:/usr/share/nginx/html/statpics/
+    - {{ geokrety_base_dir }}/data/cdn/obrazki/:/usr/share/nginx/html/images/obrazki/
+    - {{ geokrety_base_dir }}/data/cdn/obrazki-dowonu/:/usr/share/nginx/html/images/obrazki-dowonu/
+    - {{ geokrety_base_dir }}/data/cdn/obrazki-male/:/usr/share/nginx/html/images/obrazki-male/
+    - {{ geokrety_base_dir }}/data/cdn/statpics/:/usr/share/nginx/html/images/statpics/
     - {{ geokrety_base_dir }}/data/cdn/mapki/:/usr/share/nginx/html/mapki/
+    - {{ geokrety_base_dir }}/data/cdn/templates/wykresy/:/usr/share/nginx/html/templates/images/wykresy/
     # generated vars
     - {{ geokrety_base_dir }}/data/cdn/files/:/usr/share/nginx/html/files/
-    - {{ geokrety_base_dir }}/data/cdn/templates/wykresy/:/usr/share/nginx/html/templates/wykresy/
     - {{ geokrety_base_dir }}/data/cdn/rzeczy/xml/:/usr/share/nginx/html/rzeczy/xml/
     - {{ geokrety_base_dir }}/data/cdn/mapa-f/:/usr/share/nginx/html/rzeczy/mapa-f/out/
     - {{ geokrety_base_dir }}/data/cdn/year-stats/:/usr/share/nginx/html/templates/stats/year/
