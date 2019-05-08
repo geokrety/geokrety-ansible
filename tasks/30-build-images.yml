@@ -12,7 +12,7 @@
 
 - name: "'{{ item }}' - Build and push BASE image"
   docker_image:
-    name: "{{ geokrety_docker_image_website_base_image }}:{{ params.base.git_branch }}"
+    name: "{{ geokrety_docker_image_website_base_image }}:{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
     source: build
     force_source: yes
     push: yes
@@ -31,5 +31,5 @@
       pull: yes
       args:
         BASE_IMAGE: "{{ geokrety_docker_image_website_base_image }}"
-        BASE_TAG: "{{ params.base.git_branch }}"
+        BASE_TAG: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
         GIT_COMMIT: "{{ git_result.after | default('undef') | truncate(8, True, '') }}"
