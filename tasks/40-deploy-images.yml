@@ -12,5 +12,6 @@
   docker_stack:
     state: present
     name: "{{ geokrety_docker_stack_base_name }}-{{ item }}"
+    resolve_image: "{{ 'always' if geokrety_push_images|bool else 'never' }}"
     compose:
       - "{{ geokrety_base_dir }}/geokrety_legacy.yml"

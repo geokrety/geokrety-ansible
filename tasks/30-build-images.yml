@@ -5,7 +5,7 @@
     name: "{{ geokrety_docker_image_cdn_image }}:{{ item }}"
     source: build
     force_source: yes
-    push: yes
+    push: "{{ geokrety_push_images }}"
     build:
       path: "{{ geokrety_base_dir }}/git/cdn"
       pull: yes
@@ -15,7 +15,7 @@
     name: "{{ geokrety_docker_image_website_base_image }}:{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
     source: build
     force_source: yes
-    push: yes
+    push: "{{ geokrety_push_images }}"
     build:
       path: "{{ geokrety_base_dir }}/git/base"
       pull: yes
@@ -25,10 +25,10 @@
     name: "{{ geokrety_docker_image_website_image }}:{{ item }}"
     source: build
     force_source: yes
-    push: yes
+    push: "{{ geokrety_push_images }}"
     build:
       path: "{{ geokrety_base_dir }}/git/website"
-      pull: yes
+      pull: "{{ geokrety_push_images }}"
       args:
         BASE_IMAGE: "{{ geokrety_docker_image_website_base_image }}"
         BASE_TAG: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
@@ -39,10 +39,10 @@
     name: "{{ geokrety_docker_image_cron_image }}:{{ item }}"
     source: build
     force_source: yes
-    push: yes
+    push: "{{ geokrety_push_images }}"
     build:
       path: "{{ geokrety_base_dir }}/git/cron"
-      pull: yes
+      pull: "{{ geokrety_push_images }}"
       args:
         IMAGE: "{{ geokrety_docker_image_website_image }}:{{ item }}"
   when: params.cron is defined

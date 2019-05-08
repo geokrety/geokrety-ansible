@@ -41,9 +41,9 @@ x-variables: &variables
 
 x-volumes-website: &volumes-website
   volumes:
-{% if 'localdir' in params.keys() %}
+{% if 'localdir' in params.website.keys() %}
     # Mount local dir as html root
-    - {{ params.localdir }}/website:/var/www/html/
+    - {{ params.website.localdir }}/website:/var/www/html/
 {% endif %}
     # Configure mail forwarder
     - {{ geokrety_base_dir }}/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
@@ -60,16 +60,21 @@ x-volumes-website: &volumes-website
     - {{ geokrety_base_dir }}/data/cdn/mapa-f/:/var/www/html/rzeczy/mapa-f/out/
     - {{ geokrety_base_dir }}/data/cdn/year-stats/:/var/www/html/templates/stats/year/
 
+{% if 'cdn' in params.keys() %}
 x-volumes-cdn: &volumes-cdn
   volumes:
-{% if 'localdir' in params.keys() %}
+{% if 'localdir' in params.website.keys() %}
     # Mount local dir as html root
-    - {{ params.localdir }}/website:/var/www/html/
+    - {{ params.website.localdir }}/website:/var/www/html/
 {% endif %}
     # Configure mail forwarder
     - {{ geokrety_base_dir }}/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
     # The cdn data
+{% if 'localdir' in params.cdn.keys() %}
+    - {{ params.cdn.localdir }}/content:/usr/share/nginx/html
+{% else %}
     - {{ geokrety_base_dir }}/git/cdn/content:/usr/share/nginx/html
+{% endif %}
     # persistent vars
     - {{ geokrety_base_dir }}/data/cdn/obrazki/:/usr/share/nginx/html/images/obrazki/
     - {{ geokrety_base_dir }}/data/cdn/obrazki-dowonu/:/usr/share/nginx/html/images/obrazki-dowonu/
@@ -82,6 +87,7 @@ x-volumes-cdn: &volumes-cdn
     - {{ geokrety_base_dir }}/data/cdn/rzeczy/xml/:/usr/share/nginx/html/rzeczy/xml/
     - {{ geokrety_base_dir }}/data/cdn/mapa-f/:/usr/share/nginx/html/rzeczy/mapa-f/out/
     - {{ geokrety_base_dir }}/data/cdn/year-stats/:/usr/share/nginx/html/templates/stats/year/
+{% endif %}
 
 services:
 
@@ -108,6 +114,7 @@ services:
       default:
       traefik_default:
 
+{% if 'cdn' in params.keys() %}
   cdn:
     image: {{ geokrety_docker_image_cdn_image }}:{{ item }}
     <<: *volumes-cdn
@@ -130,10 +137,11 @@ services:
     networks:
       default:
       traefik_default:
+{% endif %}
 
 {% if params.cron is defined %}
   cron:
-    image: {{ geokrety_docker_image_cron_image }}:{{ instance }}
+    image: {{ geokrety_docker_image_cron_image }}:{{ item }}
     <<: *variables
     <<: *volumes-website
     deploy:

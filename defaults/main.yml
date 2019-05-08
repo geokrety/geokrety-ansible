@@ -22,6 +22,7 @@ geokrety_docker_image_website_base_image: geokrety/website-legacy-base
 geokrety_docker_image_website_image: geokrety/website-legacy
 geokrety_docker_image_cron_image: geokrety/cron-legacy
 geokrety_docker_stack_base_name: geokrety-legacy
+geokrety_push_images: yes
 
 geokrety_tz: Europe/Paris
 
