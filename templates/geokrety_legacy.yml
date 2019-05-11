@@ -201,6 +201,16 @@ services:
       default:
       traefik_default:
 
+  redis:
+    image: redis:5
+    deploy:
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+
 networks:
   default:
   traefik_default:
