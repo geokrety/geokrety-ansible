@@ -31,6 +31,7 @@ x-variables: &variables
     POP_TLS: "{{ params.pop_tls | default(geokrety_params.pop_tls) }}"
     POP_USERNAME: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
     POP_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
+    SUPPORT_MAIL: "{{ params.mail_email | default(geokrety_params.mail_email) }}"
     SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
     SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
     PIWIK_URL: "{{ params.piwik.url | default(geokrety_params.piwik.url) }}"

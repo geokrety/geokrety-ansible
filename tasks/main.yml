@@ -2,7 +2,7 @@
 
 - include_tasks: preflight.yml
 
-- include_tasks: minisites.yml
+# - include_tasks: minisites.yml
 
 
 - block:
