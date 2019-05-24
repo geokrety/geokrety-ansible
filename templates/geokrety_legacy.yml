@@ -39,6 +39,7 @@ x-variables: &variables
     PIWIK_TOKEN: "{{ params.piwik.token | default(geokrety_params.piwik.token) }}"
     GEONAMES_ENDPOINT: "http://api.geonames.org"
     GEONAMES_USERNAME: "{{ params.geonames_username | default(geokrety_params.geonames_username) }}"
+    GEOKRETY_MAP_URL: "{{ params.geokrety_map_url | default(geokrety_params.geokrety_map_url) }}"
 
 x-volumes-website: &volumes-website
   volumes:

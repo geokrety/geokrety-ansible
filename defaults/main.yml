@@ -58,6 +58,7 @@ geokrety_params:
   #    recaptcha_public_key: xxx
   #    recaptcha_secret_key: xxx
   cdn_uri: cdn.geokrety.org
+  geokrety_map_url: https://api.geokrety.org
   # password_hash: xxx
   # password_hash_legacy: xxx
   # api2login_md5_str1: xxx
