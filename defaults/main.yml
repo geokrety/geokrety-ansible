@@ -102,6 +102,9 @@ geokrety_params:
     OC_NL:
       CONSUMER_KEY: ""
       CONSUMER_SECRET: ""
+    OC_RO:
+      CONSUMER_KEY: ""
+      CONSUMER_SECRET: ""
 
 # geokrety_environments:
 #   - name: xxx
