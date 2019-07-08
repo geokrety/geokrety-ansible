@@ -41,6 +41,13 @@ x-variables: &variables
     GEONAMES_USERNAME: "{{ params.geonames_username | default(geokrety_params.geonames_username) }}"
     GEOKRETY_MAP_URL: "{{ params.geokrety_map_url | default(geokrety_params.geokrety_map_url) }}"
 
+x-variables-okapi: &variables-okapi
+    OC_PL_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_PL.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_PL.CONSUMER_KEY) }}"
+    OC_UK_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_UK.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_UK.CONSUMER_KEY) }}"
+    OC_DE_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_DE.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_DE.CONSUMER_KEY) }}"
+    OC_US_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_US.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_US.CONSUMER_KEY) }}"
+    OC_NL_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_NL.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_NL.CONSUMER_KEY) }}"
+
 x-volumes-website: &volumes-website
   volumes:
 {% if 'localdir' in params.website.keys() %}
@@ -145,6 +152,7 @@ services:
   cron:
     image: {{ geokrety_docker_image_cron_image }}:{{ item }}
     <<: *variables
+    <<: *variables-okapi
     <<: *volumes-website
     deploy:
       labels:

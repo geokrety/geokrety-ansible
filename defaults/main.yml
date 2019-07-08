@@ -86,6 +86,22 @@ geokrety_params:
   #  token: xxx
   # geonames_username: xxx
   uri: []
+  OKAPI:
+    OC_PL:
+      CONSUMER_KEY: ""
+      CONSUMER_SECRET: ""
+    OC_UK:
+      CONSUMER_KEY: ""
+      CONSUMER_SECRET: ""
+    OC_DE:
+      CONSUMER_KEY: ""
+      CONSUMER_SECRET: ""
+    OC_US:
+      CONSUMER_KEY: ""
+      CONSUMER_SECRET: ""
+    OC_NL:
+      CONSUMER_KEY: ""
+      CONSUMER_SECRET: ""
 
 # geokrety_environments:
 #   - name: xxx
