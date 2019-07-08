@@ -52,7 +52,7 @@ geokrety_params:
     user: xxx
     password: xxx
     name: xxx
-    charset: utf-8
+    charset: utf8mb4
   # google:
   #    map_key: xxx
   #    recaptcha_public_key: xxx
