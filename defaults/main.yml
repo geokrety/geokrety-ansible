@@ -85,6 +85,7 @@ geokrety_params:
   #  site_id: 000
   #  token: xxx
   # geonames_username: xxx
+  session_in_redis: 'true'
   uri: []
   OKAPI:
     OC_PL:

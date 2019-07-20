@@ -45,6 +45,7 @@ x-variables: &variables
     OC_DE_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_DE.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_DE.CONSUMER_KEY) }}"
     OC_US_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_US.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_US.CONSUMER_KEY) }}"
     OC_NL_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_NL.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_NL.CONSUMER_KEY) }}"
+    SESSION_IN_REDIS: "{{ params.session_in_redis | default(geokrety_params.session_in_redis) }}"
 
 x-volumes-website: &volumes-website
   volumes:
