@@ -47,6 +47,7 @@ geokrety_cron_image:
   docker_tag: latest
 
 geokrety_params:
+  environment: xxx
   db:
     host: db
     user: xxx
