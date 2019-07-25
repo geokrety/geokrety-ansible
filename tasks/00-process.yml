@@ -16,12 +16,20 @@
 - name: "'{{ item }}' Clone git repositories"
   include_tasks: 20-clone-git.yml
 
+- name: "'{{ item }}' Clone git repositories for monitoring"
+  include_tasks: 21-clone-git-monitoring.yml
+  when: "params.monitoring is defined"
+
 - name: "'{{ item }}' Mount CDN directories over AUFS"
   include_tasks: 25-aufs.yml
   when: "item != 'prod'"
 
 - name: "'{{ item }}' Build images"
   include_tasks: 30-build-images.yml
+
+- name: "'{{ item }}' Build images for monitoring"
+  include_tasks: 31-build-images-monitoring.yml
+  when: "params.monitoring is defined"
 
 - name: "'{{ item }}' Deploy stack"
   include_tasks: 40-deploy-images.yml

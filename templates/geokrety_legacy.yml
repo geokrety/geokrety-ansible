@@ -222,6 +222,31 @@ services:
     networks:
       default:
 
+{% if params.monitoring is defined %}
+  prometheus:
+    image: {{ params.monitoring.prometheus.image }}:{{ params.monitoring.prometheus.tag }}
+    command:
+      - "--web.external-url=/prometheus"
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+    volumes:
+      - {{ geokrety_base_dir }}/prometheus:/prometheus:rw
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefix:/prometheus"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 9090
+        traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+      restart_policy:
+        condition: any
+    networks:
+      traefik_default:
+      default:
+{% endif %}
+
 networks:
   default:
   traefik_default:

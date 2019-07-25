@@ -21,6 +21,7 @@ geokrety_docker_image_cdn_image: geokrety/cdn
 geokrety_docker_image_website_base_image: geokrety/website-legacy-base
 geokrety_docker_image_website_image: geokrety/website-legacy
 geokrety_docker_image_cron_image: geokrety/cron-legacy
+geokrety_docker_image_prometheus_image: geokrety/prometheus
 geokrety_docker_stack_base_name: geokrety-legacy
 geokrety_push_images: yes
 
@@ -43,6 +44,11 @@ geokrety_cdn_image:
 
 geokrety_cron_image:
   git_url: https://github.com/geokrety/geokrety-scripts.git
+  git_branch: master
+  docker_tag: latest
+
+geokrety_prometheus_image:
+  git_url: https://github.com/geokrety/geokrety-prometheus.git
   git_branch: master
   docker_tag: latest
 
@@ -126,6 +132,11 @@ geokrety_params:
 #       uri: [xxx.staging.geokrety.org]
 #     cron: # Not built if missing
 #       git_branch: xxx
+#     monitoring:
+#       prometheus:
+#         git_branch: metrics
+#         image: geokrety/prometheus
+#         tag: metrics
 
 # geokrety_org_mysql_root_password:
 # geokrety_email_password:
