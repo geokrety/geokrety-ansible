@@ -140,14 +140,24 @@ geokrety_params:
 #       git_branch: xxx
 #     monitoring:
 #       prometheus:
-#         git_branch: metrics
+#         git_branch: wip/metrics
 #         image: geokrety/prometheus
 #         tag: metrics
 #       grafana:
 #         password: xxx
-#         git_branch: metrics
+#         git_branch: wip/metrics
 #         image: geokrety/grafana
 #         tag: metrics
+#         env:
+#           - {k: 'GF_AUTH_GITHUB_ENABLED', v: '"true"'}
+#           - {k: 'GF_AUTH_GITHUB_CLIENT_ID', v: 'xxx'}
+#           - {k: 'GF_AUTH_GITHUB_CLIENT_SECRET', v: 'xxx'}
+#           - {k: 'GF_AUTH_GITHUB_SCOPES', v: 'user:email,read:org'}
+#           - {k: 'GF_AUTH_GITHUB_AUTH_URL', v: 'https://github.com/login/oauth/authorize'}
+#           - {k: 'GF_AUTH_GITHUB_TOKEN_URL', v: 'https://github.com/login/oauth/access_token'}
+#           - {k: 'GF_AUTH_GITHUB_API_URL', v: 'https://api.github.com/user'}
+#           - {k: 'GF_AUTH_GITHUB_ALLOW_SIGN_UP', v: '"true"'}
+#           - {k: 'GF_AUTH_GITHUB_ALLOWED_ORGANIZATIONS', v: 'geokrety geokretymap'}
 
 # geokrety_org_mysql_root_password:
 # geokrety_email_password:
