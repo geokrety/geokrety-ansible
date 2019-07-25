@@ -22,7 +22,16 @@
     state: directory
     owner: "65534"
     group: "65534"
-    mode: 0775
+    mode: 0770
+  when: "params.monitoring is defined"
+
+- name: "'{{ item }}' - Create grafana directory"
+  file:
+    path: "{{ geokrety_base_dir }}/grafana"
+    state: directory
+    owner: "472"
+    group: "472"
+    mode: 0770
   when: "params.monitoring is defined"
 
 - name: "'{{ item }}' - Create cdn PROD directory"

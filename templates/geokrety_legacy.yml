@@ -247,18 +247,24 @@ services:
 
   grafana:
     image: {{ params.monitoring.grafana.image | default(geokrety_docker_image_grafana_image) }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}
+    volumes:
+      - {{ geokrety_base_dir }}/grafana:/var/lib/grafana:rw
     environment:
-      GF_SERVER_ROOT_URL: {{ params.website.uri | first }}/grafana"
+      GF_SERVER_ROOT_URL: https://{{ params.website.uri | first }}/grafana
+      GF_SERVER_SERVE_FROM_SUB_PATH: 'true'
       GF_SECURITY_ADMIN_PASSWORD: {{ params.monitoring.grafana.password }}
+{% for conf in params.monitoring.grafana.env %}
+      {{ conf.k }}: {{ conf.v }}
+{% endfor %}
+
     deploy:
       labels:
         traefik.enable: "true"
         traefik.docker.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefix:/grafana"
+        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefixStrip:/grafana"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 3000
-        traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
       restart_policy:
         condition: any
     networks:
