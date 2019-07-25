@@ -1,0 +1,19 @@
+---
+
+- name: "'{{ item }}' - Clone: PROMETHEUS - (branch: {{ params.monitoring.prometheus.git_branch | default(geokrety_prometheus_image.git_branch) }})"
+  git:
+    repo: "{{ geokrety_prometheus_image.git_url }}"
+    dest: "{{ geokrety_base_dir }}/git/prometheus"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/prometheus.git"
+    version: "{{ params.monitoring.prometheus.git_branch | default(geokrety_prometheus_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+
+- name: "'{{ item }}' - Clone: GRAFANA - (branch: {{ params.monitoring.grafana.git_branch | default(geokrety_grafana_image.git_branch) }})"
+  git:
+    repo: "{{ geokrety_grafana_image.git_url }}"
+    dest: "{{ geokrety_base_dir }}/git/grafana"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/grafana.git"
+    version: "{{ params.monitoring.grafana.git_branch | default(geokrety_grafana_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"

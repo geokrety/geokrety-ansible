@@ -1,0 +1,21 @@
+---
+
+- name: "'{{ item }}' - Build and push PROMETHEUS image"
+  docker_image:
+    name: "{{ params.monitoring.prometheus.image | default(geokrety_docker_image_prometheus_image) }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}"
+    source: build
+    force_source: yes
+    push: "{{ geokrety_push_images }}"
+    build:
+      path: "{{ geokrety_base_dir }}/git/prometheus"
+      pull: "{{ geokrety_push_images }}"
+
+- name: "'{{ item }}' - Build and push GRAFANA image"
+  docker_image:
+    name: "{{ params.monitoring.grafana.image | default(geokrety_docker_image_grafana_image) }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}"
+    source: build
+    force_source: yes
+    push: "{{ geokrety_push_images }}"
+    build:
+      path: "{{ geokrety_base_dir }}/git/grafana"
+      pull: "{{ geokrety_push_images }}"

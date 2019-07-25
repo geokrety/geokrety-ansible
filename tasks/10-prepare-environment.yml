@@ -20,9 +20,9 @@
   file:
     path: "{{ geokrety_base_dir }}/prometheus"
     state: directory
-    owner: "999"
-    group: "0"
-    mode: 0750
+    owner: "65534"
+    group: "65534"
+    mode: 0775
   when: "params.monitoring is defined"
 
 - name: "'{{ item }}' - Create cdn PROD directory"

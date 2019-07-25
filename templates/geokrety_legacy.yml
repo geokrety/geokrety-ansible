@@ -224,11 +224,10 @@ services:
 
 {% if params.monitoring is defined %}
   prometheus:
-    image: {{ params.monitoring.prometheus.image }}:{{ params.monitoring.prometheus.tag }}
+    image: {{ params.monitoring.prometheus.image | default(geokrety_docker_image_prometheus_image) }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}
     command:
       - "--web.external-url=/prometheus"
       - "--config.file=/etc/prometheus/prometheus.yml"
-
     volumes:
       - {{ geokrety_base_dir }}/prometheus:/prometheus:rw
     deploy:
@@ -239,6 +238,26 @@ services:
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 9090
+        traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+      restart_policy:
+        condition: any
+    networks:
+      traefik_default:
+      default:
+
+  grafana:
+    image: {{ params.monitoring.grafana.image | default(geokrety_docker_image_grafana_image) }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}
+    environment:
+      GF_SERVER_ROOT_URL: {{ params.website.uri | first }}/grafana"
+      GF_SECURITY_ADMIN_PASSWORD: {{ params.monitoring.grafana.password }}
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefix:/grafana"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 3000
         traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
       restart_policy:
         condition: any
