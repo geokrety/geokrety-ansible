@@ -5,7 +5,7 @@ x-variables: &variables
   depends_on:
     - db
   environment:
-    TIMEZONE: "{{ geokrety_tz }}"
+    TIMEZONE: "{{ params.tz | default(geokrety_tz) }}"
     DB_HOSTNAME: "{{ params.db.host | default(geokrety_params.db.host) }}"
     DB_USERNAME: "{{ params.db.user | default(geokrety_params.db.user) }}"
     DB_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
@@ -179,7 +179,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - {{ geokrety_home }}/instances/prod/dbdump/database.sql:/docker-entrypoint-initdb.d/database.sql:ro
     environment:
-      TZ: {{ geokrety_tz }}
+      TZ: {{ params.tz | default(geokrety_tz) }}
       MYSQL_ROOT_PASSWORD: {{ geokrety_org_mysql_root_password }}
       MYSQL_DATABASE: "{{ params.db.name | default(geokrety_params.db.name) }}"
       MYSQL_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
