@@ -109,7 +109,8 @@ services:
       replicas: 2
       update_config:
         parallelism: 1
-        delay: 10s
+        delay: 30s
+        monitor: 60s
         order: start-first
       labels:
         traefik.enable: "true"
