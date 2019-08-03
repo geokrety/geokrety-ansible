@@ -1,21 +1,34 @@
 ---
 
-- name: "'{{ item }}' - Build and push PROMETHEUS image"
+- name: "'{{ item }}' Define PROMETHEUS image name"
+  set_fact:
+    geokrety_docker_image_prometheus_image_name: "{{ ('' if geokrety_push_images else 'local/') + params.monitoring.prometheus.image | default(geokrety_docker_image_prometheus_image) }}"
+
+- name: "'{{ item }}' Define GRAFANA image name"
+  set_fact:
+    geokrety_docker_image_grafana_image_name: "{{ ('' if geokrety_push_images else 'local/') + params.monitoring.grafana.image | default(geokrety_docker_image_grafana_image) }}"
+
+- debug:
+    var: geokrety_docker_image_prometheus_image_name
+- debug:
+    var: geokrety_docker_image_grafana_image_name
+
+- name: "'{{ item }}' - Build and push PROMETHEUS image - {{ params.monitoring.prometheus.localdir | default(geokrety_base_dir+'/git/prometheus') }} | {{ geokrety_docker_image_prometheus_image_name }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}"
   docker_image:
-    name: "{{ params.monitoring.prometheus.image | default(geokrety_docker_image_prometheus_image) }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}"
+    name: "{{ geokrety_docker_image_prometheus_image_name }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}"
     source: build
     force_source: yes
     push: "{{ geokrety_push_images }}"
     build:
-      path: "{{ geokrety_base_dir }}/git/prometheus"
+      path: "{{ params.monitoring.prometheus.localdir | default(geokrety_base_dir+'/git/prometheus') }}"
       pull: "{{ geokrety_push_images }}"
 
-- name: "'{{ item }}' - Build and push GRAFANA image"
+- name: "'{{ item }}' - Build and push GRAFANA image - {{ params.monitoring.grafana.localdir | default(geokrety_base_dir+'/git/grafana') }} | {{ geokrety_docker_image_grafana_image_name }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}"
   docker_image:
-    name: "{{ params.monitoring.grafana.image | default(geokrety_docker_image_grafana_image) }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}"
+    name: "{{ geokrety_docker_image_grafana_image_name }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}"
     source: build
     force_source: yes
     push: "{{ geokrety_push_images }}"
     build:
-      path: "{{ geokrety_base_dir }}/git/grafana"
+      path: "{{ params.monitoring.grafana.localdir | default(geokrety_base_dir+'/git/grafana') }}"
       pull: "{{ geokrety_push_images }}"

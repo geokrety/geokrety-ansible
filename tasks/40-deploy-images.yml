@@ -8,7 +8,7 @@
     group: "{{ geokrety_group }}"
     mode: 0640
 
-- name: "'{{ item }}' - Deploy stack"
+- name: "'{{ item }}' - Deploy stack - {{ geokrety_base_dir }}/geokrety_legacy.yml"
   docker_stack:
     state: present
     name: "{{ geokrety_docker_stack_base_name }}-{{ item }}"

@@ -1,48 +1,64 @@
 ---
 
-- name: "'{{ item }}' - Build and push CDN image"
+- name: "'{{ item }}' Define CDN image name"
+  set_fact:
+    geokrety_docker_image_cdn_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_cdn_image }}"
+
+- name: "'{{ item }}' Define BASE image name"
+  set_fact:
+    geokrety_docker_image_website_base_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_website_base_image }}"
+
+- name: "'{{ item }}' Define WEBSITE image name"
+  set_fact:
+    geokrety_docker_image_website_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_website_image }}"
+
+- name: "'{{ item }}' Define CRON image name"
+  set_fact:
+    geokrety_docker_image_cron_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_cron_image }}"
+
+- name: "'{{ item }}' - Build and push CDN image - {{ params.cdn.localdir | default(geokrety_base_dir+'/git/cdn') }} | {{ geokrety_docker_image_cdn_image_name }}:{{ item }}"
   docker_image:
-    name: "{{ geokrety_docker_image_cdn_image }}:{{ item }}"
+    name: "{{ geokrety_docker_image_cdn_image_name }}:{{ item }}"
     source: build
     force_source: yes
     push: "{{ geokrety_push_images }}"
     build:
-      path: "{{ geokrety_base_dir }}/git/cdn"
+      path: "{{ params.cdn.localdir | default(geokrety_base_dir+'/git/cdn') }}"
       pull: yes
 
-- name: "'{{ item }}' - Build and push BASE image"
+- name: "'{{ item }}' - Build and push BASE image - {{ params.base.localdir | default(geokrety_base_dir+'/git/base') }} | {{ geokrety_docker_image_website_base_image_name }}:{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
   docker_image:
-    name: "{{ geokrety_docker_image_website_base_image }}:{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
+    name: "{{ geokrety_docker_image_website_base_image_name }}:{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
     source: build
     force_source: yes
     push: "{{ geokrety_push_images }}"
     build:
-      path: "{{ geokrety_base_dir }}/git/base"
+      path: "{{ params.base.localdir | default(geokrety_base_dir+'/git/base') }}"
       pull: yes
 
-- name: "'{{ item }}' - Build and push WEBSITE image"
+- name: "'{{ item }}' - Build and push WEBSITE image - {{ params.website.localdir | default(geokrety_base_dir+'/git/website') }} | {{ geokrety_docker_image_website_image_name }}:{{ item }}"
   docker_image:
-    name: "{{ geokrety_docker_image_website_image }}:{{ item }}"
+    name: "{{ geokrety_docker_image_website_image_name }}:{{ item }}"
     source: build
     force_source: yes
     push: "{{ geokrety_push_images }}"
     build:
-      path: "{{ geokrety_base_dir }}/git/website"
+      path: "{{ params.website.localdir | default(geokrety_base_dir+'/git/website') }}"
       pull: "{{ geokrety_push_images }}"
       args:
-        BASE_IMAGE: "{{ geokrety_docker_image_website_base_image }}"
+        BASE_IMAGE: "{{ geokrety_docker_image_website_base_image_name }}"
         BASE_TAG: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
         GIT_COMMIT: "{{ git_result.after | default('undef') | truncate(8, True, '') }}"
 
-- name: "'{{ item }}' - Build and push CRON image"
+- name: "'{{ item }}' - Build and push CRON image - {{ params.cron.localdir | default(geokrety_base_dir+'/git/cron') }} | {{ geokrety_docker_image_cron_image_name }}:{{ item }}"
   docker_image:
-    name: "{{ geokrety_docker_image_cron_image }}:{{ item }}"
+    name: "{{ geokrety_docker_image_cron_image_name }}:{{ item }}"
     source: build
     force_source: yes
     push: "{{ geokrety_push_images }}"
     build:
-      path: "{{ geokrety_base_dir }}/git/cron"
+      path: "{{ params.cron.localdir | default(geokrety_base_dir+'/git/cron') }}"
       pull: "{{ geokrety_push_images }}"
       args:
-        IMAGE: "{{ geokrety_docker_image_website_image }}:{{ item }}"
+        IMAGE: "{{ geokrety_docker_image_website_image_name }}:{{ item }}"
   when: params.cron is defined

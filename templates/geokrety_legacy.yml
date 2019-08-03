@@ -102,7 +102,7 @@ x-volumes-cdn: &volumes-cdn
 services:
 
   website:
-    image: {{ geokrety_docker_image_website_image }}:{{ item }}
+    image: {{ geokrety_docker_image_website_image_name }}:{{ item }}
     <<: *variables
     <<: *volumes-website
     deploy:
@@ -127,7 +127,7 @@ services:
 
 {% if 'cdn' in params.keys() %}
   cdn:
-    image: {{ geokrety_docker_image_cdn_image }}:{{ item }}
+    image: {{ geokrety_docker_image_cdn_image_name }}:{{ item }}
     <<: *volumes-cdn
     deploy:
       replicas: 2
@@ -152,7 +152,7 @@ services:
 
 {% if params.cron is defined %}
   cron:
-    image: {{ geokrety_docker_image_cron_image }}:{{ item }}
+    image: {{ geokrety_docker_image_cron_image_name }}:{{ item }}
     <<: *variables
     <<: *volumes-website
     deploy:
@@ -225,7 +225,7 @@ services:
 
 {% if params.monitoring is defined %}
   prometheus:
-    image: {{ params.monitoring.prometheus.image | default(geokrety_docker_image_prometheus_image) }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}
+    image: {{ geokrety_docker_image_prometheus_image_name }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}
     command:
       - "--web.external-url=/prometheus"
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -258,7 +258,7 @@ services:
       default:
 
   grafana:
-    image: {{ params.monitoring.grafana.image | default(geokrety_docker_image_grafana_image) }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}
+    image: {{ geokrety_docker_image_grafana_image_name }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}
     volumes:
       - {{ geokrety_base_dir }}/grafana:/var/lib/grafana:rw
     environment:

@@ -16,6 +16,7 @@
     version: "{{ params.cdn.git_branch | default(geokrety_cdn_image.git_branch) }}"
     force: yes
   become_user: "{{ geokrety_username }}"
+  when: params.cdn.localdir is not defined
 
 - name: "'{{ item }}' - Clone: BASE IMAGE - (branch: {{ params.base.git_branch | default(geokrety_base_image.git_branch) }})"
   git:
@@ -25,6 +26,7 @@
     version: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
     force: yes
   become_user: "{{ geokrety_username }}"
+  when: params.base.localdir is not defined
 
 - name: "'{{ item }}' - Clone WEBSITE - (branch:{{ params.website.git_branch | default(geokrety_website_image.git_branch) }})"
   git:
@@ -35,6 +37,7 @@
     force: yes
   become_user: "{{ geokrety_username }}"
   register: git_result
+  when: params.website.localdir is not defined
 
 - name: "'{{ item }}' - Clone CRON - (branch:{{ params.cron.git_branch | default(geokrety_cron_image.git_branch) }})"
   git:
@@ -44,4 +47,4 @@
     version: "{{ params.cron.git_branch | default(geokrety_cron_image.git_branch) }}"
     force: yes
   become_user: "{{ geokrety_username }}"
-  when: params.cron is defined
+  when: params.cron is defined and params.cron.localdir is not defined

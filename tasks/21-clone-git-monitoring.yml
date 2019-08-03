@@ -8,6 +8,7 @@
     version: "{{ params.monitoring.prometheus.git_branch | default(geokrety_prometheus_image.git_branch) }}"
     force: yes
   become_user: "{{ geokrety_username }}"
+  when: params.monitoring.prometheus.localdir is not defined
 
 - name: "'{{ item }}' - Clone: GRAFANA - (branch: {{ params.monitoring.grafana.git_branch | default(geokrety_grafana_image.git_branch) }})"
   git:
@@ -17,3 +18,4 @@
     version: "{{ params.monitoring.grafana.git_branch | default(geokrety_grafana_image.git_branch) }}"
     force: yes
   become_user: "{{ geokrety_username }}"
+  when: params.monitoring.grafana.localdir is not defined
