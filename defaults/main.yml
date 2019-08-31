@@ -59,14 +59,17 @@ geokrety_grafana_image:
   docker_tag: latest
 
 geokrety_params:
+  new_env_flag: False
   environment: xxx
   # tz: GMT
   db:
+    dsn: mysql:host=db;port=3306;dbname=geokrety;charset=utf8mb4
+    user: geokrety
+    password: geokrety
     host: db
-    user: xxx
-    password: xxx
-    name: xxx
+    name: geokrety
     charset: utf8mb4
+  password_seed: xxx
   # google:
   #    map_key: xxx
   #    recaptcha_public_key: xxx
@@ -75,6 +78,7 @@ geokrety_params:
   geokrety_map_url: https://api.geokrety.org
   # password_hash: xxx
   # password_hash_legacy: xxx
+  # password_hash_rotation: 8
   # api2login_md5_str1: xxx
   # api2login_md5_str2: xxx
   # swistak_key: xxx

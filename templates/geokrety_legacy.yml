@@ -6,6 +6,38 @@ x-variables: &variables
     - db
   environment:
     TIMEZONE: "{{ params.tz | default(geokrety_tz) }}"
+    SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
+    SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
+{% if params.new_env_flag is defined and params.new_env_flag %}
+    GK_SITE_BASE_SERVER_URL: "https://{{ params.website.uri.0 }}"
+
+    GK_DEBUG: "{{ params.debug is defined and params.debug }}"
+    GK_ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
+
+    GK_SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
+    GK_SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
+
+    GK_DB_DSN: "{{ params.db.dsn | default(geokrety_params.db.dsn) }}"
+    GK_DB_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
+    GK_DB_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
+
+    GK_SMTP_USER: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
+    GK_SMTP_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
+
+    GK_PASSWORD_HASH_ROTATION: "{{ params.password_hash_rotation | default(geokrety_params.password_hash_rotation) }}"
+    GK_PASSWORD_HASH: "{{ params.password_hash_legacy | default(geokrety_params.password_hash_legacy) }}"
+    GK_PASSWORD_SEED: "{{ params.password_seed | default(geokrety_params.password_seed) }}"
+
+    GK_SESSION_IN_REDIS: "{{ params.session_in_redis | default(geokrety_params.session_in_redis) }}"
+
+    GK_CDN_SERVER_URL: "https://{{ params.cdn.uri | default(geokrety_params.cdn_uri) }}"
+    GK_MAP_URL: "{{ params.geokrety_map_url | default(geokrety_params.geokrety_map_url) }}"
+
+    GK_GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
+    GK_GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google.recaptcha_secret_key | default(geokrety_params.google.recaptcha_secret_key) }}"
+{% endif %}
+
+    # OBSOLETE: Old entries that will be removed one day (Still in use by branches < new-theme/f3)
     DB_HOSTNAME: "{{ params.db.host | default(geokrety_params.db.host) }}"
     DB_USERNAME: "{{ params.db.user | default(geokrety_params.db.user) }}"
     DB_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
@@ -32,8 +64,6 @@ x-variables: &variables
     POP_USERNAME: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
     POP_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
     SUPPORT_MAIL: "{{ params.mail_email | default(geokrety_params.mail_email) }}"
-    SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
-    SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
     PIWIK_URL: "{{ params.piwik.url | default(geokrety_params.piwik.url) }}"
     PIWIK_SITE_ID: "{{ params.piwik.site_id | default(geokrety_params.piwik.site_id) }}"
     PIWIK_TOKEN: "{{ params.piwik.token | default(geokrety_params.piwik.token) }}"
