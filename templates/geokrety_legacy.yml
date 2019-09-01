@@ -148,6 +148,9 @@ services:
         traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
+{% if params.new_env_flag is defined and params.new_env_flag %}
+        traefik.backend.healthcheck.path: "/health"
+{% endif %}
         traefik.port: 80
       restart_policy:
         condition: any
