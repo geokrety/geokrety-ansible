@@ -94,7 +94,7 @@ geokrety_params:
   mail_domain: gmail.com
   mail_email:
     main: geokrety@gmail.com
-    support: "{{ geokrety_params.mail_email.main }}"
+    support: geokrety@gmail.com
   # mail_username: xxx
   # mail_password: xxx
   # sentry:
