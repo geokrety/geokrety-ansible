@@ -92,7 +92,9 @@ geokrety_params:
   pop_port: 995
   pop_tls: True
   mail_domain: gmail.com
-  mail_email: geokrety@gmail.com
+  mail_email:
+    main: geokrety@gmail.com
+    support: "{{ geokrety_params.mail_email.main }}"
   # mail_username: xxx
   # mail_password: xxx
   # sentry:

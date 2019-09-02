@@ -21,8 +21,11 @@ x-variables: &variables
     GK_DB_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
     GK_DB_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
 
+    GK_SITE_EMAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
+    GK_SITE_EMAIL_SUPPORT: "{{ params.mail_email.support | default(geokrety_params.mail_email.support) }}"
     GK_SMTP_USER: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
     GK_SMTP_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
+    GK_SMTP_HOST: "{{ params.mail_smtp_host | default(geokrety_params.mail_smtp_host) }}"
 
     GK_PASSWORD_HASH_ROTATION: "{{ params.password_hash_rotation | default(geokrety_params.password_hash_rotation) }}"
     GK_PASSWORD_HASH: "{{ params.password_hash_legacy | default(geokrety_params.password_hash_legacy) }}"
@@ -63,7 +66,7 @@ x-variables: &variables
     POP_TLS: "{{ params.pop_tls | default(geokrety_params.pop_tls) }}"
     POP_USERNAME: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
     POP_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
-    SUPPORT_MAIL: "{{ params.mail_email | default(geokrety_params.mail_email) }}"
+    SUPPORT_MAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
     PIWIK_URL: "{{ params.piwik.url | default(geokrety_params.piwik.url) }}"
     PIWIK_SITE_ID: "{{ params.piwik.site_id | default(geokrety_params.piwik.site_id) }}"
     PIWIK_TOKEN: "{{ params.piwik.token | default(geokrety_params.piwik.token) }}"
