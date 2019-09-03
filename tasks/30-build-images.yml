@@ -36,6 +36,12 @@
       path: "{{ params.base.localdir | default(geokrety_base_dir+'/git/base') }}"
       pull: yes
 
+- name: "'{{ item }}' - get git describe - {{ params.website.localdir | default(geokrety_base_dir+'/git/website') }} | {{ geokrety_docker_image_website_image_name }}:{{ item }}"
+  shell: "git describe"
+  args:
+    chdir: "{{ params.website.localdir | default(geokrety_base_dir+'/git/website') }}"
+  register: geokrety_website_latest_tag
+
 - name: "'{{ item }}' - Build and push WEBSITE image - {{ params.website.localdir | default(geokrety_base_dir+'/git/website') }} | {{ geokrety_docker_image_website_image_name }}:{{ item }}"
   docker_image:
     name: "{{ geokrety_docker_image_website_image_name }}:{{ item }}"
@@ -48,7 +54,7 @@
       args:
         BASE_IMAGE: "{{ geokrety_docker_image_website_base_image_name }}"
         BASE_TAG: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
-        GIT_COMMIT: "{{ git_result.after | default('undef') | truncate(8, True, '') }}"
+        GIT_COMMIT: "{{ geokrety_website_latest_tag.stdout }}"
 
 - name: "'{{ item }}' - Build and push CRON image - {{ params.cron.localdir | default(geokrety_base_dir+'/git/cron') }} | {{ geokrety_docker_image_cron_image_name }}:{{ item }}"
   docker_image:

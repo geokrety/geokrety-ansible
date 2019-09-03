@@ -13,6 +13,8 @@ x-variables: &variables
 
     GK_DEBUG: "{{ params.debug is defined and params.debug }}"
     GK_ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
+    GK_INSTANCE_NAME: "{{ params.name | default(geokrety_params.environment) }}"
+    GK_DEPLOY_DATE: "{{ ansible_date_time.iso8601_micro }}"
 
     GK_SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
     GK_SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
