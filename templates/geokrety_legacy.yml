@@ -25,6 +25,8 @@ x-variables: &variables
 
     GK_SITE_EMAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
     GK_SITE_EMAIL_SUPPORT: "{{ params.mail_email.support | default(geokrety_params.mail_email.support) }}"
+    GK_SITE_EMAIL_REGISTRATION: "{{ params.mail_email.registration | default(geokrety_params.mail_email.registration) }}"
+    GK_SITE_EMAIL_MESSAGE_CENTER: "{{ params.mail_email.message_center | default(geokrety_params.mail_email.message_center) }}"
     GK_SMTP_USER: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
     GK_SMTP_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
     GK_SMTP_HOST: "{{ params.mail_smtp_host | default(geokrety_params.mail_smtp_host) }}"

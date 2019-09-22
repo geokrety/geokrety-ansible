@@ -94,7 +94,9 @@ geokrety_params:
   mail_domain: gmail.com
   mail_email:
     main: geokrety@gmail.com
-    support: geokrety@gmail.com
+    registration: geokrety+registration@gmail.com
+    support: geokrety+support@gmail.com
+    message_center: geokrety+message-center@gmail.com
   # mail_username: xxx
   # mail_password: xxx
   # sentry:
