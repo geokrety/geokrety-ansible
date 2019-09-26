@@ -90,7 +90,7 @@ x-volumes-website: &volumes-website
   volumes:
 {% if 'localdir' in params.website.keys() %}
     # Mount local dir as html root
-    - {{ params.website.localdir }}/website:/var/www/html/
+    - {{ params.website.localdir }}:/var/www/geokrety/
 {% endif %}
     # Configure mail forwarder
     - {{ geokrety_base_dir }}/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
