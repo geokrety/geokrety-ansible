@@ -41,7 +41,7 @@
 
 - name: "'{{ item }}' - Clone CRON - (branch:{{ params.cron.git_branch | default(geokrety_cron_image.git_branch) }})"
   git:
-    repo: "{{ geokrety_cron_image.git_url }}"
+    repo: "{{ params.cron.git_url | default(geokrety_cron_image.git_url) }}"
     dest: "{{ geokrety_base_dir }}/git/cron"
     separate_git_dir: "{{ geokrety_base_dir }}/git/cron.git"
     version: "{{ params.cron.git_branch | default(geokrety_cron_image.git_branch) }}"

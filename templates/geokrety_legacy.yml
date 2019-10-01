@@ -197,8 +197,13 @@ services:
 {% if params.cron is defined %}
   cron:
     image: {{ geokrety_docker_image_cron_image_name }}:{{ item }}
+{% if params.new_env_flag is defined and params.new_env_flag %}
+    environment:
+      GK_SITE_BASE_SERVER_URL: "https://{{ params.website.uri.0 }}"
+{% else %}
     <<: *variables
     <<: *volumes-website
+{% endif %}
     deploy:
       labels:
         traefik.enable: "false"
