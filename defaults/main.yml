@@ -86,8 +86,8 @@ geokrety_params:
   # news_password: xxx
   # export_bypass_token: xxx
   # jrating_token: xxx
-  smtp_hostname: smtp.gmail.com
-  smtp_port: 587
+  mail_smtp_host: smtp.gmail.com
+  smtp_port: 465
   pop_hostname: pop.gmail.com
   pop_port: 995
   pop_tls: True
