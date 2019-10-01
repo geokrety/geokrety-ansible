@@ -11,6 +11,10 @@ x-variables: &variables
 {% if params.new_env_flag is defined and params.new_env_flag %}
     GK_SITE_BASE_SERVER_URL: "https://{{ params.website.uri.0 }}"
 
+    GK_MINIO_SERVER_URL_EXTERNAL: "https://{{ params.minio.uri_external }}"
+    GK_MINIO_ACCESS_KEY: "{{ params.minio.access_key }}"
+    GK_MINIO_SECRET_KEY: "{{ params.minio.secret_key }}"
+
     GK_DEBUG: "{{ params.debug is defined and params.debug }}"
     GK_ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
     GK_INSTANCE_NAME: "{{ params.name | default(geokrety_params.environment) }}"
@@ -262,6 +266,32 @@ services:
         condition: any
     networks:
       default:
+
+{% if params.minio is defined %}
+  minio:
+    image: minio/minio
+    command:
+      - "server"
+      - "/data"
+    volumes:
+      - {{ geokrety_base_dir }}/minio/:/data/
+    environment:
+      MINIO_ACCESS_KEY: {{ params.minio.access_key }}
+      MINIO_SECRET_KEY: {{ params.minio.secret_key }}
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:{{ params.minio.uri_external }}"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 9000
+      restart_policy:
+        condition: any
+    networks:
+      traefik_default:
+      default:
+{% endif %}
 
 {% if params.monitoring is defined %}
   prometheus:

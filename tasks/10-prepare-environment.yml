@@ -16,6 +16,13 @@
     group: "0"
     mode: 0750
 
+- name: "'{{ item }}' - Create minio directory"
+  file:
+    path: "{{ geokrety_base_dir }}/minio"
+    state: directory
+    mode: 0770
+  when: "params.minio is defined"
+
 - name: "'{{ item }}' - Create prometheus directory"
   file:
     path: "{{ geokrety_base_dir }}/prometheus"
