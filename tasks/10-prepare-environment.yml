@@ -57,6 +57,15 @@
     group: "{{ geokrety_group }}"
     mode: 0750
 
+- name: "'{{ item }}' - Create 'msmtp.conf'"
+  template:
+    src: configs/msmtprc
+    dest: "{{ geokrety_base_dir }}/msmtprc"
+    owner: root
+    group: root
+    mode: 0644
+
+## Obsolete in Debian Buster
 - name: "'{{ item }}' - Create 'ssmtp.conf'"
   template:
     src: configs/ssmtp.conf

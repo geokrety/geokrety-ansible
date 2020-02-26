@@ -1,6 +1,9 @@
 ---
 
-- include_tasks: preflight.yml
+- block:
+  - include_tasks: preflight.yml
+  tags:
+    - preflight
 
 # - include_tasks: minisites.yml
 
