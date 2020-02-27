@@ -161,6 +161,7 @@ services:
         traefik.protocol: "http"
 {% if params.new_env_flag is defined and params.new_env_flag %}
         traefik.backend.healthcheck.path: "/health"
+        traefik.backend.loadbalancer.stickiness: "true"
 {% endif %}
         traefik.port: 80
       restart_policy:
