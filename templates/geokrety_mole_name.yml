@@ -6,8 +6,8 @@ services:
   service:
     image: geokrety/the-mole-name:latest
     volumes:
-      - "{{ geokrety_database_dir_base }}/the-mole-name:/opt/flask/database:rw"
-      - "{{ geokrety_configs_dir_base }}/the-mole-name:/opt/flask/config:rw"
+      - "{{ geokrety_home }}/minisites/the-mole-name/database/the-mole-name:/opt/flask/database:rw"
+      - "{{ geokrety_home }}/minisites/the-mole-name/configs/the-mole-name:/opt/flask/config:rw"
     deploy:
       labels:
         traefik.enable: "true"
