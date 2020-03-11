@@ -14,6 +14,9 @@ x-variables: &variables
     GK_MINIO_SERVER_URL_EXTERNAL: "https://{{ params.minio.uri_external }}"
     GK_MINIO_ACCESS_KEY: "{{ params.minio.access_key }}"
     GK_MINIO_SECRET_KEY: "{{ params.minio.secret_key }}"
+    GK_MINIO_NOTIFY_WEBHOOK_NAME: "{{ params.minio.webhook_name | default('UPLOAD') }}"
+    GK_MINIO_NOTIFY_WEBHOOK_ENDPOINT_UPLOAD: "{{ params.minio.webhook_endpoint_upload }}"
+    GK_MINIO_NOTIFY_WEBHOOK_AUTH_TOKEN_UPLOAD: "{{ params.minio.webhook_auth_token_upload }}"
 
     GK_DEBUG: "{{ params.debug is defined and params.debug }}"
     GK_ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
@@ -228,7 +231,7 @@ services:
     volumes:
       - {{ geokrety_base_dir }}/mysql:/var/lib/mysql:rw
       - /etc/localtime:/etc/localtime:ro
-      - {{ geokrety_home }}/instances/prod/dbdump/database.sql:/docker-entrypoint-initdb.d/database.sql:ro
+      - {{ geokrety_home }}/instances/{{ item }}/dbdump/database.sql:/docker-entrypoint-initdb.d/database.sql:ro
     environment:
       TZ: {{ params.db.tz | default(params.tz | default(geokrety_tz)) }}
       MYSQL_ROOT_PASSWORD: {{ geokrety_org_mysql_root_password }}
@@ -284,6 +287,10 @@ services:
     environment:
       MINIO_ACCESS_KEY: {{ params.minio.access_key }}
       MINIO_SECRET_KEY: {{ params.minio.secret_key }}
+      # Create a webhook called `UPLOAD`
+      MINIO_NOTIFY_WEBHOOK_ENABLE_UPLOAD: "on"
+      MINIO_NOTIFY_WEBHOOK_ENDPOINT_UPLOAD: "http://website{{ params.minio.webhook_endpoint_upload }}"
+      MINIO_NOTIFY_WEBHOOK_AUTH_TOKEN_UPLOAD: "{{ params.minio.webhook_auth_token_upload }}"
     deploy:
       labels:
         traefik.enable: "true"
