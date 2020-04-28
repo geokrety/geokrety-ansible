@@ -15,4 +15,12 @@
       - ansible==2.8.0rc2
       - sh
 
+- name: "'{{ item }}' - Create srtm directory"
+  file:
+    path: "{{ geokrety_home }}/databases/srtm"
+    state: directory
+    owner: "{{ geokrety_username }}"
+    group: "{{ geokrety_group }}"
+    mode: 0755
+
 ...

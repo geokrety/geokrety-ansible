@@ -16,6 +16,14 @@
     group: "0"
     mode: 0750
 
+- name: "'{{ item }}' - Create postgres directory"
+  file:
+    path: "{{ geokrety_base_dir }}/postgres"
+    state: directory
+    owner: "999"
+    group: "0"
+    mode: 0750
+
 - name: "'{{ item }}' - Create minio directory"
   file:
     path: "{{ geokrety_base_dir }}/minio"
@@ -40,6 +48,14 @@
     group: "472"
     mode: 0770
   when: "params.monitoring is defined"
+
+- name: "'{{ item }}' - Create assets directory"
+  file:
+    path: "{{ geokrety_base_dir }}/data/assets"
+    state: directory
+    owner: "33"
+    group: "33"
+    mode: 0775
 
 - name: "'{{ item }}' - Create cdn PROD directory"
   file:

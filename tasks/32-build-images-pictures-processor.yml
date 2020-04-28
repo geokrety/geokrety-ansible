@@ -1,0 +1,37 @@
+---
+
+- name: "'{{ item }}' Define PICTURES PROCESSOR DOWNLOADER image name"
+  set_fact:
+    geokrety_docker_image_pictures_processor_downloader_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_pictures_processor_downloader_image_name }}"
+
+- name: "'{{ item }}' Define PICTURES PROCESSOR UPLOADER image name"
+  set_fact:
+    geokrety_docker_image_pictures_processor_uploader_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_pictures_processor_uploader_image_name }}"
+
+- name: "'{{ item }}' - Build and push PICTURES PROCESSOR DOWNLOADER image - {{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }} | {{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ item }}"
+  docker_image:
+    name: "{{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ item }}"
+    source: build
+    force_source: yes
+    push: "{{ geokrety_push_images }}"
+    build:
+      dockerfile: Dockerfile.downloader
+      path: "{{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }}"
+      pull: "{{ geokrety_push_images }}"
+      args:
+        IMAGE: "{{ geokrety_docker_image_website_image_name }}:{{ item }}"
+        BASE_TAG: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
+
+- name: "'{{ item }}' - Build and push PICTURES PROCESSOR UPLOADER image - {{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }} | {{ geokrety_docker_image_pictures_processor_uploader_image_name }}:{{ item }}"
+  docker_image:
+    name: "{{ geokrety_docker_image_pictures_processor_uploader_image_name }}:{{ item }}"
+    source: build
+    force_source: yes
+    push: "{{ geokrety_push_images }}"
+    build:
+      dockerfile: Dockerfile.uploader
+      path: "{{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }}"
+      pull: "{{ geokrety_push_images }}"
+      args:
+        IMAGE: "{{ geokrety_docker_image_website_image_name }}:{{ item }}"
+        BASE_TAG: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"

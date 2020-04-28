@@ -14,9 +14,13 @@ x-variables: &variables
     GK_MINIO_SERVER_URL_EXTERNAL: "https://{{ params.minio.uri_external }}"
     GK_MINIO_ACCESS_KEY: "{{ params.minio.access_key }}"
     GK_MINIO_SECRET_KEY: "{{ params.minio.secret_key }}"
-    GK_MINIO_NOTIFY_WEBHOOK_NAME: "{{ params.minio.webhook_name | default('UPLOAD') }}"
-    GK_MINIO_NOTIFY_WEBHOOK_ENDPOINT_UPLOAD: "{{ params.minio.webhook_endpoint_upload }}"
-    GK_MINIO_NOTIFY_WEBHOOK_AUTH_TOKEN_UPLOAD: "{{ params.minio.webhook_auth_token_upload }}"
+    GK_MINIO_PICTURES_PROCESSOR_MINIO_ACCESS_KEY: "{{ params.minio.pictures_processor_downloader_access_key }}"
+    GK_MINIO_PICTURES_PROCESSOR_MINIO_SECRET_KEY: "{{ params.minio.pictures_processor_downloader_secret_key }}"
+
+    GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURE_UPLOADED: "{{ params.minio.webhook_auth_token_picture_uploaded }}"
+    GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_DOWNLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_downloader }}"
+    GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_UPLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_uploader }}"
+    GK_AUTH_TOKEN_DROP_S3_FILE_UPLOAD_REQUEST: "{{ params.minio.auth_token_drop_s3_file_upload_request }}"
 
     GK_DEBUG: "{{ params.debug is defined and params.debug }}"
     GK_ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
@@ -26,9 +30,12 @@ x-variables: &variables
     GK_SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
     GK_SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
 
+    GK_DB_DRIVER: "{{ params.db.driver | default(geokrety_params.db.driver) }}"
     GK_DB_DSN: "{{ params.db.dsn | default(geokrety_params.db.dsn) }}"
     GK_DB_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
     GK_DB_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
+    GK_DB_GPG_PASSWORD: "{{ params.db.gpg_password }}"
+    GK_DB_SECRET_KEY: "{{ params.db.gpg_secret }}"
 
     GK_SITE_EMAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
     GK_SITE_EMAIL_SUPPORT: "{{ params.mail_email.support | default(geokrety_params.mail_email.support) }}"
@@ -101,6 +108,7 @@ x-volumes-website: &volumes-website
 {% endif %}
     # Configure mail forwarder
     - {{ geokrety_base_dir }}/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
+    - {{ geokrety_base_dir }}/data/assets/:/var/www/geokrety/website/public/assets/compressed
     # persistent vars
     - {{ geokrety_base_dir }}/data/cdn/obrazki/:/var/www/html/obrazki/
     - {{ geokrety_base_dir }}/data/cdn/obrazki-dowonu/:/var/www/html/obrazki-dowonu/
@@ -163,12 +171,16 @@ services:
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
 {% if params.new_env_flag is defined and params.new_env_flag %}
-        traefik.backend.healthcheck.path: "/health"
-        traefik.backend.loadbalancer.stickiness: "true"
+        # traefik.backend.healthcheck.path: "/health"
+        # traefik.backend.loadbalancer.stickiness: "true"
 {% endif %}
         traefik.port: 80
       restart_policy:
         condition: any
+    dns:
+{% for dns_server in geokrety_dns_servers %}
+      - {{ dns_server }}
+{% endfor %}
     networks:
       default:
       traefik_default:
@@ -247,6 +259,35 @@ services:
     networks:
       default:
 
+  postgres:
+    image: {{ geokrety_docker_image_postgres_name }}:{{ item }}
+    volumes:
+      - {{ geokrety_base_dir }}/postgres:/var/lib/postgresql/data:rw
+      - {{ geokrety_home }}/databases/srtm:/srtm:rw
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      TZ: {{ params.db.tz | default(params.tz | default(geokrety_tz)) }}
+      POSTGRES_DB: "{{ params.db.name | default(geokrety_params.db.name) }}"
+      POSTGRES_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
+      POSTGRES_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
+      POSTGIS_ENABLE_OUTDB_RASTERS: 1
+      POSTGIS_GDAL_ENABLED_DRIVERS: ENABLE_ALL
+{% if params.postgres is defined and params.postgres.expose is defined %}
+    ports:
+      - target: 5432
+        published: {{ params.postgres.expose }}
+        protocol: tcp
+        mode: host
+{% endif %}
+    deploy:
+      replicas: 1
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+
   adminer:
     image: adminer
     depends_on:
@@ -259,6 +300,30 @@ services:
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 8080
+        traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    environment:
+      TZ: {{ params.db.tz | default(params.tz | default(geokrety_tz)) }}
+      PGADMIN_DEFAULT_EMAIL: "{{ params.pgadmin.email }}"
+      PGADMIN_DEFAULT_PASSWORD: "{{ params.pgadmin.password }}"
+      SCRIPT_NAME: "/pgadmin"
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefix:/pgadmin"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 80
         traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
       restart_policy:
         condition: any
@@ -287,10 +352,6 @@ services:
     environment:
       MINIO_ACCESS_KEY: {{ params.minio.access_key }}
       MINIO_SECRET_KEY: {{ params.minio.secret_key }}
-      # Create a webhook called `UPLOAD`
-      MINIO_NOTIFY_WEBHOOK_ENABLE_UPLOAD: "on"
-      MINIO_NOTIFY_WEBHOOK_ENDPOINT_UPLOAD: "http://website{{ params.minio.webhook_endpoint_upload }}"
-      MINIO_NOTIFY_WEBHOOK_AUTH_TOKEN_UPLOAD: "{{ params.minio.webhook_auth_token_upload }}"
     deploy:
       labels:
         traefik.enable: "true"
@@ -303,6 +364,49 @@ services:
         condition: any
     networks:
       traefik_default:
+      default:
+{% endif %}
+
+{% if params.pictures_processor is defined %}
+  pictures-processor-downloader:
+    image: {{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ item }}
+    environment:
+      GK_MINIO_PICTURES_PROCESSOR_MINIO_ACCESS_KEY: {{ params.minio.pictures_processor_downloader_access_key }}
+      GK_MINIO_PICTURES_PROCESSOR_MINIO_SECRET_KEY: {{ params.minio.pictures_processor_downloader_secret_key }}
+      GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_DOWNLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_downloader }}"
+      GK_AUTH_TOKEN_DROP_S3_FILE_UPLOAD_REQUEST: "{{ params.minio.auth_token_drop_s3_file_upload_request }}"
+      SENTRY_DSN: "{{ params.minio.sentry.dsn | default(geokrety_params.minio.sentry.dsn) }}"
+      SENTRY_ENV: "{{ params.minio.sentry.env | default(geokrety_params.minio.sentry.env) }}"
+{% if 'localdir' in params.pictures_processor.keys() %}
+    volumes:
+      - {{ params.pictures_processor.localdir }}/downloader:/var/www/geokrety/website:ro
+{% endif %}
+    deploy:
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+
+  pictures-processor-uploader:
+    image: {{ geokrety_docker_image_pictures_processor_uploader_image_name }}:{{ item }}
+    environment:
+      MINIO_ACCESS_KEY: {{ params.minio.access_key }}
+      MINIO_SECRET_KEY: {{ params.minio.secret_key }}
+      GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_UPLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_uploader }}"
+      SENTRY_DSN: "{{ params.minio.sentry.dsn | default(geokrety_params.minio.sentry.dsn) }}"
+      SENTRY_ENV: "{{ params.minio.sentry.env | default(geokrety_params.minio.sentry.env) }}"
+{% if 'localdir' in params.pictures_processor.keys() %}
+    volumes:
+      - {{ params.pictures_processor.localdir }}/uploader:/var/www/geokrety/website:ro
+{% endif %}
+    deploy:
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
+    networks:
       default:
 {% endif %}
 

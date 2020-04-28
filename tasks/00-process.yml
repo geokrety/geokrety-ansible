@@ -16,10 +16,6 @@
 - name: "'{{ item }}' Clone git repositories"
   include_tasks: 20-clone-git.yml
 
-- name: "'{{ item }}' Clone git repositories for monitoring"
-  include_tasks: 21-clone-git-monitoring.yml
-  when: "params.monitoring is defined"
-
 - name: "'{{ item }}' Mount CDN directories over AUFS"
   include_tasks: 25-aufs.yml
   when: "item != 'prod'"
@@ -27,9 +23,26 @@
 - name: "'{{ item }}' Build images"
   include_tasks: 30-build-images.yml
 
-- name: "'{{ item }}' Build images for monitoring"
-  include_tasks: 31-build-images-monitoring.yml
+- block:
+    - name: "'{{ item }}' Clone git repositories for monitoring"
+      include_tasks: 21-clone-git-monitoring.yml
+    - name: "'{{ item }}' Build images for monitoring"
+      include_tasks: 31-build-images-monitoring.yml
   when: "params.monitoring is defined"
+
+- block:
+    - name: "'{{ item }}' Clone git repositories for pictures processor"
+      include_tasks: 22-clone-git-pictures-processor.yml
+    - name: "'{{ item }}' Build images for pictures processor"
+      include_tasks: 32-build-images-pictures-processor.yml
+  when: "params.pictures_processor is defined"
+
+- block:
+    - name: "'{{ item }}' Clone git repositories for postgres"
+      include_tasks: 23-clone-git-postgres.yml
+    - name: "'{{ item }}' Build images for postgres"
+      include_tasks: 33-build-images-postgres.yml
+  when: "params.postgres is defined"
 
 - name: "'{{ item }}' Deploy stack"
   include_tasks: 40-deploy-images.yml

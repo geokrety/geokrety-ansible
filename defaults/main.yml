@@ -13,6 +13,10 @@ geokrety_admin_ssh_keys:
   - boly38_key_rsa.pub
   - kumy_key_rsa.pub
 
+geokrety_dns_servers:
+  - 8.8.8.8
+  - 9.9.9.9
+
 geokrety_username: geokrety
 geokrety_group: geokrety
 geokrety_home: /home/geokrety
@@ -21,8 +25,13 @@ geokrety_docker_image_cdn_image: geokrety/cdn
 geokrety_docker_image_website_base_image: geokrety/website-legacy-base
 geokrety_docker_image_website_image: geokrety/website-legacy
 geokrety_docker_image_cron_image: geokrety/cron-legacy
+geokrety_docker_image_pictures_processor_image: geokrety/pictures-processor
+geokrety_docker_image_pictures_processor_base_image_name: geokrety/pictures-processor-base
+geokrety_docker_image_pictures_processor_downloader_image_name: geokrety/pictures-processor-downloader
+geokrety_docker_image_pictures_processor_uploader_image_name: geokrety/pictures-processor-uploader
 geokrety_docker_image_prometheus_image: geokrety/prometheus
 geokrety_docker_image_grafana_image: geokrety/grafana
+geokrety_docker_image_postgres_name: geokrety/postgres
 geokrety_docker_stack_base_name: geokrety-legacy
 geokrety_push_images: yes
 
@@ -48,6 +57,11 @@ geokrety_cron_image:
   git_branch: master
   docker_tag: latest
 
+geokrety_pictures_processor_image:
+  git_url: https://github.com/geokrety/geokrety-pictures-processor.git
+  git_branch: master
+  docker_tag: latest
+
 geokrety_prometheus_image:
   git_url: https://github.com/geokrety/geokrety-prometheus.git
   git_branch: master
@@ -55,6 +69,11 @@ geokrety_prometheus_image:
 
 geokrety_grafana_image:
   git_url: https://github.com/geokrety/geokrety-grafana.git
+  git_branch: master
+  docker_tag: latest
+
+geokrety_postgres_image:
+  git_url: https://github.com/geokrety/geokrety-postgres.git
   git_branch: master
   docker_tag: latest
 
@@ -69,6 +88,7 @@ geokrety_params:
     host: db
     name: geokrety
     charset: utf8mb4
+    driver: mysql
   password_seed: xxx
   # google:
   #    map_key: xxx

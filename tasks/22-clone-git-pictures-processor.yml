@@ -1,0 +1,10 @@
+---
+
+- name: "'{{ item }}' - Clone PICTURES PROCESSOR - (branch:{{ params.pictures_processor.git_branch | default(geokrety_pictures_processor_image.git_branch) }})"
+  git:
+    repo: "{{ params.pictures_processor.git_url | default(geokrety_pictures_processor_image.git_url) }}"
+    dest: "{{ geokrety_base_dir }}/git/pictures-processor"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/pictures-processor.git"
+    version: "{{ params.pictures_processor.git_branch | default(geokrety_pictures_processor_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"

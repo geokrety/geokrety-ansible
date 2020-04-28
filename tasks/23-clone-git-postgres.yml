@@ -1,0 +1,11 @@
+---
+    
+- name: "'{{ item }}' - Clone POSTGRES - (branch:{{ params.postgres.git_branch | default(geokrety_postgres_image.git_branch) }})"
+  git:
+    repo: "{{ params.postgres.git_url | default(geokrety_postgres_image.git_url) }}"
+    dest: "{{ geokrety_base_dir }}/git/postgres"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/postgres.git"
+    version: "{{ params.postgres.git_branch | default(geokrety_postgres_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+  when: params.postgres is defined and params.postgres.localdir is not defined
