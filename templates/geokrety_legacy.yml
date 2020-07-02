@@ -14,6 +14,7 @@ x-variables: &variables
     GK_MINIO_SERVER_URL_EXTERNAL: "https://{{ params.minio.uri_external }}"
     GK_MINIO_ACCESS_KEY: "{{ params.minio.access_key }}"
     GK_MINIO_SECRET_KEY: "{{ params.minio.secret_key }}"
+{% if params.pictures_processor is defined %}
     GK_MINIO_PICTURES_PROCESSOR_MINIO_ACCESS_KEY: "{{ params.minio.pictures_processor_downloader_access_key }}"
     GK_MINIO_PICTURES_PROCESSOR_MINIO_SECRET_KEY: "{{ params.minio.pictures_processor_downloader_secret_key }}"
 
@@ -21,6 +22,7 @@ x-variables: &variables
     GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_DOWNLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_downloader }}"
     GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_UPLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_uploader }}"
     GK_AUTH_TOKEN_DROP_S3_FILE_UPLOAD_REQUEST: "{{ params.minio.auth_token_drop_s3_file_upload_request }}"
+{% endif %}
 
     GK_DEBUG: "{{ params.debug is defined and params.debug }}"
     GK_ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
@@ -34,8 +36,8 @@ x-variables: &variables
     GK_DB_DSN: "{{ params.db.dsn | default(geokrety_params.db.dsn) }}"
     GK_DB_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
     GK_DB_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
-    GK_DB_GPG_PASSWORD: "{{ params.db.gpg_password }}"
-    GK_DB_SECRET_KEY: "{{ params.db.gpg_secret }}"
+    GK_DB_GPG_PASSWORD: "{{ params.db.gpg_password | default('') }}"
+    GK_DB_SECRET_KEY: "{{ params.db.gpg_secret | default('') }}"
 
     GK_SITE_EMAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
     GK_SITE_EMAIL_SUPPORT: "{{ params.mail_email.support | default(geokrety_params.mail_email.support) }}"
@@ -184,6 +186,9 @@ services:
     networks:
       default:
       traefik_default:
+{% if params.db.importer is defined and params.db.importer %}
+      geokrety-legacy-prod_default:
+{% endif %}
 
 {% if 'cdn' in params.keys() %}
   cdn:
@@ -229,6 +234,7 @@ services:
       default:
 {% endif %}
 
+{% if params.postgres is not defined %}
   db:
     image: mariadb:10.1
     command:
@@ -258,7 +264,9 @@ services:
         condition: any
     networks:
       default:
+{% endif %}
 
+{% if params.postgres is defined %}
   postgres:
     image: {{ geokrety_docker_image_postgres_name }}:{{ item }}
     volumes:
@@ -272,7 +280,7 @@ services:
       POSTGRES_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
       POSTGIS_ENABLE_OUTDB_RASTERS: 1
       POSTGIS_GDAL_ENABLED_DRIVERS: ENABLE_ALL
-{% if params.postgres is defined and params.postgres.expose is defined %}
+{% if params.postgres.expose is defined %}
     ports:
       - target: 5432
         published: {{ params.postgres.expose }}
@@ -287,6 +295,7 @@ services:
         condition: any
     networks:
       default:
+{% endif %}
 
   adminer:
     image: adminer
@@ -307,6 +316,7 @@ services:
       default:
       traefik_default:
 
+{% if params.postgres is defined %}
   pgadmin:
     image: dpage/pgadmin4
     depends_on:
@@ -330,6 +340,7 @@ services:
     networks:
       default:
       traefik_default:
+{% endif %}
 
   redis:
     image: redis:5
@@ -473,5 +484,10 @@ services:
 
 networks:
   default:
+    attachable: true
   traefik_default:
     external: true
+{% if params.db.importer is defined and params.db.importer %}
+  geokrety-legacy-prod_default:
+    external: true
+{% endif %}
