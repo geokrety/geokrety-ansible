@@ -44,5 +44,12 @@
       include_tasks: 33-build-images-postgres.yml
   when: "params.postgres is defined"
 
+- block:
+    - name: "'{{ item }}' Clone git repositories for SVG2PNG"
+      include_tasks: 24-clone-git-svg-to-png.yml
+    - name: "'{{ item }}' Build images for SVG2PNG"
+      include_tasks: 34-build-images-svg-to-png.yml
+  when: "params.svg_to_png is defined"
+
 - name: "'{{ item }}' Deploy stack"
   include_tasks: 40-deploy-images.yml

@@ -29,6 +29,7 @@ geokrety_docker_image_pictures_processor_image: geokrety/pictures-processor
 geokrety_docker_image_pictures_processor_base_image_name: geokrety/pictures-processor-base
 geokrety_docker_image_pictures_processor_downloader_image_name: geokrety/pictures-processor-downloader
 geokrety_docker_image_pictures_processor_uploader_image_name: geokrety/pictures-processor-uploader
+geokrety_docker_image_svg_to_png_image_name: geokrety/svg-to-png
 geokrety_docker_image_prometheus_image: geokrety/prometheus
 geokrety_docker_image_grafana_image: geokrety/grafana
 geokrety_docker_image_postgres_name: geokrety/postgres
@@ -59,6 +60,11 @@ geokrety_cron_image:
 
 geokrety_pictures_processor_image:
   git_url: https://github.com/geokrety/geokrety-pictures-processor.git
+  git_branch: master
+  docker_tag: latest
+
+geokrety_svg_to_png_image:
+  git_url: https://github.com/geokrety/geokrety-svg-to-png.git
   git_branch: master
   docker_tag: latest
 

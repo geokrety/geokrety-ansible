@@ -1,0 +1,16 @@
+---
+
+- name: "'{{ item }}' Define SVG2PNG image name"
+  set_fact:
+    geokrety_docker_image_svg_to_png_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_svg_to_png_image_name }}"
+
+- name: "'{{ item }}' - Build and push SVG2PNG image - {{ params.svg_to_png.localdir | default(geokrety_base_dir+'/git/svg_to_png') }} | {{ geokrety_docker_image_svg_to_png_name }}:{{ item }}"
+  docker_image:
+    name: "{{ geokrety_docker_image_svg_to_png_name }}:{{ item }}"
+    source: build
+    force_source: yes
+    push: "{{ geokrety_push_images }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ params.svg_to_png.localdir | default(geokrety_base_dir+'/git/svg_to_png') }}"
+      pull: "{{ geokrety_push_images }}"

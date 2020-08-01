@@ -7,20 +7,12 @@
     key: "{{ lookup('file', 'pubkeys/' + item) }}"
   with_items: "{{ geokrety_admin_ssh_keys }}"
 
-- name: Install usefull python libraries
+- name: Install useful python libraries
   pip:
-    executable: /usr/bin/pip
+    executable: /usr/bin/pip3
     name:
       - jsondiff
       - ansible==2.8.0rc2
       - sh
-
-- name: "'{{ item }}' - Create srtm directory"
-  file:
-    path: "{{ geokrety_home }}/databases/srtm"
-    state: directory
-    owner: "{{ geokrety_username }}"
-    group: "{{ geokrety_group }}"
-    mode: 0755
 
 ...

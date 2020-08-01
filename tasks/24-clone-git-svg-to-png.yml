@@ -1,0 +1,11 @@
+---
+
+- name: "'{{ item }}' - Clone SVG2PNG - (branch:{{ params.svg_to_png.git_branch | default(geokrety_svg_to_png_image.git_branch) }})"
+  git:
+    repo: "{{ params.svg_to_png.git_url | default(geokrety_svg_to_png_image.git_url) }}"
+    dest: "{{ geokrety_base_dir }}/git/svg_to_png"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/svg_to_png.git"
+    version: "{{ params.svg_to_png.git_branch | default(geokrety_svg_to_png_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+  when: params.svg_to_png is defined and params.svg_to_png.localdir is not defined

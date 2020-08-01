@@ -8,6 +8,14 @@
     group: "{{ geokrety_group }}"
     mode: 0750
 
+- name: "'{{ item }}' - Create srtm directory"
+  file:
+    path: "{{ geokrety_home }}/databases/srtm"
+    state: directory
+    owner: "{{ geokrety_username }}"
+    group: "{{ geokrety_group }}"
+    mode: 0755
+
 - name: "'{{ item }}' - Create mysql directory"
   file:
     path: "{{ geokrety_base_dir }}/mysql"

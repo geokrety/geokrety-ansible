@@ -421,6 +421,27 @@ services:
       default:
 {% endif %}
 
+{% if params.svg_to_png is defined %}
+  svg-to-png:
+    image: {{ geokrety_docker_image_svg_to_png_name }}:{{ item }}
+    volumes:
+      - /home/kumy/GIT/geokrety-svg-to-png:/app
+{% if params.svg_to_png.expose is defined %}
+    ports:
+      - target: 8080
+        published: {{ params.svg_to_png.expose }}
+        protocol: tcp
+        mode: host
+{% endif %}
+    deploy:
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+{% endif %}
+
 {% if params.monitoring is defined %}
   prometheus:
     image: {{ geokrety_docker_image_prometheus_image_name }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}
