@@ -38,6 +38,8 @@ x-variables: &variables
     GK_DB_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
     GK_DB_GPG_PASSWORD: "{{ params.db.gpg_password | default('') }}"
     GK_DB_SECRET_KEY: "{{ params.db.gpg_secret | default('') }}"
+    GK_DB_ORIG_USER: root
+    GK_DB_ORIG_PASSWORD: {{ geokrety_org_mysql_root_password }}
 
     GK_SITE_EMAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
     GK_SITE_EMAIL_SUPPORT: "{{ params.mail_email.support | default(geokrety_params.mail_email.support) }}"
@@ -424,8 +426,10 @@ services:
 {% if params.svg_to_png is defined %}
   svg-to-png:
     image: {{ geokrety_docker_image_svg_to_png_name }}:{{ item }}
+{% if params.svg_to_png.localdir is defined %}
     volumes:
       - /home/kumy/GIT/geokrety-svg-to-png:/app
+{% endif %}
 {% if params.svg_to_png.expose is defined %}
     ports:
       - target: 8080
