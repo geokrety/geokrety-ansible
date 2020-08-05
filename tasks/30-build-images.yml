@@ -37,7 +37,7 @@
       pull: yes
 
 - name: "'{{ item }}' - get git describe - {{ params.website.localdir | default(geokrety_base_dir+'/git/website') }} | {{ geokrety_docker_image_website_image_name }}:{{ item }}"
-  shell: "git describe"
+  shell: "git describe --tags"
   args:
     chdir: "{{ params.website.localdir | default(geokrety_base_dir+'/git/website') }}"
   register: geokrety_website_latest_tag
