@@ -22,6 +22,21 @@ services:
       default:
       traefik_default:
 
+  zip:
+    image: nginx
+    volumes:
+      - "{{ geokrety_home }}/databases/srtm/:/usr/share/nginx/html/"
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:srtm.geokrety.org"
+        traefik.frontend.passHostHeader: "true"
+      restart_policy:
+        condition: any
+    networks:
+      traefik_default:
+
 networks:
   default:
   traefik_default:

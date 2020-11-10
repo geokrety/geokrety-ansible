@@ -12,8 +12,8 @@ x-variables: &variables
     GK_SITE_BASE_SERVER_URL: "https://{{ params.website.uri.0 }}"
 
     GK_MINIO_SERVER_URL_EXTERNAL: "https://{{ params.minio.uri_external }}"
-    GK_MINIO_ACCESS_KEY: "{{ params.minio.access_key }}"
-    GK_MINIO_SECRET_KEY: "{{ params.minio.secret_key }}"
+    MINIO_ACCESS_KEY: "{{ params.minio.access_key }}"
+    MINIO_SECRET_KEY: "{{ params.minio.secret_key }}"
 {% if params.pictures_processor is defined %}
     GK_MINIO_PICTURES_PROCESSOR_MINIO_ACCESS_KEY: "{{ params.minio.pictures_processor_downloader_access_key }}"
     GK_MINIO_PICTURES_PROCESSOR_MINIO_SECRET_KEY: "{{ params.minio.pictures_processor_downloader_secret_key }}"
@@ -54,12 +54,26 @@ x-variables: &variables
     GK_PASSWORD_SEED: "{{ params.password_seed | default(geokrety_params.password_seed) }}"
 
     GK_SESSION_IN_REDIS: "{{ params.session_in_redis | default(geokrety_params.session_in_redis) }}"
+    GK_F3_CACHE: "redis=redis:6379"
 
     GK_CDN_SERVER_URL: "https://{{ params.cdn.uri | default(geokrety_params.cdn_uri) }}"
     GK_MAP_URL: "{{ params.geokrety_map_url | default(geokrety_params.geokrety_map_url) }}"
 
     GK_GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
     GK_GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google.recaptcha_secret_key | default(geokrety_params.google.recaptcha_secret_key) }}"
+
+{% if params.social_auth is defined %}
+    GK_OPAUTH_SECURITY_SALT: "{{ params.social_auth.security_salt }}"
+{% if params.social_auth.google is defined %}
+    GK_OPAUTH_GOOGLE_CLIENT_ID: "{{ params.social_auth.google.client_id }}"
+    GK_OPAUTH_GOOGLE_CLIENT_SECRET: "{{ params.social_auth.google.client_secret }}"
+{% endif %}
+{% if params.social_auth.facebook is defined %}
+    GK_OPAUTH_FACEBOOK_CLIENT_ID: "{{ params.social_auth.facebook.client_id }}"
+    GK_OPAUTH_FACEBOOK_CLIENT_SECRET: "{{ params.social_auth.facebook.client_secret }}"
+{% endif %}
+{% endif %}
+
 {% endif %}
 
     # OBSOLETE: Old entries that will be removed one day (Still in use by branches < new-theme/f3)
@@ -381,7 +395,7 @@ services:
 {% endif %}
 
 {% if params.pictures_processor is defined %}
-  pictures-processor-downloader:
+  pictures-downloader:
     image: {{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ item }}
     environment:
       GK_MINIO_PICTURES_PROCESSOR_MINIO_ACCESS_KEY: {{ params.minio.pictures_processor_downloader_access_key }}
@@ -402,7 +416,7 @@ services:
     networks:
       default:
 
-  pictures-processor-uploader:
+  pictures-uploader:
     image: {{ geokrety_docker_image_pictures_processor_uploader_image_name }}:{{ item }}
     environment:
       MINIO_ACCESS_KEY: {{ params.minio.access_key }}
