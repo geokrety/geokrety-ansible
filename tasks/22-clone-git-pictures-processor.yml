@@ -8,3 +8,4 @@
     version: "{{ params.pictures_processor.git_branch | default(geokrety_pictures_processor_image.git_branch) }}"
     force: yes
   become_user: "{{ geokrety_username }}"
+  when: params.pictures_processor is defined and params.pictures_processor.localdir is not defined
