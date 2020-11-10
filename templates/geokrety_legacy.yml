@@ -521,6 +521,35 @@ services:
       default:
 {% endif %}
 
+{% if 'accounts_cleaner' in params.keys() %}
+  accounts-cleaner:
+    image: {{ geokrety_docker_image_accounts_cleaner_name }}:{{ item }}
+    <<: *variables
+{% if 'localdir' in params.accounts_cleaner.keys() %}
+    volumes:
+      - {{ params.accounts_cleaner.localdir }}:/var/www/geokrety
+{% endif %}
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 30s
+        monitor: 60s
+        order: start-first
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:{{ params.accounts_cleaner.uri | join(',') }}"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 80
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
+{% endif %}
+
 networks:
   default:
     attachable: true
