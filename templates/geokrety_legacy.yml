@@ -250,7 +250,6 @@ services:
       default:
 {% endif %}
 
-{% if params.postgres is not defined %}
   db:
     image: mariadb:10.1
     command:
@@ -280,8 +279,6 @@ services:
         condition: any
     networks:
       default:
-{% endif %}
-
 {% if params.postgres is defined %}
   postgres:
     image: {{ geokrety_docker_image_postgres_name }}:{{ item }}
