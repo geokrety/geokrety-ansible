@@ -62,6 +62,12 @@ x-variables: &variables
     GK_GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
     GK_GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google.recaptcha_secret_key | default(geokrety_params.google.recaptcha_secret_key) }}"
 
+{% if params.website.help_geokrety_exemples_ids is defined %}
+{% for gk_id in params.website.help_geokrety_exemples_ids %}
+    GK_HELP_GEOKRETY_EXAMPLE_{{ loop.index }}: "{{ gk_id }}"
+{% endfor %}
+{% endif %}
+
 {% if params.social_auth is defined %}
     GK_OPAUTH_SECURITY_SALT: "{{ params.social_auth.security_salt }}"
 {% if params.social_auth.google is defined %}
