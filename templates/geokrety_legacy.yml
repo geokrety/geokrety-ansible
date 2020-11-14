@@ -187,6 +187,9 @@ services:
         traefik.docker.network: "traefik_default"
         traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}"
         traefik.frontend.passHostHeader: "true"
+        traefik.frontend.redirect.regex: www.{{ params.website.uri[0] }}([/](.*))*
+        traefik.frontend.redirect.replacement: {{ params.website.uri[0] }}$${1}
+        traefik.frontend.redirect.permanent: "true"
         traefik.protocol: "http"
 {% if params.new_env_flag is defined and params.new_env_flag %}
         # traefik.backend.healthcheck.path: "/health"
