@@ -62,6 +62,15 @@ x-variables: &variables
     GK_GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
     GK_GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google.recaptcha_secret_key | default(geokrety_params.google.recaptcha_secret_key) }}"
 
+    GK_API_EXPORT_PASSWORD_BYPASS_LIMIT: "{{ params.export_bypass_token | default(geokrety_params.export_bypass_token) }}"
+
+    GK_OKAPI_CONSUMER_KEY_OC_PL: "{{ params.OKAPI.OC_PL.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_PL.CONSUMER_KEY) }}"
+    GK_OKAPI_CONSUMER_KEY_OC_UK: "{{ params.OKAPI.OC_UK.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_UK.CONSUMER_KEY) }}"
+    GK_OKAPI_CONSUMER_KEY_OC_DE: "{{ params.OKAPI.OC_DE.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_DE.CONSUMER_KEY) }}"
+    GK_OKAPI_CONSUMER_KEY_OC_US: "{{ params.OKAPI.OC_US.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_US.CONSUMER_KEY) }}"
+    GK_OKAPI_CONSUMER_KEY_OC_NL: "{{ params.OKAPI.OC_NL.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_NL.CONSUMER_KEY) }}"
+    GK_OKAPI_CONSUMER_KEY_OC_RO: "{{ params.OKAPI.OC_RO.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_RO.CONSUMER_KEY) }}"
+
 {% if params.website.help_geokrety_exemples_ids is defined %}
 {% for gk_id in params.website.help_geokrety_exemples_ids %}
     GK_HELP_GEOKRETY_EXAMPLE_{{ loop.index }}: "{{ gk_id }}"
