@@ -1,0 +1,11 @@
+---
+
+- name: "'{{ item }}' - Clone bootstrap-email - (branch:{{ params.bootstrap_email.git_branch | default(geokrety_bootstrap_email_image.git_branch) }})"
+  git:
+    repo: "{{ params.bootstrap_email.git_url | default(geokrety_bootstrap_email_image.git_url) }}"
+    dest: "{{ geokrety_base_dir }}/git/bootstrap_email"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/bootstrap_email.git"
+    version: "{{ params.bootstrap_email.git_branch | default(geokrety_bootstrap_email_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+  when: params.bootstrap_email is defined and params.bootstrap_email.localdir is not defined

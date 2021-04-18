@@ -52,6 +52,20 @@
   when: "params.svg_to_png is defined"
 
 - block:
+    - name: "'{{ item }}' Clone git repositories for bootstrap-email"
+      include_tasks: 24-clone-git-bootstrap-email.yml
+    - name: "'{{ item }}' Build images for bootstrap-email"
+      include_tasks: 34-build-images-bootstrap-email.yml
+  when: "params.bootstrap_email is defined"
+
+- block:
+    - name: "'{{ item }}' Clone git repositories for osm-static-maps"
+      include_tasks: 24-clone-git-osm-static-maps.yml
+    - name: "'{{ item }}' Build images for osm-static-maps"
+      include_tasks: 34-build-images-osm-static-maps.yml
+  when: "params.osm_static_maps is defined"
+
+- block:
     - name: "'{{ item }}' Process accounts cleaner image"
       include_tasks: 35-build-images-accounts-cleaner.yml
   when: "params.accounts_cleaner is defined"

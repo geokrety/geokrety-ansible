@@ -1,0 +1,16 @@
+---
+
+- name: "'{{ item }}' Define Bootstrap Email image name"
+  set_fact:
+    geokrety_docker_image_bootstrap_email_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_bootstrap_email_image_name }}"
+
+- name: "'{{ item }}' - Build and push Bootstrap Email image - {{ params.bootstrap_email.localdir | default(geokrety_base_dir+'/git/bootstrap_email') }} | {{ geokrety_docker_image_bootstrap_email_name }}:{{ item }}"
+  docker_image:
+    name: "{{ geokrety_docker_image_bootstrap_email_name }}:{{ item }}"
+    source: build
+    force_source: yes
+    push: "{{ geokrety_push_images }}"
+    build:
+      dockerfile: Dockerfile
+      path: "{{ params.bootstrap_email.localdir | default(geokrety_base_dir+'/git/bootstrap_email') }}"
+      pull: "{{ geokrety_push_images }}"

@@ -1,0 +1,11 @@
+---
+
+- name: "'{{ item }}' - Clone osm-static-maps - (branch:{{ params.osm_static_maps.git_branch | default(geokrety_osm_static_maps_image.git_branch) }})"
+  git:
+    repo: "{{ params.osm_static_maps.git_url | default(geokrety_osm_static_maps_image.git_url) }}"
+    dest: "{{ geokrety_base_dir }}/git/osm_static_maps"
+    separate_git_dir: "{{ geokrety_base_dir }}/git/osm_static_maps.git"
+    version: "{{ params.osm_static_maps.git_branch | default(geokrety_osm_static_maps_image.git_branch) }}"
+    force: yes
+  become_user: "{{ geokrety_username }}"
+  when: params.osm_static_maps is defined and params.osm_static_maps.localdir is not defined

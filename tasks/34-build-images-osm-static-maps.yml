@@ -1,0 +1,16 @@
+---
+
+- name: "'{{ item }}' Define OSM Static Maps image name"
+  set_fact:
+    geokrety_docker_image_osm_static_maps_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_osm_static_maps_image_name }}"
+
+- name: "'{{ item }}' - Build and push OSM Static Maps image - {{ params.osm_static_maps.localdir | default(geokrety_base_dir+'/git/osm_static_maps') }} | {{ geokrety_docker_image_osm_static_maps_name }}:{{ item }}"
+  docker_image:
+    name: "{{ geokrety_docker_image_osm_static_maps_name }}:{{ item }}"
+    source: build
+    force_source: yes
+    push: "{{ geokrety_push_images }}"
+    build:
+      dockerfile: Dockerfile-alpine
+      path: "{{ params.osm_static_maps.localdir | default(geokrety_base_dir+'/git/osm_static_maps') }}"
+      pull: "{{ geokrety_push_images }}"

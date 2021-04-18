@@ -30,6 +30,8 @@ geokrety_docker_image_pictures_processor_base_image_name: geokrety/pictures-proc
 geokrety_docker_image_pictures_processor_downloader_image_name: geokrety/pictures-processor-downloader
 geokrety_docker_image_pictures_processor_uploader_image_name: geokrety/pictures-processor-uploader
 geokrety_docker_image_svg_to_png_image_name: geokrety/svg-to-png
+geokrety_docker_image_bootstrap_email_image_name: geokrety/bootstrap-email
+geokrety_docker_image_osm_static_maps_image_name: geokrety/osm-static-maps
 geokrety_docker_image_prometheus_image: geokrety/prometheus
 geokrety_docker_image_grafana_image: geokrety/grafana
 geokrety_docker_image_postgres_name: geokrety/postgres
@@ -67,6 +69,17 @@ geokrety_pictures_processor_image:
 geokrety_svg_to_png_image:
   git_url: https://github.com/geokrety/geokrety-svg-to-png.git
   git_branch: master
+  docker_tag: latest
+
+geokrety_bootstrap_email_image:
+  git_url: https://github.com/geokrety/bootstrap-email-smtp-server.git
+  git_branch: master
+  docker_tag: latest
+
+geokrety_osm_static_maps_image:
+  # git_url: https://github.com/jperelli/osm-static-maps.git
+  git_url: https://github.com/geokrety/osm-static-maps.git
+  git_branch: franpitri/master
   docker_tag: latest
 
 geokrety_prometheus_image:

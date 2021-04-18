@@ -6,8 +6,6 @@ x-variables: &variables
     - db
   environment:
     TIMEZONE: "{{ params.tz | default(geokrety_tz) }}"
-    SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
-    SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
 {% if params.new_env_flag is defined and params.new_env_flag %}
     GK_SITE_BASE_SERVER_URL: "https://{{ params.website.uri.0 }}"
 
@@ -29,8 +27,12 @@ x-variables: &variables
     GK_INSTANCE_NAME: "{{ params.name | default(geokrety_params.environment) }}"
     GK_DEPLOY_DATE: "{{ ansible_date_time.iso8601_micro }}"
 
+{% if params.sentry.dsn is defined or geokrety_params.sentry.dsn is defined %}
+    SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
+    SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
     GK_SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
     GK_SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
+{% endif %}
 
     GK_DB_DRIVER: "{{ params.db.driver | default(geokrety_params.db.driver) }}"
     GK_DB_DSN: "{{ params.db.dsn | default(geokrety_params.db.dsn) }}"
@@ -185,7 +187,6 @@ x-volumes-cdn: &volumes-cdn
 {% endif %}
 
 services:
-
   website:
     image: {{ geokrety_docker_image_website_image_name }}:{{ item }}
     <<: *variables
@@ -373,6 +374,59 @@ services:
       traefik_default:
 {% endif %}
 
+{% if params.bootstrap_email is defined %}
+  bootstrap-email:
+    image: {{ geokrety_docker_image_bootstrap_email_name }}:{{ item }}
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+        order: start-first
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+{% if params.bootstrap_email.localdir is defined %}
+    volumes:
+      - {{ params.bootstrap_email.localdir }}/src:/app
+{% endif %}
+    environment:
+      BOOTSTRAP_EMAIL_RELAY_HOST: "{{ params.mail_smtp_host | default(geokrety_params.mail_smtp_host) }}"
+      BOOTSTRAP_EMAIL_RELAY_USERNAME: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
+      BOOTSTRAP_EMAIL_RELAY_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
+      BOOTSTRAP_EMAIL_RELAY_PORT: 465
+      BOOTSTRAP_EMAIL_RELAY_TLS: "true"
+      BOOTSTRAP_EMAIL_GW_HOSTS: "0.0.0.0"
+      BOOTSTRAP_EMAIL_GW_PORTS: 25
+      BOOTSTRAP_EMAIL_GW_INTERNATIONALIZATION: "true"
+      BOOTSTRAP_EMAIL_GW_DEBUG: "true"
+{% endif %}
+
+{% if params.osm_static_maps is defined %}
+  osm-static-maps:
+    image: {{ geokrety_docker_image_osm_static_maps_name }}:{{ item }}
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+        order: start-first
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+    environment:
+      PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+      PUPPETEER_EXECUTABLE_PATH: "/usr/bin/chromium-browser"
+{% endif %}
+
   redis:
     image: redis:5
     deploy:
@@ -417,8 +471,10 @@ services:
       GK_MINIO_PICTURES_PROCESSOR_MINIO_SECRET_KEY: {{ params.minio.pictures_processor_downloader_secret_key }}
       GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_DOWNLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_downloader }}"
       GK_AUTH_TOKEN_DROP_S3_FILE_UPLOAD_REQUEST: "{{ params.minio.auth_token_drop_s3_file_upload_request }}"
+{% if params.sentry.dsn is defined or geokrety_params.sentry.dsn is defined %}
       SENTRY_DSN: "{{ params.minio.sentry.dsn | default(geokrety_params.minio.sentry.dsn) }}"
       SENTRY_ENV: "{{ params.minio.sentry.env | default(geokrety_params.minio.sentry.env) }}"
+{% endif %}
 {% if 'localdir' in params.pictures_processor.keys() %}
     volumes:
       - {{ params.pictures_processor.localdir }}/downloader:/var/www/geokrety/website:ro
@@ -437,8 +493,10 @@ services:
       MINIO_ACCESS_KEY: {{ params.minio.access_key }}
       MINIO_SECRET_KEY: {{ params.minio.secret_key }}
       GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_UPLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_uploader }}"
+{% if params.sentry.dsn is defined or geokrety_params.sentry.dsn is defined %}
       SENTRY_DSN: "{{ params.minio.sentry.dsn | default(geokrety_params.minio.sentry.dsn) }}"
       SENTRY_ENV: "{{ params.minio.sentry.env | default(geokrety_params.minio.sentry.env) }}"
+{% endif %}
 {% if 'localdir' in params.pictures_processor.keys() %}
     volumes:
       - {{ params.pictures_processor.localdir }}/uploader:/var/www/geokrety/website:ro
@@ -457,7 +515,7 @@ services:
     image: {{ geokrety_docker_image_svg_to_png_name }}:{{ item }}
 {% if params.svg_to_png.localdir is defined %}
     volumes:
-      - /home/kumy/GIT/geokrety-svg-to-png:/app
+      - {{ params.svg_to_png.localdir }}:/app
 {% endif %}
 {% if params.svg_to_png.expose is defined %}
     ports:
