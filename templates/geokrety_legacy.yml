@@ -141,6 +141,7 @@ x-volumes-website: &volumes-website
     # Configure mail forwarder
     - {{ geokrety_base_dir }}/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
     - {{ geokrety_base_dir }}/data/assets/:/var/www/geokrety/website/public/assets/compressed
+{% if params.new_env_flag is not defined or not params.new_env_flag %}
     # persistent vars
     - {{ geokrety_base_dir }}/data/cdn/obrazki/:/var/www/html/obrazki/
     - {{ geokrety_base_dir }}/data/cdn/obrazki-dowonu/:/var/www/html/obrazki-dowonu/
@@ -153,6 +154,7 @@ x-volumes-website: &volumes-website
     - {{ geokrety_base_dir }}/data/cdn/rzeczy/xml/:/var/www/html/rzeczy/xml/
     - {{ geokrety_base_dir }}/data/cdn/mapa-f/:/var/www/html/rzeczy/mapa-f/out/
     - {{ geokrety_base_dir }}/data/cdn/year-stats/:/var/www/html/templates/stats/year/
+{% endif %}
 
 {% if 'cdn' in params.keys() %}
 x-volumes-cdn: &volumes-cdn
@@ -169,6 +171,7 @@ x-volumes-cdn: &volumes-cdn
 {% else %}
     - {{ geokrety_base_dir }}/git/cdn/content:/usr/share/nginx/html
 {% endif %}
+{% if params.new_env_flag is not defined or not params.new_env_flag %}
     # persistent vars
     - {{ geokrety_base_dir }}/data/cdn/obrazki/:/usr/share/nginx/html/images/obrazki/
     - {{ geokrety_base_dir }}/data/cdn/obrazki-dowonu/:/usr/share/nginx/html/images/obrazki-dowonu/
@@ -181,6 +184,7 @@ x-volumes-cdn: &volumes-cdn
     - {{ geokrety_base_dir }}/data/cdn/rzeczy/xml/:/usr/share/nginx/html/rzeczy/xml/
     - {{ geokrety_base_dir }}/data/cdn/mapa-f/:/usr/share/nginx/html/rzeczy/mapa-f/out/
     - {{ geokrety_base_dir }}/data/cdn/year-stats/:/usr/share/nginx/html/templates/stats/year/
+{% endif %}
 {% endif %}
 
 services:
