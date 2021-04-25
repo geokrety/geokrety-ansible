@@ -376,6 +376,14 @@ services:
 {% endif %}
 
 {% if params.bootstrap_email is defined %}
+  smtp-relay:
+    image: juanluisbaptiste/postfix
+    environment:
+      SMTP_SERVER: bootstrap-email
+      SMTP_PORT: 25
+      SERVER_HOSTNAME: smtp-relay
+      SMTP_HEADER_TAG: GK-smtp-relay
+
   bootstrap-email:
     image: {{ geokrety_docker_image_bootstrap_email_name }}:{{ item }}
     deploy:
@@ -397,10 +405,10 @@ services:
 {% endif %}
     environment:
       BOOTSTRAP_EMAIL_RELAY_HOST: "{{ params.mail_smtp_host | default(geokrety_params.mail_smtp_host) }}"
+      BOOTSTRAP_EMAIL_RELAY_PORT: "{{ params.mail_smtp_port | default(geokrety_params.mail_smtp_port) }}"
       BOOTSTRAP_EMAIL_RELAY_USERNAME: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
       BOOTSTRAP_EMAIL_RELAY_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
-      BOOTSTRAP_EMAIL_RELAY_PORT: 465
-      BOOTSTRAP_EMAIL_RELAY_TLS: "true"
+      # BOOTSTRAP_EMAIL_RELAY_TLS: "{{ params.mail_smtp_tls | default(geokrety_params.mail_smtp_tls) }}"
       BOOTSTRAP_EMAIL_GW_HOSTS: "0.0.0.0"
       BOOTSTRAP_EMAIL_GW_PORTS: 25
       BOOTSTRAP_EMAIL_GW_INTERNATIONALIZATION: "true"
