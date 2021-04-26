@@ -383,6 +383,17 @@ services:
       SMTP_PORT: 25
       SERVER_HOSTNAME: smtp-relay
       SMTP_HEADER_TAG: GK-smtp-relay
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+        order: start-first
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
 
   bootstrap-email:
     image: {{ geokrety_docker_image_bootstrap_email_name }}:{{ item }}
