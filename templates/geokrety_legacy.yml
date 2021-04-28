@@ -419,7 +419,7 @@ services:
       BOOTSTRAP_EMAIL_RELAY_PORT: "{{ params.mail_smtp_port | default(geokrety_params.mail_smtp_port) }}"
       BOOTSTRAP_EMAIL_RELAY_USERNAME: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
       BOOTSTRAP_EMAIL_RELAY_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
-      # BOOTSTRAP_EMAIL_RELAY_TLS: "{{ params.mail_smtp_tls | default(geokrety_params.mail_smtp_tls) }}"
+      BOOTSTRAP_EMAIL_RELAY_TLS: "{{ params.mail_smtp_tls | default(geokrety_params.mail_smtp_tls) }}"
       BOOTSTRAP_EMAIL_GW_HOSTS: "0.0.0.0"
       BOOTSTRAP_EMAIL_GW_PORTS: 25
       BOOTSTRAP_EMAIL_GW_INTERNATIONALIZATION: "true"
