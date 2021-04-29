@@ -18,7 +18,7 @@
 
 - name: "'{{ item }}' Mount CDN directories over AUFS"
   include_tasks: 25-aufs.yml
-  when: "item != 'prod'"
+  when: "item != 'prod' and (params.new_env_flag is not defined or not params.new_env_flag)"
 
 - name: "'{{ item }}' Build images"
   include_tasks: 30-build-images.yml
