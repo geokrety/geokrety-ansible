@@ -464,19 +464,27 @@ services:
     command:
       - "server"
       - "/data"
+      - "--console-address"
+      - ":9001"
     volumes:
       - {{ geokrety_base_dir }}/minio/:/data/
     environment:
-      MINIO_ACCESS_KEY: {{ params.minio.access_key }}
-      MINIO_SECRET_KEY: {{ params.minio.secret_key }}
+      MINIO_ROOT_USER: {{ params.minio.access_key }}
+      MINIO_ROOT_PASSWORD: {{ params.minio.secret_key }}
+      CONSOLE_SECURE_TLS_REDIRECT: "off"
+      MINIO_BROWSER_REDIRECT_URL: "https://console.{{ params.minio.uri_external }}"
     deploy:
       labels:
         traefik.enable: "true"
         traefik.docker.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.minio.uri_external }}"
-        traefik.frontend.passHostHeader: "true"
-        traefik.protocol: "http"
-        traefik.port: 9000
+        traefik.svc.frontend.rule: "Host:{{ params.minio.uri_external }}"
+        traefik.svc.frontend.passHostHeader: "true"
+        traefik.svc.protocol: "http"
+        traefik.svc.port: 9000
+        traefik.console.frontend.rule: "Host:console.{{ params.minio.uri_external }}"
+        traefik.console.frontend.passHostHeader: "true"
+        traefik.console.protocol: "http"
+        traefik.console.port: 9001
       restart_policy:
         condition: any
     networks:
