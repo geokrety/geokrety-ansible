@@ -11,6 +11,6 @@
     force_source: yes
     push: "{{ geokrety_push_images }}"
     build:
-      dockerfile: Dockerfile-alpine
+      dockerfile: Dockerfile
       path: "{{ params.osm_static_maps.localdir | default(geokrety_base_dir+'/git/osm_static_maps') }}"
       pull: "{{ geokrety_push_images }}"
