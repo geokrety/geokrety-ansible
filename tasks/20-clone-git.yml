@@ -28,12 +28,12 @@
   become_user: "{{ geokrety_username }}"
   when: params.base.localdir is not defined
 
-- name: "'{{ item }}' - Clone WEBSITE - (branch:{{ params.website.git_branch | default(geokrety_website_image.git_branch) }})"
+- name: "'{{ item }}' - Clone WEBSITE - (branch:{{ git_tag | default(params.website.git_branch | default(geokrety_website_image.git_branch)) }})"
   git:
     repo: "{{ geokrety_website_image.git_url }}"
     dest: "{{ geokrety_base_dir }}/git/website"
     separate_git_dir: "{{ geokrety_base_dir }}/git/website.git"
-    version: "{{ params.website.git_branch | default(geokrety_website_image.git_branch) }}"
+    version: "{{ git_tag | default(params.website.git_branch | default(geokrety_website_image.git_branch)) }}"
     force: yes
   become_user: "{{ geokrety_username }}"
   register: git_result
