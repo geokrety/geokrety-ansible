@@ -22,9 +22,6 @@
       dockerfile: Dockerfile.base
       path: "{{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }}"
       pull: "{{ geokrety_push_images }}"
-      args:
-        BASE_IMAGE: "{{ geokrety_docker_image_website_base_image_name }}"
-        BASE_TAG: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
 
 - name: "'{{ item }}' - Build and push PICTURES PROCESSOR DOWNLOADER image - {{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }} | {{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ item }}"
   docker_image:
