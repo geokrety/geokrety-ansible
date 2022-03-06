@@ -220,7 +220,7 @@ services:
       - {{ geokrety_base_dir }}/git/website/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - {{ geokrety_base_dir }}/git/website/configs/nginx/fastcgi_pass:/etc/nginx/fastcgi_pass:ro
       - {{ geokrety_base_dir }}/git/website/configs/nginx/templates:/etc/nginx/templates:ro
-      - {{ geokrety_base_dir }}/git/website/public:/var/www/html:ro
+      - {{ geokrety_base_dir }}/git/website/website/public:/var/www/html:ro
 {% endif %}
       - {{ geokrety_base_dir }}/data/assets:/var/www/html/assets/compressed:ro
     deploy:
@@ -260,6 +260,12 @@ services:
         order: start-first
       labels:
         traefik.enable: "false"
+    healthcheck:
+      test: /usr/local/bin/php-fpm-healthcheck -v || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      # start_period: 10s
 {% else %}
       replicas: 2
       update_config:
