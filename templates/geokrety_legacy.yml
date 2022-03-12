@@ -221,7 +221,7 @@ services:
       - {{ geokrety_base_dir }}/git/website/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - {{ geokrety_base_dir }}/git/website/configs/nginx/fastcgi_pass:/etc/nginx/fastcgi_pass:ro
       - {{ geokrety_base_dir }}/git/website/configs/nginx/no_req_limit.conf:/etc/nginx/no_req_limit.conf:ro
-      - {{ geokrety_base_dir }}/git/website/configs/nginx/templates:/etc/nginx/templates:ro
+      - {{ geokrety_base_dir }}/git/website/configs/nginx/templates/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - {{ geokrety_base_dir }}/git/website/website/public:/var/www/html:ro
 {% endif %}
       - {{ geokrety_base_dir }}/data/assets:/var/www/html/assets/compressed:ro
