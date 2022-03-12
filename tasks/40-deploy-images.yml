@@ -15,3 +15,11 @@
     resolve_image: "{{ 'always' if geokrety_push_images|bool else 'never' }}"
     compose:
       - "{{ geokrety_base_dir }}/geokrety_legacy.yml"
+
+## Services don't update by themself if image is already present locally (ie: in dev)
+## https://github.com/moby/moby/issues/31357
+## One option is to force services to be updated
+## Find service with need update by looking at the image field in
+## $ docker ps |grep geokrety-legacy-new-theme_
+## and issue the update command for each of non up to date service
+## $ docker service update --force geokrety-legacy-new-theme_postgres

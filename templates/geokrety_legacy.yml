@@ -214,11 +214,13 @@ services:
 {% if 'localdir' in params.website.keys() %}
       - {{ params.website.localdir }}/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - {{ params.website.localdir }}/configs/nginx/fastcgi_pass:/etc/nginx/fastcgi_pass:ro
-      - {{ params.website.localdir }}/configs/nginx/templates:/etc/nginx/templates:ro
+      - {{ params.website.localdir }}/configs/nginx/no_req_limit.conf:/etc/nginx/no_req_limit.conf:ro
+      - {{ params.website.localdir }}/configs/nginx/templates/default.conf.template:/etc/nginx/templates/default.conf.template:ro
       - {{ params.website.localdir }}/website/public:/var/www/html:ro
 {% else %}
       - {{ geokrety_base_dir }}/git/website/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - {{ geokrety_base_dir }}/git/website/configs/nginx/fastcgi_pass:/etc/nginx/fastcgi_pass:ro
+      - {{ geokrety_base_dir }}/git/website/configs/nginx/no_req_limit.conf:/etc/nginx/no_req_limit.conf:ro
       - {{ geokrety_base_dir }}/git/website/configs/nginx/templates:/etc/nginx/templates:ro
       - {{ geokrety_base_dir }}/git/website/website/public:/var/www/html:ro
 {% endif %}
@@ -233,12 +235,12 @@ services:
       <<: *labels-website
       restart_policy:
         condition: any
-    healthcheck:
-      test: curl -b /tmp/cookie.txt -c /tmp/cookie.txt --fail -v --output /dev/stderr http://localhost:80/health || exit 1
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      # start_period: 10s
+    # healthcheck:
+    #   test: curl -b /tmp/cookie.txt -c /tmp/cookie.txt --fail -v --output /dev/stderr http://localhost:80/health || exit 1
+    #   interval: 30s
+    #   timeout: 5s
+    #   retries: 3
+    #   # start_period: 10s
     networks:
       default:
       traefik_default:
