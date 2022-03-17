@@ -235,12 +235,12 @@ services:
       <<: *labels-website
       restart_policy:
         condition: any
-    # healthcheck:
-    #   test: curl -b /tmp/cookie.txt -c /tmp/cookie.txt --fail -v --output /dev/stderr http://localhost:80/health || exit 1
-    #   interval: 30s
-    #   timeout: 5s
-    #   retries: 3
-    #   # start_period: 10s
+    healthcheck:
+      test: curl -b /tmp/cookie.txt -c /tmp/cookie.txt --fail -v --output /dev/stderr http://localhost:80/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      # start_period: 10s
     networks:
       default:
       traefik_default:
@@ -286,6 +286,35 @@ services:
 {% if params.nginx is not defined %}
       traefik_default:
 {% endif %}
+
+  db-migrator:
+    image: {{ geokrety_docker_image_website_image_name }}:{{ item }}
+    <<: *variables
+{% if 'localdir' in params.website.keys() %}
+    volumes:
+      # Mount local dir as html root
+      - {{ params.website.localdir }}:/var/www/geokrety/
+{% endif %}
+    command: bash -c "make composer-autoload; tail -F /dev/null"
+    deploy:
+      restart_policy:
+        condition: any
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 30s
+        monitor: 5s
+        order: start-first
+      labels:
+        traefik.enable: "false"
+    healthcheck:
+      disable: true
+    dns:
+{% for dns_server in geokrety_dns_servers %}
+      - {{ dns_server }}
+{% endfor %}
+    networks:
+      default:
 {% if params.db.importer is defined and params.db.importer %}
       geokrety-legacy-prod_default:
 {% endif %}
