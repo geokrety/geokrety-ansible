@@ -483,7 +483,7 @@ services:
       SERVER_HOSTNAME: smtp-relay
       SMTP_HEADER_TAG: GK-smtp-relay
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         parallelism: 1
         failure_action: rollback
