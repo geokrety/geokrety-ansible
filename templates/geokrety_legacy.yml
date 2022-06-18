@@ -88,6 +88,9 @@ x-variables: &variables
     GK_OPAUTH_FACEBOOK_CLIENT_SECRET: "{{ params.social_auth.facebook.client_secret }}"
 {% endif %}
 {% endif %}
+{% if params.website.audit_logs_exclude_path_bypass is defined %}
+    GK_AUDIT_LOGS_EXCLUDE_PATH_BYPASS: "{{ params.website.audit_logs_exclude_path_bypass }}"
+{% endif %}
 
 {% endif %}
 
