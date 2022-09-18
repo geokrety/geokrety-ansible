@@ -35,7 +35,7 @@ geokrety_docker_image_prometheus_image: geokrety/prometheus
 geokrety_docker_image_grafana_image: geokrety/grafana
 geokrety_docker_image_postgres_name: geokrety/postgres
 geokrety_docker_image_accounts_cleaner_image_name: geokrety/accounts-cleaner
-geokrety_docker_stack_base_name: geokrety-legacy
+geokrety_docker_stack_base_name: geokrety
 geokrety_push_images: yes
 
 geokrety_tz: Europe/Paris

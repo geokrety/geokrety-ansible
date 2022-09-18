@@ -7,12 +7,19 @@
     key: "{{ lookup('file', 'pubkeys/' + item) }}"
   with_items: "{{ geokrety_admin_ssh_keys }}"
 
+- name: Install package
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - ansible
+
 - name: Install useful python libraries
   pip:
     executable: /usr/bin/pip3
     name:
       - jsondiff
-      - ansible==2.8.0rc2
       - sh
 
 ...

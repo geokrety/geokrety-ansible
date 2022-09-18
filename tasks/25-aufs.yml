@@ -24,7 +24,7 @@
       path: "{{ geokrety_base_dir }}/data/cdn"
       src: none
       fstype: aufs
-      opts: "br={{ geokrety_base_dir }}/data/cdn-overlay:{{ geokrety_home }}/instances/prod/data/cdn"
+      opts: "br={{ geokrety_base_dir }}/data/cdn-overlay:{{ geokrety_home }}/instances/legacy-prod/data/cdn"
       state: mounted
 
-  when: "item != 'prod'"
+  when: "item != 'legacy-prod'"
