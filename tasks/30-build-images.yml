@@ -42,7 +42,7 @@
     chdir: "{{ params.website.localdir | default(geokrety_base_dir+'/git/website') }}"
   register: geokrety_website_latest_tag
 
-- name: "'{{ item }}' - Build and push WEBSITE image - {{ params.website.localdir | default(geokrety_base_dir+'/git/website') }} | {{ geokrety_docker_image_website_image_name }}:{{ item }}"
+- name: "'{{ item }}' - Build and push WEBSITE image - {{ params.website.localdir | default(geokrety_base_dir+'/git/website') }} | {{ geokrety_docker_image_website_image_name }}:{{ item }} | {{ geokrety_docker_image_website_base_image_name }}:{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
   docker_image:
     name: "{{ geokrety_docker_image_website_image_name }}:{{ item }}"
     source: build
