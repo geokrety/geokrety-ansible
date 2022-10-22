@@ -9,6 +9,7 @@ x-variables: &variables
 {% if params.new_env_flag is defined and params.new_env_flag %}
     GK_SITE_BASE_SERVER_URL: "https://{{ params.website.uri.0 }}"
     GK_SITE_BASE_SERVER_FQDN: "{{ params.website.uri.0 }}"
+    GK_SYSTEM_PATH_ALLOWED_IPS: "127.0.0.1,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,130.180.209.67"
 
     GK_MINIO_SERVER_URL_EXTERNAL: "https://{{ params.minio.uri_external }}"
     MINIO_ACCESS_KEY: "{{ params.minio.access_key }}"
