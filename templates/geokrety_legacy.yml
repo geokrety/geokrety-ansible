@@ -291,6 +291,7 @@ services:
       traefik_default:
 {% endif %}
 
+{% if params.db.importer is defined and params.db.importer %}
   db-migrator:
     image: {{ geokrety_docker_image_website_image_name }}:{{ item }}
     <<: *variables
@@ -319,8 +320,6 @@ services:
 {% endfor %}
     networks:
       default:
-{% if params.db.importer is defined and params.db.importer %}
-      geokrety-legacy-prod_default:
 {% endif %}
 
 {% if 'cdn' in params.keys() %}
@@ -765,7 +764,3 @@ networks:
     attachable: true
   traefik_default:
     external: true
-{% if params.db.importer is defined and params.db.importer %}
-  geokrety-legacy-prod_default:
-    external: true
-{% endif %}
