@@ -63,7 +63,8 @@ x-variables: &variables
     GK_GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
     GK_GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google.recaptcha_secret_key | default(geokrety_params.google.recaptcha_secret_key) }}"
 
-    GK_API_EXPORT_PASSWORD_BYPASS_LIMIT: "{{ params.export_bypass_token | default(geokrety_params.export_bypass_token) }}"
+    GK_API_EXPORT_PASSWORD_BYPASS_LIMIT_DAYS: "{{ params.export_bypass_token | default(geokrety_params.export_bypass_token) }}"
+    GK_RATE_LIMITS_BYPASS: "{{ params.rate_limits_bypass | default(geokrety_params.rate_limits_bypass) }}"
 
     GK_OKAPI_CONSUMER_KEY_OC_PL: "{{ params.OKAPI.OC_PL.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_PL.CONSUMER_KEY) }}"
     GK_OKAPI_CONSUMER_KEY_OC_UK: "{{ params.OKAPI.OC_UK.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_UK.CONSUMER_KEY) }}"
