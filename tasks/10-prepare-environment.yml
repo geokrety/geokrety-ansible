@@ -33,6 +33,15 @@
     mode: 0775
   when: params.basex is defined and params.basex.host is defined
 
+- name: "'{{ item }}' - Create rabbitmq directory"
+  file:
+    path: "{{ geokrety_base_dir }}/rabbitmq"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: 0775
+  when: params.rabbitmq is defined and params.rabbitmq.host is defined
+
 - name: "'{{ item }}' - Create postgres directory"
   file:
     path: "{{ geokrety_base_dir }}/postgres"

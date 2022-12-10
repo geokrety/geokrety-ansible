@@ -105,7 +105,7 @@ geokrety_accounts_cleaner_image:
 
 geokrety_basex_amqp_sync_image:
   git_url: https://github.com/geokrety/geokrety-basex-amqp-sync.git
-  git_branch: master
+  git_branch: main
   docker_tag: latest
 
 geokrety_params:
