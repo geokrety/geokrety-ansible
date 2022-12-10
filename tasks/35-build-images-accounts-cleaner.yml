@@ -10,7 +10,7 @@
   become_user: "{{ geokrety_username }}"
   when: params.accounts_cleaner is defined and params.accounts_cleaner.localdir is not defined
 
-- name: "'{{ item }}' - get git describe - {{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }} | {{ geokrety_docker_image_website_base_image_name }}:{{ item }}"
+- name: "'{{ item }}' - get git describe - {{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }} | {{ geokrety_docker_image_accounts_cleaner_image_name }}:{{ item }}"
   shell: "git describe --tags"
   args:
     chdir: "{{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }}"

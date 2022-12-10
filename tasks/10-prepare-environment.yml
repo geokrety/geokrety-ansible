@@ -26,6 +26,15 @@
 
 - name: "'{{ item }}' - Create postgres directory"
   file:
+    path: "{{ geokrety_base_dir }}/BaseXData"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: 0775
+  when: params.basex is defined and params.basex.host is defined
+
+- name: "'{{ item }}' - Create postgres directory"
+  file:
     path: "{{ geokrety_base_dir }}/postgres"
     state: directory
     owner: "999"

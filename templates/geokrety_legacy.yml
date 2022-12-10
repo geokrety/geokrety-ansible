@@ -45,6 +45,21 @@ x-variables: &variables
     GK_DB_ORIG_USER: root
     GK_DB_ORIG_PASSWORD: {{ geokrety_org_mysql_root_password }}
 
+{% if params.basex is defined and params.basex.host is defined %}
+    GK_BASEX_HOST: "{{ params.basex.host }}"
+    GK_BASEX_PORT: "{{ params.basex.port }}"
+    GK_BASEX_USER: "{{ params.basex.user }}"
+    GK_BASEX_PASSWORD: "{{ params.basex.password }}"
+{% endif %}
+
+{% if params.rabbitmq is defined and params.rabbitmq.host is defined %}
+    GK_RABBITMQ_HOST: "{{ params.rabbitmq.host }}"
+    GK_RABBITMQ_PORT: "{{ params.rabbitmq.port }}"
+    GK_RABBITMQ_USER: "{{ params.rabbitmq.user }}"
+    GK_RABBITMQ_PASSWORD: "{{ params.rabbitmq.password }}"
+    # GK_RABBITMQ_VHOST: "{{ params.rabbitmq.vhost | default('%2F') }}"
+{% endif %}
+
     GK_SITE_EMAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
     GK_SITE_EMAIL_SUPPORT: "{{ params.mail_email.support | default(geokrety_params.mail_email.support) }}"
     GK_SITE_EMAIL_REGISTRATION: "{{ params.mail_email.registration | default(geokrety_params.mail_email.registration) }}"
@@ -400,6 +415,12 @@ services:
 {% if params.postgres is defined %}
   postgres:
     image: {{ geokrety_docker_image_postgres_name }}:{{ item }}
+    command:
+      - "postgres"
+{% if params.rabbitmq is defined and params.rabbitmq.host is defined %}
+      - "-c"
+      - "shared_preload_libraries=pg_amqp.so"
+{% endif %}
     volumes:
       - {{ geokrety_base_dir }}/postgres:/var/lib/postgresql/data:rw
       - {{ geokrety_home }}/databases/srtm:/srtm:rw
@@ -476,6 +497,90 @@ services:
     networks:
       default:
       traefik_default:
+{% endif %}
+
+{% if params.rabbitmq is defined and params.rabbitmq.host is defined %}
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    hostname: gk-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER={{ params.rabbitmq.user }}
+      - RABBITMQ_DEFAULT_PASS={{ params.rabbitmq.password }}
+      - TZ=Europe/Paris
+
+    volumes:
+      - {{ geokrety_base_dir }}/rabbitmq:/var/lib/rabbitmq
+{% if params.rabbitmq.expose is defined %}
+    ports:
+      - target: 5672
+        published: {{ params.rabbitmq.expose }}
+        protocol: tcp
+        mode: host
+{% endif %}
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "traefik_default"
+        traefik.frontend.rule: "Host:{{ params.rabbitmq.uri_external }}"
+        traefik.frontend.passHostHeader: "true"
+        traefik.protocol: "http"
+        traefik.port: 15672
+        # traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
+{% endif %}
+
+{% if params.basex is defined and params.basex.host is defined %}
+  basex:
+    image: quodatum/basexhttp:BaseX973
+    environment:
+      - BASEX_JVM=-Xmx3072m
+      - TZ=Europe/Paris
+    volumes:
+      - {{ geokrety_base_dir }}/BaseXData:/srv/basex/data
+{% if params.basex.expose is defined %}
+    ports:
+      - target: 1984
+        published: {{ params.basex.expose }}
+        protocol: tcp
+        mode: host
+{% endif %}
+    deploy:
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
+    networks:
+      default:
+
+  basex-amqp-sync:
+    image: {{ geokrety_docker_image_basex_amqp_sync_name }}:{{ item }}
+    environment:
+      - GK_BASEX_HOST={{ params.basex.host | default('basex') }}
+      - GK_BASEX_PORT={{ params.basex.port | default(1984) }}
+      - GK_BASEX_USER={{ params.basex.user }}
+      - GK_BASEX_PASSWORD={{ params.basex.password }}
+      - GK_RABBITMQ_HOST={{ params.rabbitmq.host | default('rabbitmq') }}
+      - GK_RABBITMQ_PORT={{ params.rabbitmq.port | default(5672) }}
+      - GK_RABBITMQ_USER={{ params.rabbitmq.user }}
+      - GK_RABBITMQ_PASS={{ params.rabbitmq.password }}
+      - GK_RABBITMQ_VHOST={{ params.rabbitmq.vhost | default('%2F') }}
+      - GK_API_BASE_URL=https://{{ params.website.uri.0 }}
+      - GK_API_RATE_LIMITS_BYPASS={{ params.rate_limits_bypass | default(geokrety_params.rate_limits_bypass) }}
+{% if 'localdir' in params.website.keys() %}
+    volumes:
+      - {{ params.basex_amqp_sync.localdir }}/:/usr/src/app/
+{% endif %}
+    deploy:
+      labels:
+        traefik.enable: "false"
+      restart_policy:
+        condition: any
+    networks:
+      default:
 {% endif %}
 
 {% if params.bootstrap_email is defined %}

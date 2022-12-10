@@ -70,5 +70,10 @@
       include_tasks: 35-build-images-accounts-cleaner.yml
   when: "params.accounts_cleaner is defined"
 
+- block:
+    - name: "'{{ item }}' Process accounts cleaner image"
+      include_tasks: 36-build-images-basex-amqp-sync.yml
+  when: "params.basex_amqp_sync is defined"
+
 - name: "'{{ item }}' Deploy stack"
   include_tasks: 40-deploy-images.yml
