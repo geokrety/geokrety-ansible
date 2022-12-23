@@ -535,7 +535,7 @@ services:
 
 {% if params.basex is defined and params.basex.host is defined %}
   basex:
-    image: quodatum/basexhttp:BaseX973
+    image: quodatum/basexhttp:basex-10.3
     environment:
       - BASEX_JVM=-Xmx3072m
       - TZ=Europe/Paris
