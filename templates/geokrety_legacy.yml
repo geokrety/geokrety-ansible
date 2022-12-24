@@ -548,6 +548,12 @@ services:
         protocol: tcp
         mode: host
 {% endif %}
+{% if params.basex.hosts is defined %}
+    extra_hosts:
+{% for item in params.basex.hosts %}
+      - "{{ item.host }}:{{ item.ip }}"
+{% endfor %}
+{% endif %}
     deploy:
       labels:
         traefik.enable: "false"
