@@ -190,7 +190,10 @@ x-volumes-cdn: &volumes-cdn
 {% if 'localdir' in params.cdn.keys() %}
     - {{ params.cdn.localdir }}/content:/usr/share/nginx/html
 {% else %}
-    - {{ geokrety_base_dir }}/git/cdn/content:/usr/share/nginx/html
+    # Basex full exports
+{% if params.basex is defined and params.basex.host is defined %}
+    - {{ geokrety_base_dir }}/BaseXExports:/usr/share/nginx/html/exports
+{% endif %}
 {% endif %}
 {% if params.new_env_flag is not defined or not params.new_env_flag %}
     # persistent vars
@@ -541,6 +544,7 @@ services:
       - TZ=Europe/Paris
     volumes:
       - {{ geokrety_base_dir }}/BaseXData:/srv/basex/data
+      - {{ geokrety_base_dir }}/BaseXExports:/srv/basex/exports
 {% if params.basex.expose is defined %}
     ports:
       - target: 1984
