@@ -61,6 +61,8 @@ x-variables: &variables
 {% endif %}
 
     GK_SITE_EMAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
+    GK_SITE_EMAIL_NOREPLY: "{{ params.mail_email.noreply | default(geokrety_params.mail_email.noreply) }}"
+    GK_SITE_EMAIL_NOTIF: "{{ params.mail_email.notif | default(geokrety_params.mail_email.notif) }}"
     GK_SITE_EMAIL_SUPPORT: "{{ params.mail_email.support | default(geokrety_params.mail_email.support) }}"
     GK_SITE_EMAIL_REGISTRATION: "{{ params.mail_email.registration | default(geokrety_params.mail_email.registration) }}"
     GK_SITE_EMAIL_MESSAGE_CENTER: "{{ params.mail_email.message_center | default(geokrety_params.mail_email.message_center) }}"

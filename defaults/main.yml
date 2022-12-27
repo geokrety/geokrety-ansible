@@ -145,6 +145,8 @@ geokrety_params:
   mail_domain: gmail.com
   mail_email:
     main: geokrety@gmail.com
+    noreply: geokrety+noreply@gmail.com
+    notif: geokrety+notif@gmail.com
     registration: geokrety+registration@gmail.com
     support: geokrety+support@gmail.com
     message_center: geokrety+message-center@gmail.com
