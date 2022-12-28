@@ -186,12 +186,11 @@ x-volumes-cdn: &volumes-cdn
     # Mount local dir as html root
     - {{ params.website.localdir }}/website:/var/www/html/
 {% endif %}
-    # Configure mail forwarder
-    - {{ geokrety_base_dir }}/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
     # The cdn data
 {% if 'localdir' in params.cdn.keys() %}
     - {{ params.cdn.localdir }}/content:/usr/share/nginx/html
 {% else %}
+    - {{ geokrety_base_dir }}/git/cdn/content:/usr/share/nginx/html
     # Basex full exports
 {% if params.basex is defined and params.basex.host is defined %}
     - {{ geokrety_base_dir }}/BaseXExports:/usr/share/nginx/html/exports
