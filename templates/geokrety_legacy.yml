@@ -36,6 +36,12 @@ x-variables: &variables
     GK_SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
 {% endif %}
 
+{% if params.piwik is defined %}
+    GK_PIWIK_URL: "{{ params.piwik.url | default(geokrety_params.piwik.url) }}"
+    GK_PIWIK_SITE_ID: "{{ params.piwik.site_id | default(geokrety_params.piwik.site_id) }}"
+    GK_PIWIK_TOKEN: "{{ params.piwik.token | default(geokrety_params.piwik.token) }}"
+{% endif %}
+
     GK_DB_DRIVER: "{{ params.db.driver | default(geokrety_params.db.driver) }}"
     GK_DB_DSN: "{{ params.db.dsn | default(geokrety_params.db.dsn) }}"
     GK_DB_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
@@ -305,6 +311,12 @@ services:
 {% for dns_server in geokrety_dns_servers %}
       - {{ dns_server }}
 {% endfor %}
+{% if params.piwik is defined and params.piwik.extra_hosts is defined %}
+    extra_hosts:
+{% for extra_host in params.piwik.extra_hosts %}
+      - "{{ extra_host }}"
+{% endfor %}
+{% endif %}
     networks:
       default:
 {% if params.nginx is not defined %}
