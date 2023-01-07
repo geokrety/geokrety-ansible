@@ -77,8 +77,8 @@ geokrety_bootstrap_email_image:
   docker_tag: latest
 
 geokrety_osm_static_maps_image:
-  git_url: https://github.com/jperelli/osm-static-maps.git
-  # git_url: https://github.com/geokrety/osm-static-maps.git
+  # git_url: https://github.com/jperelli/osm-static-maps.git
+  git_url: https://github.com/geokrety/osm-static-maps.git
   # git_branch: franpitri/master
   git_branch: master
   docker_tag: latest

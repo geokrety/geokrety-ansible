@@ -678,7 +678,7 @@ services:
       - {{ geokrety_base_dir }}/git/osm_static_maps:/app
     environment:
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
-      PUPPETEER_EXECUTABLE_PATH: "/usr/bin/chromium-browser"
+      PUPPETEER_EXECUTABLE_PATH: "/usr/bin/chromium"
 {% endif %}
 
   redis:
