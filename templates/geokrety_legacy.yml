@@ -50,8 +50,10 @@ x-variables: &variables
     GK_DB_PASSWORD: "{{ params.postgres.password | default(geokrety_params.postgres.password) }}"
     GK_DB_GPG_PASSWORD: "{{ params.postgres.gpg_password | default('') }}"
     GK_DB_SECRET_KEY: "{{ params.postgres.gpg_secret | default('') }}"
-    GK_DB_ORIG_USER: root
-    GK_DB_ORIG_PASSWORD: {{ geokrety_org_mysql_root_password }}
+    GK_DB_ORIG_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
+    GK_DB_ORIG_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
+    GK_DB_ORIG_DB_NAME: "{{ params.db.name | default(geokrety_params.db.name) }}"
+    GK_DB_ORIG_HOST: "{{ params.db.host | default(geokrety_params.db.host) }}"
 
 {% if params.basex is defined and params.basex.host is defined %}
     GK_BASEX_HOST: "{{ params.basex.host }}"
@@ -399,6 +401,8 @@ services:
         traefik.enable: "false"
       restart_policy:
         condition: any
+    extra_hosts:
+      - "indy.kumy.org:192.168.10.114"
     networks:
       default:
 {% endif %}
