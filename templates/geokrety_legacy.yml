@@ -316,7 +316,7 @@ services:
       - {{ dns_server }}
 {% endfor %}
     extra_hosts:
-      - "indy.kumy.org:192.168.10.114"
+      - "indy.kumy.org:192.168.12.3"
 {% if params.piwik is defined and params.piwik.extra_hosts is defined %}
 {% for extra_host in params.piwik.extra_hosts %}
       - "{{ extra_host }}"
@@ -356,7 +356,7 @@ services:
       - {{ dns_server }}
 {% endfor %}
     extra_hosts:
-      - "indy.kumy.org:192.168.10.114"
+      - "indy.kumy.org:192.168.12.3"
     networks:
       default:
 {% endif %}
@@ -402,7 +402,7 @@ services:
       restart_policy:
         condition: any
     extra_hosts:
-      - "indy.kumy.org:192.168.10.114"
+      - "indy.kumy.org:192.168.12.3"
     networks:
       default:
 {% endif %}
