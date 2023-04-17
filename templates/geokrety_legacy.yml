@@ -315,9 +315,8 @@ services:
 {% for dns_server in geokrety_dns_servers %}
       - {{ dns_server }}
 {% endfor %}
-    extra_hosts:
-      - "indy.kumy.org:192.168.12.3"
 {% if params.piwik is defined and params.piwik.extra_hosts is defined %}
+    extra_hosts:
 {% for extra_host in params.piwik.extra_hosts %}
       - "{{ extra_host }}"
 {% endfor %}
@@ -355,8 +354,6 @@ services:
 {% for dns_server in geokrety_dns_servers %}
       - {{ dns_server }}
 {% endfor %}
-    extra_hosts:
-      - "indy.kumy.org:192.168.12.3"
     networks:
       default:
 {% endif %}
@@ -401,8 +398,6 @@ services:
         traefik.enable: "false"
       restart_policy:
         condition: any
-    extra_hosts:
-      - "indy.kumy.org:192.168.12.3"
     networks:
       default:
 {% endif %}
