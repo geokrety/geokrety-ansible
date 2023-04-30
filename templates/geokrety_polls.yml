@@ -15,6 +15,12 @@ services:
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 80
+        # traefik2
+        traefik.http.routers.geokrety-polls.rule: "Host(`polls.geokrety.org`)"
+        traefik.http.routers.geokrety-polls.priority: 5
+        traefik.http.routers.geokrety-polls.middlewares: "X-Forwarded-Https@file"
+        traefik.http.services.geokrety-polls.loadbalancer.passhostheader: "true"
+        traefik.http.services.geokrety-polls.loadbalancer.server.port: 80
       restart_policy:
         condition: any
     networks:

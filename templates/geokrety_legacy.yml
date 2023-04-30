@@ -233,6 +233,15 @@ x-labels-website: &labels-website
     traefik.frontend.redirect.permanent: "true"
     traefik.protocol: "http"
     traefik.port: 80
+    # traefik2
+    traefik.http.middlewares.geokrety-{{ item }}-redirectregex.redirectregex.regex: "https://www.{{ params.website.uri[0] }}([/](.*))*"
+    traefik.http.middlewares.geokrety-{{ item }}-redirectregex.redirectregex.replacement: "https://{{ params.website.uri[0] }}$${1}"
+    traefik.http.routers.geokrety-{{ item }}-nginx.priority: 5
+    traefik.http.routers.geokrety-{{ item }}-nginx.rule: "Host(`{{ params.website.uri | join('`,`') }}`,`www.{{ params.website.uri[0] }}`)"
+    traefik.http.routers.geokrety-{{ item }}-nginx.middlewares: X-Forwarded-Https@file, geokrety-{{ item }}-redirectregex
+    traefik.http.services.geokrety-{{ item }}-nginx.loadbalancer.passhostheader: "true"
+    traefik.http.services.geokrety-{{ item }}-nginx.loadbalancer.server.port: 80
+
 {% if params.new_env_flag is defined and params.new_env_flag %}
     # traefik.backend.healthcheck.path: "/health"
     # traefik.backend.loadbalancer.stickiness: "true"
@@ -376,6 +385,12 @@ services:
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 80
+        # traefik2
+        traefik.http.routers.geokrety-{{ item }}-cdn.priority: 5
+        traefik.http.routers.geokrety-{{ item }}-cdn.rule: "Host(`{{ params.cdn.uri | default(geokrety_params.cdn_uri) }}`)"
+        traefik.http.routers.geokrety-{{ item }}-cdn.middlewares: X-Forwarded-Https@file
+        traefik.http.services.geokrety-{{ item }}-cdn.loadbalancer.passhostheader: "true"
+        traefik.http.services.geokrety-{{ item }}-cdn.loadbalancer.server.port: 80
       restart_policy:
         condition: any
     networks:
@@ -489,6 +504,13 @@ services:
         traefik.protocol: "http"
         traefik.port: 8080
         traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+        # traefik2
+        traefik.http.middlewares.auth-basic-geokrey-admins.basicauth.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+        traefik.http.routers.geokrety-{{ item }}-adminer.priority: 10
+        traefik.http.routers.geokrety-{{ item }}-adminer.rule: "Host(`{{ params.website.uri[0] }}`) && PathPrefix(`/adminer`)"
+        traefik.http.routers.geokrety-{{ item }}-adminer.middlewares: X-Forwarded-Https@file,auth-basic-geokrey-admins
+        traefik.http.services.geokrety-{{ item }}-adminer.loadbalancer.passhostheader: "true"
+        traefik.http.services.geokrety-{{ item }}-adminer.loadbalancer.server.port: 8080
       restart_policy:
         condition: any
     networks:
@@ -514,6 +536,13 @@ services:
         traefik.protocol: "http"
         traefik.port: 80
         traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+        # traefik2
+        traefik.http.middlewares.auth-basic-geokrey-admins.basicauth.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+        traefik.http.routers.geokrety-{{ item }}-pgadmin.priority: 10
+        traefik.http.routers.geokrety-{{ item }}-pgadmin.rule: "Host(`{{ params.website.uri[0] }}`) && PathPrefix(`/pgadmin`)"
+        traefik.http.routers.geokrety-{{ item }}-pgadmin.middlewares: X-Forwarded-Https@file,auth-basic-geokrey-admins
+        traefik.http.services.geokrety-{{ item }}-pgadmin.loadbalancer.passhostheader: "true"
+        traefik.http.services.geokrety-{{ item }}-pgadmin.loadbalancer.server.port: 80
       restart_policy:
         condition: any
     networks:
@@ -548,6 +577,13 @@ services:
         traefik.protocol: "http"
         traefik.port: 15672
         # traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+        # traefik2
+        # traefik.http.middlewares.auth-basic-geokrey-admins.basicauth.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+        traefik.http.routers.geokrety-{{ item }}-rabbitmq.rule: "Host(`{{ params.rabbitmq.uri_external }}`)"
+        traefik.http.routers.geokrety-{{ item }}-rabbitmq.middlewares: X-Forwarded-Https@file
+        # traefik.http.routers.geokrety-{{ item }}-rabbitmq.middlewares: X-Forwarded-Https@file,auth-basic-geokrey-admins
+        traefik.http.services.geokrety-{{ item }}-rabbitmq.loadbalancer.passhostheader: "true"
+        traefik.http.services.geokrety-{{ item }}-rabbitmq.loadbalancer.server.port: 15672
       restart_policy:
         condition: any
     networks:
@@ -724,6 +760,17 @@ services:
         traefik.console.frontend.passHostHeader: "true"
         traefik.console.protocol: "http"
         traefik.console.port: 9001
+        # traefik2
+        traefik.http.routers.geokrety-{{ item }}-minio-svc.rule: "Host(`{{ params.minio.uri_external }}`)"
+        traefik.http.routers.geokrety-{{ item }}-minio-svc.service: geokrety-{{ item }}-minio-svc
+        traefik.http.routers.geokrety-{{ item }}-minio-svc.middlewares: X-Forwarded-Https@file
+        traefik.http.services.geokrety-{{ item }}-minio-svc.loadbalancer.passhostheader: "true"
+        traefik.http.services.geokrety-{{ item }}-minio-svc.loadbalancer.server.port: 9000
+        traefik.http.routers.geokrety-{{ item }}-minio-console.rule: "Host(`console.{{ params.minio.uri_external }}`)"
+        traefik.http.routers.geokrety-{{ item }}-minio-console.service: geokrety-{{ item }}-minio-console
+        traefik.http.routers.geokrety-{{ item }}-minio-console.middlewares: X-Forwarded-Https@file
+        traefik.http.services.geokrety-{{ item }}-minio-console.loadbalancer.passhostheader: "true"
+        traefik.http.services.geokrety-{{ item }}-minio-console.loadbalancer.server.port: 9001
       restart_policy:
         condition: any
     networks:
@@ -813,11 +860,18 @@ services:
       labels:
         traefik.enable: "true"
         traefik.docker.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefix:/prometheus"
+        traefik.frontend.rule: "Host:{{ params.website.uri[0] }}; PathPrefix:/prometheus"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 9090
         traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+        # traefik2
+        traefik.http.middlewares.auth-basic-geokrey-admins.basicauth.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+        traefik.http.routers.geokrety-{{ item }}-prometheus.priority: 10
+        traefik.http.routers.geokrety-{{ item }}-prometheus.rule: "Host(`{{ params.website.uri[0] }}`) && PathPrefix(`/prometheus`)"
+        traefik.http.routers.geokrety-{{ item }}-prometheus.middlewares: X-Forwarded-Https@file,auth-basic-geokrey-admins
+        traefik.http.services.geokrety-{{ item }}-prometheus.loadbalancer.passhostheader: "true"
+        traefik.http.services.geokrety-{{ item }}-prometheus.loadbalancer.server.port: 9090
       restart_policy:
         condition: any
     networks:
@@ -858,6 +912,14 @@ services:
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 3000
+        # traefik2
+        traefik.http.middlewares.geokrety-{{ item }}-grafana-stripprefix.stripprefix.prefixes: "/grafana"
+        traefik.http.middlewares.geokrety-{{ item }}-grafana-remove-auth-header.headers.customrequestheaders.Authorization: ""
+        traefik.http.routers.geokrety-{{ item }}-grafana.rule: "Host(`{{ params.website.uri[0] }}`) && PathPrefix(`/grafana`)"
+        traefik.http.routers.geokrety-{{ item }}-grafana.middlewares: "X-Forwarded-Https@file,geokrety-{{ item }}-grafana-stripprefix,geokrety-{{ item }}-grafana-remove-auth-header"
+        traefik.http.routers.geokrety-{{ item }}-grafana.priority: 10
+        traefik.http.services.geokrety-{{ item }}-grafana.loadbalancer.passhostheader: "true"
+        traefik.http.services.geokrety-{{ item }}-grafana.loadbalancer.server.port: 3000
       restart_policy:
         condition: any
     networks:
@@ -887,6 +949,11 @@ services:
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 80
+        # traefik2
+        traefik.http.routers.geokrety-{{ item }}-accounts-cleaner.rule: "Host(`{{ params.accounts_cleaner.uri | join(',') }}`)"
+        traefik.http.routers.geokrety-{{ item }}-accounts-cleaner.middlewares: X-Forwarded-Https@file
+        traefik.http.services.geokrety-{{ item }}-accounts-cleaner.loadbalancer.passhostheader: "true"
+        traefik.http.services.geokrety-{{ item }}-accounts-cleaner.loadbalancer.server.port: 80
       restart_policy:
         condition: any
     networks:
