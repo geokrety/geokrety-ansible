@@ -234,7 +234,7 @@ x-labels-website: &labels-website
     traefik.protocol: "http"
     traefik.port: 80
     # traefik2
-    traefik.http.middlewares.geokrety-{{ item }}-redirectregex.redirectregex.regex: "https://www.{{ params.website.uri[0] }}([/](.*))*"
+    traefik.http.middlewares.geokrety-{{ item }}-redirectregex.redirectregex.regex: "http://www.{{ params.website.uri[0] }}([/](.*))*"
     traefik.http.middlewares.geokrety-{{ item }}-redirectregex.redirectregex.replacement: "https://{{ params.website.uri[0] }}$${1}"
     traefik.http.routers.geokrety-{{ item }}-nginx.priority: 5
     traefik.http.routers.geokrety-{{ item }}-nginx.rule: "Host(`{{ params.website.uri | join('`,`') }}`,`www.{{ params.website.uri[0] }}`)"
