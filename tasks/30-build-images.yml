@@ -56,15 +56,15 @@
         BASE_TAG: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
         GIT_COMMIT: "{{ geokrety_website_latest_tag.stdout }}"
 
-# - name: "'{{ item }}' - Build and push CRON image - {{ params.cron.localdir | default(geokrety_base_dir+'/git/cron') }} | {{ geokrety_docker_image_cron_image_name }}:{{ item }}"
-#   docker_image:
-#     name: "{{ geokrety_docker_image_cron_image_name }}:{{ item }}"
-#     source: build
-#     force_source: yes
-#     push: "{{ geokrety_push_images }}"
-#     build:
-#       path: "{{ params.cron.localdir | default(geokrety_base_dir+'/git/cron') }}"
-#       pull: "{{ geokrety_push_images }}"
-#       args:
-#         IMAGE: "{{ geokrety_docker_image_website_image_name }}:{{ item }}"
-#   when: params.cron is defined
+- name: "'{{ item }}' - Build and push CRON image - {{ params.cron.localdir | default(geokrety_base_dir+'/git/cron') }} | {{ geokrety_docker_image_cron_image_name }}:{{ item }}"
+  docker_image:
+    name: "{{ geokrety_docker_image_cron_image_name }}:{{ item }}"
+    source: build
+    force_source: yes
+    push: "{{ geokrety_push_images }}"
+    build:
+      path: "{{ params.cron.localdir | default(geokrety_base_dir+'/git/cron') }}"
+      pull: "{{ geokrety_push_images }}"
+      args:
+        IMAGE: "{{ geokrety_docker_image_website_image_name }}:{{ item }}"
+  when: params.cron is defined
