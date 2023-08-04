@@ -791,9 +791,9 @@ services:
       GK_MINIO_PICTURES_PROCESSOR_MINIO_SECRET_KEY: {{ params.minio.pictures_processor_downloader_secret_key }}
       GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_DOWNLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_downloader }}"
       GK_AUTH_TOKEN_DROP_S3_FILE_UPLOAD_REQUEST: "{{ params.minio.auth_token_drop_s3_file_upload_request }}"
-{% if params.minio.sentry.dsn is defined or geokrety_params.minio.sentry.dsn is defined %}
-      SENTRY_DSN: "{{ params.minio.sentry.dsn | default(geokrety_params.minio.sentry.dsn) }}"
-      SENTRY_ENV: "{{ params.minio.sentry.env | default(geokrety_params.minio.sentry.env) }}"
+{% if params.sentry.dsn is defined or geokrety_params.sentry.dsn is defined %}
+      SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
+      SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
 {% endif %}
 {% if 'localdir' in params.pictures_processor.keys() %}
     volumes:
@@ -813,9 +813,9 @@ services:
       MINIO_ACCESS_KEY: {{ params.minio.access_key }}
       MINIO_SECRET_KEY: {{ params.minio.secret_key }}
       GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_UPLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_uploader }}"
-{% if params.minio.sentry.dsn is defined or geokrety_params.minio.sentry.dsn is defined %}
-      SENTRY_DSN: "{{ params.minio.sentry.dsn | default(geokrety_params.minio.sentry.dsn) }}"
-      SENTRY_ENV: "{{ params.minio.sentry.env | default(geokrety_params.minio.sentry.env) }}"
+{% if params.sentry.dsn is defined or geokrety_params.sentry.dsn is defined %}
+      SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
+      SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
 {% endif %}
 {% if 'localdir' in params.pictures_processor.keys() %}
     volumes:
