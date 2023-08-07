@@ -1,16 +1,22 @@
 ---
 
-- name: "'{{ item }}' Define OSM Static Maps image name"
+- name: "'{{ item }}' Define OSM STATIC MAPS image name"
   set_fact:
-    geokrety_docker_image_osm_static_maps_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_osm_static_maps_image_name }}"
+    geokrety_docker_image_osm_static_maps_image_name: "{{ ('local/' if params.osm_static_maps.localdir is defined else '') + geokrety_docker_image_osm_static_maps_image }}"
 
-- name: "'{{ item }}' - Build and push OSM Static Maps image - {{ params.osm_static_maps.localdir | default(geokrety_base_dir+'/git/osm_static_maps') }} | {{ geokrety_docker_image_osm_static_maps_name }}:{{ item }}"
+- name: "'{{ item }}' Define OSM STATIC MAPS image tag"
+  set_fact:
+    geokrety_docker_image_osm_static_maps_image_tag: "{{ 'devel' if params.osm_static_maps.localdir is defined else (params.osm_static_maps.docker_tag | default(geokrety_osm_static_maps_image.docker_tag) | replace('/','-')) }}"
+
+
+- name: "'{{ item }}' - Build and push OSM STATIC MAPS image - {{ params.osm_static_maps.localdir }} | {{ geokrety_docker_image_osm_static_maps_image_name }}:{{ geokrety_docker_image_osm_static_maps_image_tag }}"
   docker_image:
-    name: "{{ geokrety_docker_image_osm_static_maps_name }}:{{ item }}"
+    name: "{{ geokrety_docker_image_osm_static_maps_image_name }}:{{ geokrety_docker_image_osm_static_maps_image_tag }}"
     source: build
     force_source: yes
-    push: "{{ geokrety_push_images }}"
+    push: no
     build:
       dockerfile: Dockerfile
-      path: "{{ params.osm_static_maps.localdir | default(geokrety_base_dir+'/git/osm_static_maps') }}"
-      pull: "{{ geokrety_push_images }}"
+      path: "{{ params.osm_static_maps.localdir }}"
+      pull: "yes"
+  when: params.osm_static_maps.localdir is defined

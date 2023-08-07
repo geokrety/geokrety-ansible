@@ -1,34 +1,32 @@
 ---
 
-- name: "'{{ item }}' - BaseX amqp sync - (branch:{{ params.basex_amqp_sync.git_branch | default(geokrety_basex_amqp_sync_image.git_branch) }})"
+- name: "'{{ item }}' - Clone BASEX AMQP SYNC - (branch:{{ params.basex_amqp_sync.docker_tag | default(geokrety_basex_amqp_sync_image.docker_tag) }})"
   git:
     repo: "{{ params.basex_amqp_sync.git_url | default(geokrety_basex_amqp_sync_image.git_url) }}"
     dest: "{{ geokrety_base_dir }}/git/basex_amqp_sync"
     separate_git_dir: "{{ geokrety_base_dir }}/git/basex_amqp_sync.git"
-    version: "{{ params.basex_amqp_sync.git_branch | default(geokrety_basex_amqp_sync_image.git_branch) }}"
+    version: "{{ params.basex_amqp_sync.docker_tag | default(geokrety_basex_amqp_sync_image.docker_tag) }}"
     force: yes
   become_user: "{{ geokrety_username }}"
-  when: params.basex_amqp_sync is defined and params.basex_amqp_sync.localdir is not defined
+  when: params.basex_amqp_sync is defined and params.basex_amqp_sync.localdir is defined
 
-- name: "'{{ item }}' - get git describe - {{ params.basex_amqp_sync.localdir | default(geokrety_base_dir+'/git/basex_amqp_sync') }} | {{ geokrety_docker_image_basex_amqp_sync_image_name }}:{{ item }}"
-  shell: "git describe --tags"
-  args:
-    chdir: "{{ params.basex_amqp_sync.localdir | default(geokrety_base_dir+'/git/basex_amqp_sync') }}"
-  register: geokrety_basex_amqp_sync_git_tag
-
-- name: "'{{ item }}' Define BaseX amqp sync image name"
+- name: "'{{ item }}' Define BASEX AMQP SYNC image name"
   set_fact:
-    geokrety_docker_image_basex_amqp_sync_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_basex_amqp_sync_image_name }}"
+    geokrety_docker_image_basex_amqp_sync_image_name: "{{ ('local/' if params.basex_amqp_sync.localdir is defined else '') + geokrety_docker_image_basex_amqp_sync_image }}"
 
-- name: "'{{ item }}' - Build and push BaseX amqp sync image - {{ params.basex_amqp_sync.localdir | default(geokrety_base_dir+'/git/basex_amqp_sync') }} | {{ geokrety_docker_image_basex_amqp_sync_name }}:{{ item }}"
+- name: "'{{ item }}' Define BASEX AMQP SYNC image tag"
+  set_fact:
+    geokrety_docker_image_basex_amqp_sync_image_tag: "{{ 'devel' if params.basex_amqp_sync.localdir is defined else (params.basex_amqp_sync.docker_tag | default(geokrety_basex_amqp_sync_image.docker_tag) | replace('/','-')) }}"
+
+
+- name: "'{{ item }}' - Build BASEX AMQP SYNC image - {{ params.basex_amqp_sync.localdir }} | {{ geokrety_docker_image_basex_amqp_sync_image_name }}:{{ geokrety_docker_image_basex_amqp_sync_image_tag }}"
   docker_image:
-    name: "{{ geokrety_docker_image_basex_amqp_sync_name }}:{{ item }}"
+    name: "{{ geokrety_docker_image_basex_amqp_sync_image_name }}:{{ geokrety_docker_image_basex_amqp_sync_image_tag }}"
     source: build
     force_source: yes
-    push: "{{ geokrety_push_images }}"
+    push: no
     build:
       dockerfile: Dockerfile
-      path: "{{ params.basex_amqp_sync.localdir | default(geokrety_base_dir+'/git/basex_amqp_sync') }}"
-      pull: "{{ geokrety_push_images }}"
-      args:
-        GIT_COMMIT: "{{ geokrety_basex_amqp_sync_git_tag.stdout }}"
+      path: "{{ params.basex_amqp_sync.localdir }}"
+      pull: yes
+  when: params.basex_amqp_sync.localdir is defined

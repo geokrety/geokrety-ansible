@@ -2,69 +2,130 @@
 
 - name: "'{{ item }}' Define CDN image name"
   set_fact:
-    geokrety_docker_image_cdn_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_cdn_image }}"
+    geokrety_docker_image_cdn_image_name: "{{ ('local/' if params.cdn.localdir is defined else '') + geokrety_docker_image_cdn_image }}"
 
-- name: "'{{ item }}' Define BASE image name"
+- name: "'{{ item }}' Define NGINX image name"
   set_fact:
-    geokrety_docker_image_website_base_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_website_base_image }}"
+    geokrety_docker_image_nginx_image_name: "{{ ('local/' if params.nginx.localdir is defined else '') + geokrety_docker_image_nginx_image }}"
 
-- name: "'{{ item }}' Define WEBSITE image name"
+# Image name changed between GKv1 and GKv2 
+- block:
+  - name: "'{{ item }}' Define BASE image name"
+    set_fact:
+      geokrety_docker_image_website_base_image_name: "{{ ('local/' if params.base.localdir is defined  else '') + params.base.image_name }}"
+    when: params.base.image_name is defined
+
+  - name: "'{{ item }}' Define BASE image name"
+    set_fact:
+      geokrety_docker_image_website_base_image_name: "{{ ('local/' if params.base.localdir is defined  else '') + geokrety_docker_image_website_base_image }}"
+    when: params.base.image_name is not defined
+
+  - name: "'{{ item }}' Define WEBSITE image name"
+    set_fact:
+      geokrety_docker_image_website_image_name: "{{ ('local/' if params.website.localdir is defined  else '') + params.website.image_name }}"
+    when: params.website.image_name is defined
+
+  - name: "'{{ item }}' Define WEBSITE image name"
+    set_fact:
+      geokrety_docker_image_website_image_name: "{{ ('local/' if params.website.localdir is defined  else '') + geokrety_docker_image_website_image }}"
+    when: params.website.image_name is not defined
+
+  - name: "'{{ item }}' Define CRON image name"
+    set_fact:
+      geokrety_docker_image_cron_image_name: "{{ ('local/' if params.cron.localdir is defined  else '') + params.cron.image_name }}"
+    when: params.cron.image_name is defined
+
+  - name: "'{{ item }}' Define CRON image name"
+    set_fact:
+      geokrety_docker_image_cron_image_name: "{{ ('local/' if params.cron.localdir is defined  else '') + geokrety_docker_image_cron_image }}"
+    when: params.cron.image_name is not defined
+
+
+- name: "'{{ item }}' Define CDN image tag"
   set_fact:
-    geokrety_docker_image_website_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_website_image }}"
+    geokrety_docker_image_cdn_image_tag: "{{ 'devel' if params.cdn.localdir is defined else (params.cdn.docker_tag | default(geokrety_cdn_image.docker_tag) | replace('/','-')) }}"
 
-- name: "'{{ item }}' Define CRON image name"
+- name: "'{{ item }}' Define NGINX image tag"
   set_fact:
-    geokrety_docker_image_cron_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_cron_image }}"
+    geokrety_docker_image_nginx_image_tag: "{{ 'devel' if params.nginx.localdir is defined else (params.nginx.docker_tag | default(geokrety_nginx_image.docker_tag) | replace('/','-')) }}"
 
-- name: "'{{ item }}' - Build and push CDN image - {{ params.cdn.localdir | default(geokrety_base_dir+'/git/cdn') }} | {{ geokrety_docker_image_cdn_image_name }}:{{ item }}"
+- name: "'{{ item }}' Define BASE image tag"
+  set_fact:
+    geokrety_docker_image_website_base_image_tag: "{{ 'devel' if params.base.localdir is defined else (params.base.docker_tag | default(geokrety_base_image.docker_tag) | replace('/','-')) }}"
+
+- name: "'{{ item }}' Define WEBSITE image tag"
+  set_fact:
+    geokrety_docker_image_website_image_tag: "{{ 'devel' if params.website.localdir is defined else (params.website.docker_tag | default(geokrety_website_image.docker_tag) | replace('/','-')) }}"
+
+- name: "'{{ item }}' Define CRON image tag"
+  set_fact:
+    geokrety_docker_image_cron_image_tag: "{{ 'devel' if params.cron.localdir is defined else (params.cron.docker_tag | default(geokrety_cron_image.docker_tag) | replace('/','-')) }}"
+
+
+- name: "'{{ item }}' - Build CDN image - {{ params.cdn.localdir }} | {{ geokrety_docker_image_cdn_image_name }}:{{ geokrety_docker_image_cdn_image_tag }}"
   docker_image:
-    name: "{{ geokrety_docker_image_cdn_image_name }}:{{ item }}"
+    name: "{{ geokrety_docker_image_cdn_image_name }}:{{ geokrety_docker_image_cdn_image_tag }}"
     source: build
     force_source: yes
-    push: "{{ geokrety_push_images }}"
+    push: no
     build:
-      path: "{{ params.cdn.localdir | default(geokrety_base_dir+'/git/cdn') }}"
+      path: "{{ params.cdn.localdir }}"
       pull: yes
+  when: params.cdn.localdir is defined
 
-- name: "'{{ item }}' - Build and push BASE image - {{ params.base.localdir | default(geokrety_base_dir+'/git/base') }} | {{ geokrety_docker_image_website_base_image_name }}:{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
+- name: "'{{ item }}' - Build NGINX image - {{ params.nginx.localdir }} | {{ geokrety_docker_image_nginx_image_name }}:{{ geokrety_docker_image_nginx_image_tag }}"
   docker_image:
-    name: "{{ geokrety_docker_image_website_base_image_name }}:{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
+    name: "{{ geokrety_docker_image_nginx_image_name }}:{{ geokrety_docker_image_nginx_image_tag }}"
     source: build
     force_source: yes
-    push: "{{ geokrety_push_images }}"
+    push: no
     build:
-      path: "{{ params.base.localdir | default(geokrety_base_dir+'/git/base') }}"
+      path: "{{ params.nginx.localdir }}"
       pull: yes
+  when: params.nginx.localdir is defined
 
-- name: "'{{ item }}' - get git describe - {{ params.website.localdir | default(geokrety_base_dir+'/git/website') }} | {{ geokrety_docker_image_website_image_name }}:{{ item }}"
-  shell: "git describe --tags"
-  args:
-    chdir: "{{ params.website.localdir | default(geokrety_base_dir+'/git/website') }}"
-  register: geokrety_website_latest_tag
-
-- name: "'{{ item }}' - Build and push WEBSITE image - {{ params.website.localdir | default(geokrety_base_dir+'/git/website') }} | {{ geokrety_docker_image_website_image_name }}:{{ item }} | {{ geokrety_docker_image_website_base_image_name }}:{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
+- name: "'{{ item }}' - Build BASE image - {{ params.base.localdir | default(geokrety_base_dir+'/git/base') }} | {{ geokrety_docker_image_website_base_image_name }}:{{ geokrety_docker_image_website_base_image_tag }}"
   docker_image:
-    name: "{{ geokrety_docker_image_website_image_name }}:{{ item }}"
+    name: "{{ geokrety_docker_image_website_base_image_name }}:{{ geokrety_docker_image_website_base_image_tag }}"
     source: build
     force_source: yes
-    push: "{{ geokrety_push_images }}"
+    push: no
     build:
-      path: "{{ params.website.localdir | default(geokrety_base_dir+'/git/website') }}"
-      pull: "{{ geokrety_push_images }}"
-      args:
-        BASE_IMAGE: "{{ geokrety_docker_image_website_base_image_name }}"
-        BASE_TAG: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
-        GIT_COMMIT: "{{ geokrety_website_latest_tag.stdout }}"
+      path: "{{ params.base.localdir }}"
+      pull: yes
+  when: params.base.localdir is defined
 
-- name: "'{{ item }}' - Build and push CRON image - {{ params.cron.localdir | default(geokrety_base_dir+'/git/cron') }} | {{ geokrety_docker_image_cron_image_name }}:{{ item }}"
+- block:
+    - name: "'{{ item }}' - Build BASE image get git describe - {{ params.website.localdir }}"
+      shell: "git describe --tags"
+      args:
+        chdir: "{{ params.website.localdir }}"
+      register: geokrety_website_latest_tag
+
+    - name: "'{{ item }}' - Build WEBSITE image - {{ params.website.localdir }} | {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }} | base:{{ geokrety_docker_image_website_base_image_name }}:{{ geokrety_docker_image_website_base_image_tag }}"
+      docker_image:
+        name: "{{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}"
+        source: build
+        force_source: yes
+        push: no
+        build:
+          path: "{{ params.website.localdir }}"
+          pull: "{{ params.base.localdir is not defined }}"
+          args:
+            BASE_IMAGE: "{{ geokrety_docker_image_website_base_image_name }}"
+            BASE_TAG: "{{ geokrety_docker_image_website_base_image_tag }}"
+            GIT_COMMIT: "{{ geokrety_website_latest_tag.stdout }}"
+  when: params.website.localdir is defined
+
+- name: "'{{ item }}' - Build CRON image - {{ params.cron.localdir }} | {{ geokrety_docker_image_cron_image_name }}:{{ geokrety_docker_image_cron_image_tag }}"
   docker_image:
-    name: "{{ geokrety_docker_image_cron_image_name }}:{{ item }}"
+    name: "{{ geokrety_docker_image_cron_image_name }}:{{ geokrety_docker_image_cron_image_tag }}"
     source: build
     force_source: yes
-    push: "{{ geokrety_push_images }}"
+    push: no
     build:
-      path: "{{ params.cron.localdir | default(geokrety_base_dir+'/git/cron') }}"
-      pull: "{{ geokrety_push_images }}"
+      path: "{{ params.cron.localdir }}"
+      pull: yes
       args:
-        IMAGE: "{{ geokrety_docker_image_website_image_name }}:{{ item }}"
-  when: params.cron is defined
+        IMAGE: "{{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_base_image_tag }}"
+  when: params.cron.localdir is defined

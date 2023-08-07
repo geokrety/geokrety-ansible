@@ -12,7 +12,9 @@
   docker_stack:
     state: present
     name: "{{ geokrety_docker_stack_base_name }}-{{ item }}"
-    resolve_image: "{{ 'always' if geokrety_push_images|bool else 'never' }}"
+    resolve_image: always
+    prune: true
+    with_registry_auth: true
     compose:
       - "{{ geokrety_base_dir }}/geokrety_legacy.yml"
 
@@ -22,4 +24,4 @@
 ## Find service with need update by looking at the image field in
 ## $ docker ps |grep geokrety-legacy-new-theme_
 ## and issue the update command for each of non up to date service
-## $ docker service update --force geokrety-legacy-new-theme_postgres
+## $ docker service update --force geokrety-new-theme_postgres

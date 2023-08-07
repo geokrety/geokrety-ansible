@@ -2,8 +2,15 @@
 version: '3.7'
 
 x-variables: &variables
-  depends_on:
-    - db
+{% if params.postgres.enable is defined and params.postgres.enable or params.db.enable is defined and params.db.enable %}
+    depends_on:
+{% if params.postgres.enable is defined and params.postgres.enable %}
+      - postgres
+{% endif %}
+{% if params.db.enable is defined and params.db.enable %}
+      - db
+{% endif %}
+{% endif %}
   environment:
     TIMEZONE: "{{ params.tz | default(geokrety_tz) }}"
 {% if params.new_env_flag is defined and params.new_env_flag %}
@@ -30,8 +37,6 @@ x-variables: &variables
     GK_DEPLOY_DATE: "{{ ansible_date_time.iso8601_micro }}"
 
 {% if params.sentry.dsn is defined or geokrety_params.sentry.dsn is defined %}
-    SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
-    SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
     GK_SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
     GK_SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
 {% endif %}
@@ -120,9 +125,7 @@ x-variables: &variables
 {% if params.website.audit_logs_exclude_path_bypass is defined %}
     GK_AUDIT_LOGS_EXCLUDE_PATH_BYPASS: "{{ params.website.audit_logs_exclude_path_bypass }}"
 {% endif %}
-
-{% endif %}
-
+{% else %}
     # OBSOLETE: Old entries that will be removed one day (Still in use by branches < new-theme/f3)
     DB_HOSTNAME: "{{ params.db.host | default(geokrety_params.db.host) }}"
     DB_USERNAME: "{{ params.db.user | default(geokrety_params.db.user) }}"
@@ -164,10 +167,11 @@ x-variables: &variables
     OC_RO_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_RO.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_RO.CONSUMER_KEY) }}"
     SESSION_IN_REDIS: "{{ params.session_in_redis | default(geokrety_params.session_in_redis) }}"
     ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
+{% endif %}
 
 x-volumes-website: &volumes-website
   volumes:
-{% if 'localdir' in params.website.keys() %}
+{% if params.website.localdir is defined %}
     # Mount local dir as html root
     - {{ params.website.localdir }}:/var/www/geokrety/
 {% if params.xdebug is defined and params.xdebug %}
@@ -194,22 +198,16 @@ x-volumes-website: &volumes-website
 {% endif %}
 
 
-{% if 'cdn' in params.keys() %}
+{% if params.cdn is defined %}
 x-volumes-cdn: &volumes-cdn
   volumes:
-{% if 'localdir' in params.website.keys() %}
-    # Mount local dir as html root
-    - {{ params.website.localdir }}/website:/var/www/html/
-{% endif %}
+{% if params.cdn.localdir is defined %}
     # The cdn data
-{% if 'localdir' in params.cdn.keys() %}
     - {{ params.cdn.localdir }}/content:/usr/share/nginx/html
-{% else %}
-    - {{ geokrety_base_dir }}/git/cdn/content:/usr/share/nginx/html
-    # Basex full exports
-{% if params.basex is defined and params.basex.host is defined %}
-    - {{ geokrety_base_dir }}/BaseXExports:/usr/share/nginx/html/exports
 {% endif %}
+    # Basex full exports
+{% if params.basex is defined %}
+    - {{ geokrety_base_dir }}/BaseXExports:/usr/share/nginx/html/exports
 {% endif %}
 {% if params.new_env_flag is not defined or not params.new_env_flag %}
     # persistent vars
@@ -255,22 +253,15 @@ x-labels-website: &labels-website
 services:
 {% if params.nginx is defined %}
   nginx:
-    image: nginx
+    image: {{ geokrety_docker_image_nginx_image_name }}:{{ geokrety_docker_image_nginx_image_tag }}
     environment:
       GK_SITE_BASE_SERVER_FQDN: "{{ params.website.uri.0 }}"
     volumes:
-{% if 'localdir' in params.website.keys() %}
-      - {{ params.website.localdir }}/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - {{ params.website.localdir }}/configs/nginx/fastcgi_pass:/etc/nginx/fastcgi_pass:ro
-      - {{ params.website.localdir }}/configs/nginx/no_req_limit.conf:/etc/nginx/no_req_limit.conf:ro
-      - {{ params.website.localdir }}/configs/nginx/templates/default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - {{ params.website.localdir }}/website/public:/var/www/html:ro
-{% else %}
-      - {{ geokrety_base_dir }}/git/website/configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - {{ geokrety_base_dir }}/git/website/configs/nginx/fastcgi_pass:/etc/nginx/fastcgi_pass:ro
-      - {{ geokrety_base_dir }}/git/website/configs/nginx/no_req_limit.conf:/etc/nginx/no_req_limit.conf:ro
-      - {{ geokrety_base_dir }}/git/website/configs/nginx/templates/default.conf.template:/etc/nginx/templates/default.conf.template:ro
-      - {{ geokrety_base_dir }}/git/website/website/public:/var/www/html:ro
+{% if params.nginx.localdir is defined %}
+      - {{ params.nginx.localdir }}/files/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - {{ params.nginx.localdir }}/files/etc/nginx/fastcgi_pass:/etc/nginx/fastcgi_pass:ro
+      - {{ params.nginx.localdir }}/files/etc/nginx/templates/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - {{ params.nginx.localdir }}/files/var/www/html:/var/www/html:ro
 {% endif %}
       - {{ geokrety_base_dir }}/data/assets:/var/www/html/assets/compressed:ro
     deploy:
@@ -295,7 +286,7 @@ services:
 {% endif %}
 
   website:
-    image: {{ geokrety_docker_image_website_image_name }}:{{ item }}
+    image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
     <<: *variables
     <<: *volumes-website
     deploy:
@@ -343,9 +334,9 @@ services:
 
 {% if params.db.importer is defined and params.db.importer %}
   db-migrator:
-    image: {{ geokrety_docker_image_website_image_name }}:{{ item }}
+    image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
     <<: *variables
-{% if 'localdir' in params.website.keys() %}
+{% if params.website.localdir is defined %}
     volumes:
       # Mount local dir as html root
       - {{ params.website.localdir }}:/var/www/geokrety/
@@ -372,9 +363,9 @@ services:
       default:
 {% endif %}
 
-{% if 'cdn' in params.keys() %}
+{% if params.cdn is defined %}
   cdn:
-    image: {{ geokrety_docker_image_cdn_image_name }}:{{ item }}
+    image: {{ geokrety_docker_image_cdn_image_name }}:{{ geokrety_docker_image_cdn_image_tag }}
     <<: *volumes-cdn
     deploy:
       replicas: 2
@@ -405,7 +396,7 @@ services:
 
 {% if params.cron is defined %}
   cron:
-    image: {{ geokrety_docker_image_cron_image_name }}:{{ item }}
+    image: {{ geokrety_docker_image_cron_image_name }}:{{ geokrety_docker_image_cron_image_tag }}
 {% if params.new_env_flag is defined and params.new_env_flag %}
     environment:
       GK_SITE_BASE_SERVER_URL: "https://{{ params.website.uri.0 }}"
@@ -454,12 +445,12 @@ services:
       default:
 {% endif %}
 
-{% if params.postgres is defined and params.postgres.enabled is defined and params.postgres.enabled %}
+{% if params.postgres.enabled is defined and params.postgres.enabled %}
   postgres:
-    image: {{ geokrety_docker_image_postgres_name }}:{{ item }}
+    image: {{ geokrety_docker_image_postgres_image_name }}:{{ geokrety_docker_image_postgres_image_tag }}
     command:
       - "postgres"
-{% if params.rabbitmq is defined and params.rabbitmq.host is defined %}
+{% if params.rabbitmq is defined %}
       - "-c"
       - "shared_preload_libraries=pg_amqp.so"
 {% endif %}
@@ -467,16 +458,14 @@ services:
       - {{ geokrety_base_dir }}/postgres:/var/lib/postgresql/data:rw
       - {{ geokrety_home }}/databases/srtm:/srtm:rw
       - /etc/localtime:/etc/localtime:ro
-{% if 'localdir' in params.website.keys() %}
+{% if params.website.localdir is defined %}
       - {{ params.website.localdir }}/website/db/dumps/:/docker-entrypoint-initdb.d/:ro
-{% else %}
-      - {{ geokrety_base_dir }}/git/website/website/db/dumps/:/docker-entrypoint-initdb.d/:ro
 {% endif %}
     environment:
-      TZ: {{ params.db.tz | default(params.tz | default(geokrety_tz)) }}
-      POSTGRES_DB: "{{ params.db.name | default(geokrety_params.db.name) }}"
-      POSTGRES_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
-      POSTGRES_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
+      TZ: {{ params.postgres.tz | default(params.tz | default(geokrety_tz)) }}
+      POSTGRES_DB: "{{ params.postgres.name | default(geokrety_params.postgres.name) }}"
+      POSTGRES_USER: "{{ params.postgres.user | default(geokrety_params.postgres.user) }}"
+      POSTGRES_PASSWORD: "{{ params.postgres.password | default(geokrety_params.postgres.password) }}"
       POSTGIS_ENABLE_OUTDB_RASTERS: 1
       POSTGIS_GDAL_ENABLED_DRIVERS: ENABLE_ALL
 {% if params.postgres.expose is defined %}
@@ -496,10 +485,18 @@ services:
       default:
 {% endif %}
 
+{% if params.adminer is defined %}
   adminer:
     image: adminer
+{% if params.postgres.enable is defined and params.postgres.enable or params.db.enable is defined and params.db.enable %}
     depends_on:
+{% if params.postgres.enable is defined and params.postgres.enable %}
+      - postgres
+{% endif %}
+{% if params.db.enable is defined and params.db.enable %}
       - db
+{% endif %}
+{% endif %}
     deploy:
       labels:
         traefik.enable: "true"
@@ -521,14 +518,15 @@ services:
     networks:
       default:
       traefik_default:
+{% endif %}
 
-{% if params.postgres is defined %}
+{% if params.pgadmin is defined %}
   pgadmin:
     image: dpage/pgadmin4
     depends_on:
       - postgres
     environment:
-      TZ: {{ params.db.tz | default(params.tz | default(geokrety_tz)) }}
+      TZ: {{ params.tz | default(geokrety_tz) }}
       PGADMIN_DEFAULT_EMAIL: "{{ params.pgadmin.email }}"
       PGADMIN_DEFAULT_PASSWORD: "{{ params.pgadmin.password }}"
       SCRIPT_NAME: "/pgadmin"
@@ -555,15 +553,14 @@ services:
       traefik_default:
 {% endif %}
 
-{% if params.rabbitmq is defined and params.rabbitmq.host is defined %}
+{% if params.rabbitmq is defined %}
   rabbitmq:
     image: rabbitmq:3.11-management
     hostname: gk-rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER={{ params.rabbitmq.user }}
       - RABBITMQ_DEFAULT_PASS={{ params.rabbitmq.password }}
-      - TZ=Europe/Paris
-
+      - TZ={{ params.tz | default(geokrety_tz) }}
     volumes:
       - {{ geokrety_base_dir }}/rabbitmq:/var/lib/rabbitmq
 {% if params.rabbitmq.expose is defined %}
@@ -596,7 +593,7 @@ services:
       traefik_default:
 {% endif %}
 
-{% if params.basex is defined and params.basex.host is defined %}
+{% if params.basex is defined %}
   basex:
     image: quodatum/basexhttp:basex-10.3
     environment:
@@ -627,7 +624,7 @@ services:
       default:
 
   basex-amqp-sync:
-    image: {{ geokrety_docker_image_basex_amqp_sync_name }}:{{ item }}
+    image: {{ geokrety_docker_image_basex_amqp_sync_image_name }}:{{ geokrety_docker_image_basex_amqp_sync_image_tag }}
     environment:
       - GK_BASEX_HOST={{ params.basex.host | default('basex') }}
       - GK_BASEX_PORT={{ params.basex.port | default(1984) }}
@@ -640,7 +637,7 @@ services:
       - GK_RABBITMQ_VHOST={{ params.rabbitmq.vhost | default('%2F') }}
       - GK_API_BASE_URL=https://{{ params.website.uri.0 }}
       - GK_API_RATE_LIMITS_BYPASS={{ params.rate_limits_bypass | default(geokrety_params.rate_limits_bypass) }}
-{% if 'localdir' in params.website.keys() %}
+{% if params.basex_amqp_sync.localdir is defined %}
     volumes:
       - {{ params.basex_amqp_sync.localdir }}/:/usr/src/app/
 {% endif %}
@@ -674,7 +671,7 @@ services:
         condition: any
 
   bootstrap-email:
-    image: {{ geokrety_docker_image_bootstrap_email_name }}:{{ item }}
+    image: {{ geokrety_docker_image_bootstrap_email_image_name }}:{{ geokrety_docker_image_bootstrap_email_image_tag }}
     deploy:
       replicas: 2
       update_config:
@@ -707,7 +704,7 @@ services:
 
 {% if params.osm_static_maps is defined %}
   osm-static-maps:
-    image: {{ geokrety_docker_image_osm_static_maps_name }}:{{ item }}
+    image: {{ geokrety_docker_image_osm_static_maps_image_name }}:{{ geokrety_docker_image_osm_static_maps_image_tag }}
     deploy:
       replicas: 2
       update_config:
@@ -721,13 +718,12 @@ services:
         condition: any
     networks:
       default:
-    volumes:
-      - {{ geokrety_base_dir }}/git/osm_static_maps:/app
     environment:
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
       PUPPETEER_EXECUTABLE_PATH: "/usr/bin/chromium"
 {% endif %}
 
+{% if params.redis is defined %}
   redis:
     image: redis:5
     deploy:
@@ -737,6 +733,7 @@ services:
         condition: any
     networks:
       default:
+{% endif %}
 
 {% if params.minio is defined %}
   minio:
@@ -785,7 +782,7 @@ services:
 
 {% if params.pictures_processor is defined %}
   pictures-downloader:
-    image: {{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ item }}
+    image: {{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ geokrety_docker_image_pictures_processor_downloader_image_tag }}
     environment:
       GK_MINIO_PICTURES_PROCESSOR_MINIO_ACCESS_KEY: {{ params.minio.pictures_processor_downloader_access_key }}
       GK_MINIO_PICTURES_PROCESSOR_MINIO_SECRET_KEY: {{ params.minio.pictures_processor_downloader_secret_key }}
@@ -795,9 +792,9 @@ services:
       SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
       SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
 {% endif %}
-{% if 'localdir' in params.pictures_processor.keys() %}
+{% if params.pictures_processor.localdir is defined %}
     volumes:
-      - {{ params.pictures_processor.localdir }}/downloader:/var/www/geokrety/website:ro
+      - {{ params.pictures_processor.localdir }}/downloader/public/index.php:/var/www/html/index.php:ro
 {% endif %}
     deploy:
       labels:
@@ -808,7 +805,7 @@ services:
       default:
 
   pictures-uploader:
-    image: {{ geokrety_docker_image_pictures_processor_uploader_image_name }}:{{ item }}
+    image: {{ geokrety_docker_image_pictures_processor_uploader_image_name }}:{{ geokrety_docker_image_pictures_processor_uploader_image_tag }}
     environment:
       MINIO_ACCESS_KEY: {{ params.minio.access_key }}
       MINIO_SECRET_KEY: {{ params.minio.secret_key }}
@@ -817,9 +814,9 @@ services:
       SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
       SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
 {% endif %}
-{% if 'localdir' in params.pictures_processor.keys() %}
+{% if params.pictures_processor.localdir is defined %}
     volumes:
-      - {{ params.pictures_processor.localdir }}/uploader:/var/www/geokrety/website:ro
+      - {{ params.pictures_processor.localdir }}/uploader/public/index.php:/var/www/html/index.php:ro
 {% endif %}
     deploy:
       labels:
@@ -832,7 +829,7 @@ services:
 
 {% if params.svg_to_png is defined %}
   svg-to-png:
-    image: {{ geokrety_docker_image_svg_to_png_name }}:{{ item }}
+    image: {{ geokrety_docker_image_svg_to_png_image_name }}:{{ geokrety_docker_image_svg_to_png_image_tag }}
 {% if params.svg_to_png.localdir is defined %}
     volumes:
       - {{ params.svg_to_png.localdir }}:/app
@@ -855,7 +852,7 @@ services:
 
 {% if params.monitoring is defined %}
   prometheus:
-    image: {{ geokrety_docker_image_prometheus_image_name }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}
+    image: {{ geokrety_docker_image_prometheus_image_name }}:{{ geokrety_docker_image_prometheus_image_tag }}
     command:
       - "--web.external-url=/prometheus"
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -883,6 +880,7 @@ services:
       traefik_default:
       default:
 
+{% if params.monitoring.pushgateway is defined %}
   pushgateway:
     image: {{ params.monitoring.pushgateway.image | default('prom/pushgateway') }}:{{ params.monitoring.pushgateway.tag | default('latest') }}
     deploy:
@@ -893,9 +891,10 @@ services:
     networks:
       traefik_default:
       default:
+{% endif %}
 
   grafana:
-    image: {{ geokrety_docker_image_grafana_image_name }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}
+    image: {{ geokrety_docker_image_grafana_image_name }}:{{ geokrety_docker_image_grafana_image_tag }}
 {% if params.monitoring.grafana.localdir is defined %}
     volumes:
       - {{ params.monitoring.grafana.localdir }}/files/conf/provisioning:/etc/grafana/provisioning:rw
@@ -908,7 +907,6 @@ services:
 {% for conf in params.monitoring.grafana.env %}
       {{ conf.k }}: {{ conf.v }}
 {% endfor %}
-
     deploy:
       labels:
         traefik.enable: "true"
@@ -932,39 +930,39 @@ services:
       default:
 {% endif %}
 
-{% if 'accounts_cleaner' in params.keys() %}
-  accounts-cleaner:
-    image: {{ geokrety_docker_image_accounts_cleaner_name }}:{{ item }}
-    <<: *variables
-{% if 'localdir' in params.accounts_cleaner.keys() %}
-    volumes:
-      - {{ params.accounts_cleaner.localdir }}:/var/www/geokrety
-{% endif %}
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        delay: 30s
-        monitor: 60s
-        order: start-first
-      labels:
-        traefik.enable: "true"
-        traefik.docker.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.accounts_cleaner.uri | join(',') }}"
-        traefik.frontend.passHostHeader: "true"
-        traefik.protocol: "http"
-        traefik.port: 80
-        # traefik2
-        traefik.http.routers.geokrety-{{ item }}-accounts-cleaner.rule: "Host(`{{ params.accounts_cleaner.uri | join(',') }}`)"
-        traefik.http.routers.geokrety-{{ item }}-accounts-cleaner.middlewares: X-Forwarded-Https@file
-        traefik.http.services.geokrety-{{ item }}-accounts-cleaner.loadbalancer.passhostheader: "true"
-        traefik.http.services.geokrety-{{ item }}-accounts-cleaner.loadbalancer.server.port: 80
-      restart_policy:
-        condition: any
-    networks:
-      default:
-      traefik_default:
-{% endif %}
+{#{% if params.accounts_cleaner is defined %}#}
+{#  accounts-cleaner:#}
+{#    image: {{ geokrety_docker_image_accounts_cleaner_name }}:{{ item }}#}
+{#    <<: *variables#}
+{#{% if 'localdir' in params.accounts_cleaner.keys() %}#}
+{#    volumes:#}
+{#      - {{ params.accounts_cleaner.localdir }}:/var/www/geokrety#}
+{#{% endif %}#}
+{#    deploy:#}
+{#      replicas: 1#}
+{#      update_config:#}
+{#        parallelism: 1#}
+{#        delay: 30s#}
+{#        monitor: 60s#}
+{#        order: start-first#}
+{#      labels:#}
+{#        traefik.enable: "true"#}
+{#        traefik.docker.network: "traefik_default"#}
+{#        traefik.frontend.rule: "Host:{{ params.accounts_cleaner.uri | join(',') }}"#}
+{#        traefik.frontend.passHostHeader: "true"#}
+{#        traefik.protocol: "http"#}
+{#        traefik.port: 80#}
+{#        # traefik2#}
+{#        traefik.http.routers.geokrety-{{ item }}-accounts-cleaner.rule: "Host(`{{ params.accounts_cleaner.uri | join(',') }}`)"#}
+{#        traefik.http.routers.geokrety-{{ item }}-accounts-cleaner.middlewares: X-Forwarded-Https@file#}
+{#        traefik.http.services.geokrety-{{ item }}-accounts-cleaner.loadbalancer.passhostheader: "true"#}
+{#        traefik.http.services.geokrety-{{ item }}-accounts-cleaner.loadbalancer.server.port: 80#}
+{#      restart_policy:#}
+{#        condition: any#}
+{#    networks:#}
+{#      default:#}
+{#      traefik_default:#}
+{#{% endif %}#}
 
 networks:
   default:

@@ -2,33 +2,40 @@
 
 - name: "'{{ item }}' Define PROMETHEUS image name"
   set_fact:
-    geokrety_docker_image_prometheus_image_name: "{{ ('' if geokrety_push_images else 'local/') + params.monitoring.prometheus.image | default(geokrety_docker_image_prometheus_image) }}"
+    geokrety_docker_image_prometheus_image_name: "{{ ('local/' if params.monitoring.prometheus.localdir is defined else '') + geokrety_docker_image_prometheus_image }}"
 
 - name: "'{{ item }}' Define GRAFANA image name"
   set_fact:
-    geokrety_docker_image_grafana_image_name: "{{ ('' if geokrety_push_images else 'local/') + params.monitoring.grafana.image | default(geokrety_docker_image_grafana_image) }}"
+    geokrety_docker_image_grafana_image_name: "{{ ('local/' if params.monitoring.grafana.localdir is defined else '') + geokrety_docker_image_grafana_image }}"
 
-- debug:
-    var: geokrety_docker_image_prometheus_image_name
-- debug:
-    var: geokrety_docker_image_grafana_image_name
 
-- name: "'{{ item }}' - Build and push PROMETHEUS image - {{ params.monitoring.prometheus.localdir | default(geokrety_base_dir+'/git/prometheus') }} | {{ geokrety_docker_image_prometheus_image_name }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}"
+- name: "'{{ item }}' Define PROMETHEUS image tag"
+  set_fact:
+    geokrety_docker_image_prometheus_image_tag: "{{ 'devel' if params.monitoring.prometheus.localdir is defined else (params.monitoring.prometheus.docker_tag | default(geokrety_prometheus_image.docker_tag) | replace('/','-')) }}"
+
+- name: "'{{ item }}' Define GRAFANA image tag"
+  set_fact:
+    geokrety_docker_image_grafana_image_tag: "{{ 'devel' if params.monitoring.grafana.localdir is defined else (params.monitoring.grafana.docker_tag | default(geokrety_grafana_image.docker_tag) | replace('/','-')) }}"
+
+
+- name: "'{{ item }}' - Build PROMETHEUS image - {{ params.monitoring.prometheus.localdir }} | {{ geokrety_docker_image_prometheus_image_name }}:{{ geokrety_docker_image_prometheus_image_tag }}"
   docker_image:
-    name: "{{ geokrety_docker_image_prometheus_image_name }}:{{ params.monitoring.prometheus.tag | default(geokrety_prometheus_image.docker_tag) }}"
+    name: "{{ geokrety_docker_image_prometheus_image_name }}:{{ geokrety_docker_image_prometheus_image_tag }}"
     source: build
     force_source: yes
-    push: "{{ geokrety_push_images }}"
+    push: no
     build:
-      path: "{{ params.monitoring.prometheus.localdir | default(geokrety_base_dir+'/git/prometheus') }}"
-      pull: "{{ geokrety_push_images }}"
+      path: "{{ params.monitoring.prometheus.localdir }}"
+      pull: yes
+  when: params.monitoring.prometheus.localdir is defined
 
-- name: "'{{ item }}' - Build and push GRAFANA image - {{ params.monitoring.grafana.localdir | default(geokrety_base_dir+'/git/grafana') }} | {{ geokrety_docker_image_grafana_image_name }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}"
+- name: "'{{ item }}' - Build GRAFANA image - {{ params.monitoring.grafana.localdir }} | {{ geokrety_docker_image_grafana_image_name }}:{{ geokrety_docker_image_grafana_image_tag }}"
   docker_image:
-    name: "{{ geokrety_docker_image_grafana_image_name }}:{{ params.monitoring.grafana.tag | default(geokrety_grafana_image.docker_tag) }}"
+    name: "{{ geokrety_docker_image_grafana_image_name }}:{{ geokrety_docker_image_grafana_image_tag }}"
     source: build
     force_source: yes
-    push: "{{ geokrety_push_images }}"
+    push: no
     build:
-      path: "{{ params.monitoring.grafana.localdir | default(geokrety_base_dir+'/git/grafana') }}"
-      pull: "{{ geokrety_push_images }}"
+      path: "{{ params.monitoring.grafana.localdir }}"
+      pull: yes
+  when: params.grafana.localdir is defined

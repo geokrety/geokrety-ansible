@@ -21,92 +21,27 @@ geokrety_group: geokrety
 geokrety_home: /home/geokrety
 
 geokrety_docker_image_cdn_image: geokrety/cdn
-geokrety_docker_image_website_base_image: geokrety/website-legacy-base
-geokrety_docker_image_website_image: geokrety/website-legacy
-geokrety_docker_image_cron_image: geokrety/cron-legacy
+geokrety_docker_image_nginx_image: geokrety/nginx
+geokrety_docker_image_website_base_image: geokrety/website-base
+geokrety_docker_image_website_image: geokrety/website
+geokrety_docker_image_cron_image: geokrety/cron
 geokrety_docker_image_pictures_processor_image: geokrety/pictures-processor
-geokrety_docker_image_pictures_processor_base_image_name: geokrety/pictures-processor-base
-geokrety_docker_image_pictures_processor_downloader_image_name: geokrety/pictures-processor-downloader
-geokrety_docker_image_pictures_processor_uploader_image_name: geokrety/pictures-processor-uploader
-geokrety_docker_image_svg_to_png_image_name: geokrety/svg-to-png
-geokrety_docker_image_bootstrap_email_image_name: geokrety/bootstrap-email
-geokrety_docker_image_osm_static_maps_image_name: geokrety/osm-static-maps
+geokrety_docker_image_pictures_processor_base_image: geokrety/pictures-processor-base
+geokrety_docker_image_pictures_processor_downloader_image: geokrety/pictures-processor-downloader
+geokrety_docker_image_pictures_processor_uploader_image: geokrety/pictures-processor-uploader
+geokrety_docker_image_svg_to_png_image: geokrety/svg-to-png
+geokrety_docker_image_bootstrap_email_image: geokrety/bootstrap-email
+geokrety_docker_image_osm_static_maps_image: geokrety/osm-static-maps
 geokrety_docker_image_prometheus_image: geokrety/prometheus
 geokrety_docker_image_grafana_image: geokrety/grafana
-geokrety_docker_image_postgres_name: geokrety/postgres
-geokrety_docker_image_accounts_cleaner_image_name: geokrety/accounts-cleaner
-geokrety_docker_image_basex_amqp_sync_image_name: geokrety/basex-amqp-sync
+geokrety_docker_image_postgres_image: geokrety/postgres
+# geokrety_docker_image_accounts_cleaner_image: geokrety/accounts-cleaner
+geokrety_docker_image_basex_amqp_sync_image: geokrety/basex-amqp-sync
+
 geokrety_docker_stack_base_name: geokrety
-geokrety_push_images: yes
+geokrety_push_images: no
 
 geokrety_tz: Europe/Paris
-
-geokrety_base_image:
-  git_url: https://github.com/geokrety/geokrety-website-docker-base.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_website_image:
-  git_url: https://github.com/geokrety/geokrety-website.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_cdn_image:
-  git_url: https://github.com/geokrety/GeoKrety-Static.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_cron_image:
-  git_url: https://github.com/geokrety/geokrety-scripts.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_pictures_processor_image:
-  git_url: https://github.com/geokrety/geokrety-pictures-processor.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_svg_to_png_image:
-  git_url: https://github.com/geokrety/geokrety-svg-to-png.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_bootstrap_email_image:
-  git_url: https://github.com/geokrety/bootstrap-email-smtp-server.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_osm_static_maps_image:
-  # git_url: https://github.com/jperelli/osm-static-maps.git
-  git_url: https://github.com/geokrety/osm-static-maps.git
-  # git_branch: franpitri/master
-  git_branch: master
-  docker_tag: latest
-
-geokrety_prometheus_image:
-  git_url: https://github.com/geokrety/geokrety-prometheus.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_grafana_image:
-  git_url: https://github.com/geokrety/geokrety-grafana.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_postgres_image:
-  git_url: https://github.com/geokrety/geokrety-postgres.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_accounts_cleaner_image:
-  git_url: https://github.com/geokrety/geokrety-accounts-cleaner.git
-  git_branch: master
-  docker_tag: latest
-
-geokrety_basex_amqp_sync_image:
-  git_url: https://github.com/geokrety/geokrety-basex-amqp-sync.git
-  git_branch: main
-  docker_tag: latest
 
 geokrety_params:
   new_env_flag: False
@@ -188,26 +123,28 @@ geokrety_params:
 #       name: xxx
 #       user: xxx
 #       password: xxx
+#     adminer:
 #     sentry:
 #       env: undefined
 #     cdn:
-#       git_branch: xxx
+#       docker_tag: xxx
 #       uri: xxx.cdn.geokrety.org
 #     base:
-#       git_branch: smarty3
+#       docker_tag: smarty3
 #     website:
-#       git_branch: xxx
+#       docker_tag: xxx
 #       uri: [xxx.staging.geokrety.org]
 #     cron: # Not built if missing
-#       git_branch: xxx
+#       docker_tag: xxx
+#     redis:
 #     monitoring:
 #       prometheus:
-#         git_branch: wip/metrics
+#         docker_tag: wip/metrics
 #         image: geokrety/prometheus
 #         tag: metrics
 #       grafana:
 #         password: xxx
-#         git_branch: wip/metrics
+#         docker_tag: wip/metrics
 #         image: geokrety/grafana
 #         tag: metrics
 #         env:

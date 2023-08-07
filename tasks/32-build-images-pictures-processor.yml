@@ -2,51 +2,68 @@
 
 - name: "'{{ item }}' Define PICTURES PROCESSOR BASE image name"
   set_fact:
-    geokrety_docker_image_pictures_processor_base_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_pictures_processor_base_image_name }}"
+    geokrety_docker_image_pictures_processor_base_image_name: "{{ ('local/' if params.pictures_processor.localdir is defined else '') + geokrety_docker_image_pictures_processor_base_image }}"
 
 - name: "'{{ item }}' Define PICTURES PROCESSOR DOWNLOADER image name"
   set_fact:
-    geokrety_docker_image_pictures_processor_downloader_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_pictures_processor_downloader_image_name }}"
+    geokrety_docker_image_pictures_processor_downloader_image_name: "{{ ('local/' if params.pictures_processor.localdir is defined else '') + geokrety_docker_image_pictures_processor_downloader_image }}"
 
 - name: "'{{ item }}' Define PICTURES PROCESSOR UPLOADER image name"
   set_fact:
-    geokrety_docker_image_pictures_processor_uploader_image_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_pictures_processor_uploader_image_name }}"
+    geokrety_docker_image_pictures_processor_uploader_image_name: "{{ ('local/' if params.pictures_processor.localdir is defined else '') + geokrety_docker_image_pictures_processor_uploader_image }}"
 
-- name: "'{{ item }}' - Build and push PICTURES PROCESSOR BASE image - {{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }} | {{ geokrety_docker_image_pictures_processor_base_image_name }}:{{ item }}"
-  docker_image:
-    name: "{{ geokrety_docker_image_pictures_processor_base_image_name }}:{{ item }}"
-    source: build
-    force_source: yes
-    push: "{{ geokrety_push_images }}"
-    build:
-      dockerfile: Dockerfile.base
-      path: "{{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }}"
-      pull: "{{ geokrety_push_images }}"
+- name: "'{{ item }}' Define PICTURES PROCESSOR BASE image tag"
+  set_fact:
+    geokrety_docker_image_pictures_processor_base_image_tag: "{{ 'devel' if params.pictures_processor.localdir is defined else (params.pictures_processor.docker_tag | default(geokrety_pictures_processor_image.docker_tag) | replace('/','-')) }}"
 
-- name: "'{{ item }}' - Build and push PICTURES PROCESSOR DOWNLOADER image - {{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }} | {{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ item }}"
-  docker_image:
-    name: "{{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ item }}"
-    source: build
-    force_source: yes
-    push: "{{ geokrety_push_images }}"
-    build:
-      dockerfile: Dockerfile.downloader
-      path: "{{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }}"
-      pull: "{{ geokrety_push_images }}"
-      args:
-        BASE_IMAGE: "{{ geokrety_docker_image_pictures_processor_base_image_name }}"
-        BASE_TAG: "{{ item }}"
+- name: "'{{ item }}' Define PICTURES PROCESSOR DOWNLOADER image tag"
+  set_fact:
+    geokrety_docker_image_pictures_processor_downloader_image_tag: "{{ 'devel' if params.pictures_processor.localdir is defined else (params.pictures_processor.docker_tag | default(geokrety_pictures_processor_image.docker_tag) | replace('/','-')) }}"
 
-- name: "'{{ item }}' - Build and push PICTURES PROCESSOR UPLOADER image - {{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }} | {{ geokrety_docker_image_pictures_processor_uploader_image_name }}:{{ item }}"
-  docker_image:
-    name: "{{ geokrety_docker_image_pictures_processor_uploader_image_name }}:{{ item }}"
-    source: build
-    force_source: yes
-    push: "{{ geokrety_push_images }}"
-    build:
-      dockerfile: Dockerfile.uploader
-      path: "{{ params.pictures_processor.localdir | default(geokrety_base_dir+'/git/pictures-processor') }}"
-      pull: "{{ geokrety_push_images }}"
-      args:
-        BASE_IMAGE: "{{ geokrety_docker_image_pictures_processor_base_image_name }}"
-        BASE_TAG: "{{ item }}"
+- name: "'{{ item }}' Define PICTURES PROCESSOR UPLOADER image tag"
+  set_fact:
+    geokrety_docker_image_pictures_processor_uploader_image_tag: "{{ 'devel' if params.pictures_processor.localdir is defined else (params.pictures_processor.docker_tag | default(geokrety_pictures_processor_image.docker_tag) | replace('/','-')) }}"
+
+
+
+- name: Build PICTURES PROCESSOR images
+  block:
+    - name: "'{{ item }}' - Build PICTURES PROCESSOR BASE image - {{ params.pictures_processor.localdir }} | {{ geokrety_docker_image_pictures_processor_base_image_name }}:{{ geokrety_docker_image_pictures_processor_base_image_tag }}"
+      docker_image:
+        name: "{{ geokrety_docker_image_pictures_processor_base_image_name }}:{{ geokrety_docker_image_pictures_processor_base_image_tag }}"
+        source: build
+        force_source: yes
+        push: no
+        build:
+          dockerfile: Dockerfile.base
+          path: "{{ params.pictures_processor.localdir }}"
+          pull: yes
+
+    - name: "'{{ item }}' - Build PICTURES PROCESSOR DOWNLOADER image - {{ params.pictures_processor.localdir }} | {{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ geokrety_docker_image_pictures_processor_downloader_image_tag }}"
+      docker_image:
+        name: "{{ geokrety_docker_image_pictures_processor_downloader_image_name }}:{{ geokrety_docker_image_pictures_processor_downloader_image_tag }}"
+        source: build
+        force_source: yes
+        push: no
+        build:
+          dockerfile: Dockerfile.downloader
+          path: "{{ params.pictures_processor.localdir }}"
+          pull: no
+          args:
+            BASE_IMAGE: "{{ geokrety_docker_image_pictures_processor_base_image_name }}"
+            BASE_TAG: "{{ geokrety_docker_image_pictures_processor_base_image_tag }}"
+
+    - name: "'{{ item }}' - Build PICTURES PROCESSOR UPLOADER image - {{ params.pictures_processor.localdir }} | {{ geokrety_docker_image_pictures_processor_uploader_image_name }}:{{ geokrety_docker_image_pictures_processor_uploader_image_tag }}"
+      docker_image:
+        name: "{{ geokrety_docker_image_pictures_processor_uploader_image_name }}:{{ geokrety_docker_image_pictures_processor_uploader_image_tag }}"
+        source: build
+        force_source: yes
+        push: no
+        build:
+          dockerfile: Dockerfile.uploader
+          path: "{{ params.pictures_processor.localdir }}"
+          pull: no
+          args:
+            BASE_IMAGE: "{{ geokrety_docker_image_pictures_processor_base_image_name }}"
+            BASE_TAG: "{{ geokrety_docker_image_pictures_processor_base_image_tag }}"
+  when: params.pictures_processor.localdir is defined

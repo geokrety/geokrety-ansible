@@ -2,15 +2,20 @@
 
 - name: "'{{ item }}' Define SVG2PNG image name"
   set_fact:
-    geokrety_docker_image_svg_to_png_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_svg_to_png_image_name }}"
+    geokrety_docker_image_svg_to_png_image_name: "{{ ('local/' if params.svg_to_png.localdir is defined else '') + geokrety_docker_image_svg_to_png_image }}"
 
-- name: "'{{ item }}' - Build and push SVG2PNG image - {{ params.svg_to_png.localdir | default(geokrety_base_dir+'/git/svg_to_png') }} | {{ geokrety_docker_image_svg_to_png_name }}:{{ item }}"
+- name: "'{{ item }}' Define OSM STATIC MAPS image tag"
+  set_fact:
+    geokrety_docker_image_svg_to_png_image_tag: "{{ 'devel' if params.svg_to_png.localdir is defined else (params.svg_to_png.docker_tag | default(geokrety_svg_to_png_image.docker_tag) | replace('/','-')) }}"
+
+- name: "'{{ item }}' - Build SVG2PNG image - {{ params.svg_to_png.localdir }} | {{ geokrety_docker_image_svg_to_png_image_name }}:{{ geokrety_docker_image_svg_to_png_image_tag }}"
   docker_image:
-    name: "{{ geokrety_docker_image_svg_to_png_name }}:{{ item }}"
+    name: "{{ geokrety_docker_image_svg_to_png_image_name }}:{{ geokrety_docker_image_svg_to_png_image_tag }}"
     source: build
     force_source: yes
-    push: "{{ geokrety_push_images }}"
+    push: no
     build:
       dockerfile: Dockerfile
-      path: "{{ params.svg_to_png.localdir | default(geokrety_base_dir+'/git/svg_to_png') }}"
-      pull: "{{ geokrety_push_images }}"
+      path: "{{ params.svg_to_png.localdir }}"
+      pull: yes
+  when: params.svg_to_png.localdir is defined

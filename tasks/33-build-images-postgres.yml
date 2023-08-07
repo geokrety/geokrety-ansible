@@ -2,15 +2,21 @@
 
 - name: "'{{ item }}' Define POSTGRES image name"
   set_fact:
-    geokrety_docker_image_postgres_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_postgres_name }}"
+    geokrety_docker_image_postgres_image_name: "{{ ('local/' if params.postgres.localdir is defined else '') + geokrety_docker_image_postgres_image }}"
 
-- name: "'{{ item }}' - Build and push POSTGRES image - {{ params.postgres.localdir | default(geokrety_base_dir+'/git/postgres') }} | {{ geokrety_docker_image_postgres_name }}:{{ item }}"
+- name: "'{{ item }}' Define POSTGRES image tag"
+  set_fact:
+    geokrety_docker_image_postgres_image_tag: "{{ 'devel' if params.postgres.localdir is defined else (params.postgres.docker_tag | default(geokrety_postgres_image.docker_tag) | replace('/','-')) }}"
+
+
+- name: "'{{ item }}' - Build POSTGRES image - {{ params.postgres.localdir }} | {{ geokrety_docker_image_postgres_image_name }}:{{ geokrety_docker_image_postgres_image_tag }}"
   docker_image:
-    name: "{{ geokrety_docker_image_postgres_name }}:{{ item }}"
+    name: "{{ geokrety_docker_image_postgres_image_name }}:{{ geokrety_docker_image_postgres_image_tag }}"
     source: build
     force_source: yes
-    push: "{{ geokrety_push_images }}"
+    push: no
     build:
       dockerfile: Dockerfile
-      path: "{{ params.postgres.localdir | default(geokrety_base_dir+'/git/postgres') }}"
-      pull: "{{ geokrety_push_images }}"
+      path: "{{ params.postgres.localdir }}"
+      pull: yes
+  when: params.postgres.localdir is defined

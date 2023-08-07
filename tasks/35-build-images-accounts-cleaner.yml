@@ -1,36 +1,36 @@
 ---
 
-- name: "'{{ item }}' - Clone Accounts Cleaner - (branch:{{ params.accounts_cleaner.git_branch | default(geokrety_accounts_cleaner_image.git_branch) }})"
-  git:
-    repo: "{{ params.accounts_cleaner.git_url | default(geokrety_accounts_cleaner_image.git_url) }}"
-    dest: "{{ geokrety_base_dir }}/git/accounts_cleaner"
-    separate_git_dir: "{{ geokrety_base_dir }}/git/accounts_cleaner.git"
-    version: "{{ params.accounts_cleaner.git_branch | default(geokrety_accounts_cleaner_image.git_branch) }}"
-    force: yes
-  become_user: "{{ geokrety_username }}"
-  when: params.accounts_cleaner is defined and params.accounts_cleaner.localdir is not defined
+# - name: "'{{ item }}' - Clone ACCOUNTS CLEANER - (branch:{{ params.accounts_cleaner.docker_tag | default(geokrety_accounts_cleaner_image.docker_tag) }})"
+#   git:
+#     repo: "{{ params.accounts_cleaner.git_url | default(geokrety_accounts_cleaner_image.git_url) }}"
+#     dest: "{{ geokrety_base_dir }}/git/accounts_cleaner"
+#     separate_git_dir: "{{ geokrety_base_dir }}/git/accounts_cleaner.git"
+#     version: "{{ params.accounts_cleaner.docker_tag | default(geokrety_accounts_cleaner_image.docker_tag) }}"
+#     force: yes
+#   become_user: "{{ geokrety_username }}"
+#   when: params.accounts_cleaner is defined and params.accounts_cleaner.localdir is not defined
 
-- name: "'{{ item }}' - get git describe - {{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }} | {{ geokrety_docker_image_accounts_cleaner_image_name }}:{{ item }}"
-  shell: "git describe --tags"
-  args:
-    chdir: "{{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }}"
-  register: geokrety_accounts_cleaner_git_tag
+# - name: "'{{ item }}' - get git describe - {{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }} | {{ geokrety_docker_image_accounts_cleaner_image_name }}:{{ item }}"
+#   shell: "git describe --tags"
+#   args:
+#     chdir: "{{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }}"
+#   register: geokrety_accounts_cleaner_git_tag
 
-- name: "'{{ item }}' Define Accounts Cleaner image name"
-  set_fact:
-    geokrety_docker_image_accounts_cleaner_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_accounts_cleaner_image_name }}"
+# - name: "'{{ item }}' Define ACCOUNTS CLEANER image name"
+#   set_fact:
+#     geokrety_docker_image_accounts_cleaner_name: "{{ ('' if geokrety_push_images else 'local/') + geokrety_docker_image_accounts_cleaner_image_name }}"
 
-- name: "'{{ item }}' - Build and push Accounts Cleaner image - {{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }} | {{ geokrety_docker_image_accounts_cleaner_name }}:{{ item }}"
-  docker_image:
-    name: "{{ geokrety_docker_image_accounts_cleaner_name }}:{{ item }}"
-    source: build
-    force_source: yes
-    push: "{{ geokrety_push_images }}"
-    build:
-      dockerfile: Dockerfile
-      path: "{{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }}"
-      pull: "{{ geokrety_push_images }}"
-      args:
-        BASE_IMAGE: "{{ geokrety_docker_image_website_base_image_name }}"
-        BASE_TAG: "{{ params.base.git_branch | default(geokrety_base_image.git_branch) }}"
-        GIT_COMMIT: "{{ geokrety_accounts_cleaner_git_tag.stdout }}"
+# - name: "'{{ item }}' - Build ACCOUNTS CLEANER image - {{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }} | {{ geokrety_docker_image_accounts_cleaner_name }}:{{ item }}"
+#   docker_image:
+#     name: "{{ geokrety_docker_image_accounts_cleaner_name }}:{{ item }}"
+#     source: build
+#     force_source: yes
+#     push: "{{ geokrety_push_images }}"
+#     build:
+#       dockerfile: Dockerfile
+#       path: "{{ params.accounts_cleaner.localdir | default(geokrety_base_dir+'/git/accounts_cleaner') }}"
+#       pull: "{{ geokrety_push_images }}"
+#       args:
+#         BASE_IMAGE: "{{ geokrety_docker_image_website_base_image_name }}"
+#         BASE_TAG: "{{ params.base.docker_tag | default(geokrety_base_image.docker_tag) }}"
+#         GIT_COMMIT: "{{ geokrety_accounts_cleaner_git_tag.stdout }}"
