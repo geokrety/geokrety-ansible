@@ -37,3 +37,6 @@ geokrety_postgres_image:
 geokrety_basex_amqp_sync_image:
   git_url: https://github.com/geokrety/geokrety-basex-amqp-sync
   docker_tag: 0.2.3
+geokrety_fake_image:
+  docker_tag: 1.0.20
+  git_url: https://github.com/geokrety/justatest1
