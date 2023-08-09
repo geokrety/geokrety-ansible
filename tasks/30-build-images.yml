@@ -8,7 +8,7 @@
   set_fact:
     geokrety_docker_image_nginx_image_name: "{{ ('local/' if params.nginx.localdir is defined else '') + geokrety_docker_image_nginx_image }}"
 
-# Image name changed between GKv1 and GKv2 
+# Image name changed between GKv1 and GKv2
 - block:
   - name: "'{{ item }}' Define BASE image name"
     set_fact:
