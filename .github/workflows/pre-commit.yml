@@ -1,0 +1,11 @@
+name: lint
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  lint:
+    uses: geokrety/geokrety-gha-workflows/.github/workflows/pre-commit.yml@main
