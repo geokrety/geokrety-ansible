@@ -1,15 +1,5 @@
 ---
 
-- name: "'{{ item }}' - Clone BASEX AMQP SYNC - (branch:{{ params.basex_amqp_sync.docker_tag | default(geokrety_basex_amqp_sync_image.docker_tag) }})"
-  git:
-    repo: "{{ params.basex_amqp_sync.git_url | default(geokrety_basex_amqp_sync_image.git_url) }}"
-    dest: "{{ geokrety_base_dir }}/git/basex_amqp_sync"
-    separate_git_dir: "{{ geokrety_base_dir }}/git/basex_amqp_sync.git"
-    version: "{{ params.basex_amqp_sync.docker_tag | default(geokrety_basex_amqp_sync_image.docker_tag) }}"
-    force: yes
-  become_user: "{{ geokrety_username }}"
-  when: params.basex_amqp_sync is defined and params.basex_amqp_sync.localdir is defined
-
 - name: "'{{ item }}' Define BASEX AMQP SYNC image name"
   set_fact:
     geokrety_docker_image_basex_amqp_sync_image_name: "{{ ('local/' if params.basex_amqp_sync.localdir is defined else '') + geokrety_docker_image_basex_amqp_sync_image }}"
