@@ -126,6 +126,4 @@
     build:
       path: "{{ params.cron.localdir }}"
       pull: yes
-      args:
-        IMAGE: "{{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_base_image_tag }}"
   when: params.cron.localdir is defined
