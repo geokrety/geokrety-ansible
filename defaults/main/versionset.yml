@@ -9,7 +9,7 @@ geokrety_base_image:
   docker_tag: 1.0.16
 geokrety_website_image:
   git_url: https://github.com/geokrety/geokrety-website
-  docker_tag: 2.36.1
+  docker_tag: 2.36.2
 geokrety_cron_image:
   git_url: https://github.com/geokrety/geokrety-website-docker-cron
   docker_tag: 1.0.4
