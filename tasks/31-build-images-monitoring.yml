@@ -38,4 +38,4 @@
     build:
       path: "{{ params.monitoring.grafana.localdir }}"
       pull: yes
-  when: params.grafana.localdir is defined
+  when: params.monitoring.grafana.localdir is defined
