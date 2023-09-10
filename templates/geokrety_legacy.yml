@@ -82,6 +82,8 @@ x-variables: &variables
     GK_SITE_EMAIL_REGISTRATION: "{{ params.mail_email.registration | default(geokrety_params.mail_email.registration) }}"
     GK_SITE_EMAIL_MESSAGE_CENTER: "{{ params.mail_email.message_center | default(geokrety_params.mail_email.message_center) }}"
 
+    GK_SITE_SESSION_SHORT_LIVED_TOKEN: "{{ params.website.short_lived_session_token | default(geokrety_params.short_lived_session_token) }}"
+
     GK_PASSWORD_HASH_ROTATION: "{{ params.password_hash_rotation | default(geokrety_params.password_hash_rotation) }}"
     GK_PASSWORD_HASH: "{{ params.password_hash_legacy | default(geokrety_params.password_hash_legacy) }}"
     GK_PASSWORD_SEED: "{{ params.password_seed | default(geokrety_params.password_seed) }}"
@@ -637,6 +639,7 @@ services:
       - GK_RABBITMQ_VHOST={{ params.rabbitmq.vhost | default('%2F') }}
       - GK_API_BASE_URL=https://{{ params.website.uri.0 }}
       - GK_API_RATE_LIMITS_BYPASS={{ params.rate_limits_bypass | default(geokrety_params.rate_limits_bypass) }}
+      - GK_SITE_SESSION_SHORT_LIVED_TOKEN={{ params.website.short_lived_session_token | default(geokrety_params.short_lived_session_token) }}
 {% if params.basex_amqp_sync.localdir is defined %}
     volumes:
       - {{ params.basex_amqp_sync.localdir }}/:/usr/src/app/
