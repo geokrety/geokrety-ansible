@@ -207,15 +207,16 @@ x-volumes-cdn: &volumes-cdn
     # The cdn data
     - {{ params.cdn.localdir }}/content:/usr/share/nginx/html
 {% endif %}
+    # old image dirs
+    - {{ geokrety_base_dir }}../legacy-prod/data/cdn/obrazki/:/usr/share/nginx/html/images/obrazki/
+    - {{ geokrety_base_dir }}../legacy-prod/data/cdn/obrazki-dowonu/:/usr/share/nginx/html/images/obrazki-dowonu/
+    - {{ geokrety_base_dir }}../legacy-prod/data/cdn/obrazki-male/:/usr/share/nginx/html/images/obrazki-male/
     # Basex full exports
 {% if params.basex is defined %}
     - {{ geokrety_base_dir }}/BaseXExports:/usr/share/nginx/html/exports
 {% endif %}
 {% if params.new_env_flag is not defined or not params.new_env_flag %}
     # persistent vars
-    - {{ geokrety_base_dir }}/data/cdn/obrazki/:/usr/share/nginx/html/images/obrazki/
-    - {{ geokrety_base_dir }}/data/cdn/obrazki-dowonu/:/usr/share/nginx/html/images/obrazki-dowonu/
-    - {{ geokrety_base_dir }}/data/cdn/obrazki-male/:/usr/share/nginx/html/images/obrazki-male/
     - {{ geokrety_base_dir }}/data/cdn/statpics/:/usr/share/nginx/html/images/statpics/
     - {{ geokrety_base_dir }}/data/cdn/mapki/:/usr/share/nginx/html/mapki/
     - {{ geokrety_base_dir }}/data/cdn/templates/wykresy/:/usr/share/nginx/html/images/wykresy/
