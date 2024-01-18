@@ -325,6 +325,9 @@ services:
 {% endfor %}
 {% if params.piwik is defined and params.piwik.extra_hosts is defined %}
     extra_hosts:
+{% for extra_host in params.website.extra_hosts %}
+      - "{{ extra_host }}"
+{% endfor %}
 {% for extra_host in params.piwik.extra_hosts %}
       - "{{ extra_host }}"
 {% endfor %}
