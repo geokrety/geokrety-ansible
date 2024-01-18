@@ -511,7 +511,9 @@ services:
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
         traefik.port: 8080
+{% if params.adminer.auth_enable is defined and params.adminer.auth_enable %}
         traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
+{% endif %}
         # traefik2
         traefik.http.middlewares.auth-basic-geokrey-admins.basicauth.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
         traefik.http.routers.geokrety-{{ item }}-adminer.priority: 10
