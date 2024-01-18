@@ -319,10 +319,12 @@ services:
         order: start-first
       <<: *labels-website
 {% endif %}
+{% if geokrety_dns_servers | length %}
     dns:
 {% for dns_server in geokrety_dns_servers %}
       - {{ dns_server }}
 {% endfor %}
+{% endif %}
 {% if params.piwik is defined and params.piwik.extra_hosts is defined %}
     extra_hosts:
 {% for extra_host in params.website.extra_hosts %}
