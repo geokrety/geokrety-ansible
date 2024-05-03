@@ -228,7 +228,7 @@ services:
   nginx:
     image: {{ geokrety_docker_image_nginx_image_name }}:{{ geokrety_docker_image_nginx_image_tag }}
     environment:
-      GK_SITE_BASE_SERVER_FQDN: "{{ params.website.uri.0 }}"
+      GK_WEBSITE_FQDN: "{{ params.website.uri.0 }}"
     volumes:
 {% if params.nginx.localdir is defined %}
       - {{ params.nginx.localdir }}/files/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
