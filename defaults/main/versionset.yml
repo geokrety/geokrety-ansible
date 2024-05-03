@@ -18,7 +18,7 @@ geokrety_pictures_processor_image:
   docker_tag: 1.1.6
 geokrety_svg_to_png_image:
   git_url: https://github.com/geokrety/geokrety-svg-to-png
-  docker_tag: 1.0.5
+  docker_tag: 1.0.6
 geokrety_bootstrap_email_image:
   git_url: https://github.com/geokrety/bootstrap-email-smtp-server
   docker_tag: 1.0.5
