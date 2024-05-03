@@ -1,5 +1,4 @@
 ---
-version: '3.7'
 
 x-variables: &variables
 {% if params.postgres.enable is defined and params.postgres.enable or params.db.enable is defined and params.db.enable %}
