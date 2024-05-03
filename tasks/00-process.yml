@@ -75,5 +75,16 @@
       include_tasks: 36-build-images-basex-amqp-sync.yml
   when: "params.basex_amqp_sync is defined"
 
+
+- name: "Set docker secret: {{ inner_var_name }}"
+  community.docker.docker_secret:
+    name: "{{ item }}__{{ inner_var_name }}"
+    data: "{{ geokrety_docker_secrets[inner_var_name] }}"
+    state: present
+  when: geokrety_docker_secrets[inner_var_name]
+  with_items: '{{ geokrety_docker_secrets }}'
+  loop_control:
+     loop_var: inner_var_name
+
 - name: "'{{ item }}' Deploy stack"
   include_tasks: 40-deploy-images.yml

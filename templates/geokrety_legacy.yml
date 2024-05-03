@@ -20,20 +20,13 @@ x-variables: &variables
 
     GK_MINIO_SERVER_URL_EXTERNAL: "https://{{ params.minio.uri_external }}"
     MINIO_ACCESS_KEY: "{{ params.minio.access_key }}"
-    MINIO_SECRET_KEY: "{{ params.minio.secret_key }}"
 {% if params.pictures_processor is defined %}
     GK_MINIO_PICTURES_PROCESSOR_MINIO_ACCESS_KEY: "{{ params.minio.pictures_processor_downloader_access_key }}"
-    GK_MINIO_PICTURES_PROCESSOR_MINIO_SECRET_KEY: "{{ params.minio.pictures_processor_downloader_secret_key }}"
-
-    GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURE_UPLOADED: "{{ params.minio.webhook_auth_token_picture_uploaded }}"
-    GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_DOWNLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_downloader }}"
-    GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_UPLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_uploader }}"
-    GK_AUTH_TOKEN_DROP_S3_FILE_UPLOAD_REQUEST: "{{ params.minio.auth_token_drop_s3_file_upload_request }}"
 {% endif %}
 
     GK_DEBUG: "{{ params.debug is defined and params.debug }}"
     GK_ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
-    GK_INSTANCE_NAME: "{{ params.name | default(geokrety_params.environment) }}"
+    GK_INSTANCE_NAME: "{{ params.name }}"
     GK_DEPLOY_DATE: "{{ ansible_date_time.iso8601_micro }}"
 
 {% if params.sentry.dsn is defined or geokrety_params.sentry.dsn is defined %}
@@ -44,7 +37,6 @@ x-variables: &variables
 {% if params.piwik is defined %}
     GK_PIWIK_URL: "{{ params.piwik.url | default(geokrety_params.piwik.url) }}"
     GK_PIWIK_SITE_ID: "{{ params.piwik.site_id | default(geokrety_params.piwik.site_id) }}"
-    GK_PIWIK_TOKEN: "{{ params.piwik.token | default(geokrety_params.piwik.token) }}"
 {% endif %}
 
     GK_DB_DRIVER: "{{ params.postgres.driver | default(geokrety_params.postgres.driver) }}"
@@ -52,9 +44,6 @@ x-variables: &variables
     GK_DB_HOST: "{{ params.postgres.host | default(geokrety_params.postgres.host) }}"
     GK_DB_NAME: "{{ params.postgres.name | default(geokrety_params.postgres.name) }}"
     GK_DB_USER: "{{ params.postgres.user | default(geokrety_params.postgres.user) }}"
-    GK_DB_PASSWORD: "{{ params.postgres.password | default(geokrety_params.postgres.password) }}"
-    GK_DB_GPG_PASSWORD: "{{ params.postgres.gpg_password | default('') }}"
-    GK_DB_SECRET_KEY: "{{ params.postgres.gpg_secret | default('') }}"
     GK_DB_ORIG_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
     GK_DB_ORIG_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
     GK_DB_ORIG_DB_NAME: "{{ params.db.name | default(geokrety_params.db.name) }}"
@@ -64,14 +53,12 @@ x-variables: &variables
     GK_BASEX_HOST: "{{ params.basex.host }}"
     GK_BASEX_PORT: "{{ params.basex.port }}"
     GK_BASEX_USER: "{{ params.basex.user }}"
-    GK_BASEX_PASSWORD: "{{ params.basex.password }}"
 {% endif %}
 
 {% if params.rabbitmq is defined and params.rabbitmq.host is defined %}
     GK_RABBITMQ_HOST: "{{ params.rabbitmq.host }}"
     GK_RABBITMQ_PORT: "{{ params.rabbitmq.port }}"
     GK_RABBITMQ_USER: "{{ params.rabbitmq.user }}"
-    GK_RABBITMQ_PASSWORD: "{{ params.rabbitmq.password }}"
     # GK_RABBITMQ_VHOST: "{{ params.rabbitmq.vhost | default('%2F') }}"
 {% endif %}
 
@@ -86,12 +73,6 @@ x-variables: &variables
     GK_SITE_EMAIL_REGISTRATION: "{{ params.mail_email.registration | default(geokrety_params.mail_email.registration) }}"
     GK_SITE_EMAIL_MESSAGE_CENTER: "{{ params.mail_email.message_center | default(geokrety_params.mail_email.message_center) }}"
 
-    GK_SITE_SESSION_SHORT_LIVED_TOKEN: "{{ params.website.short_lived_session_token | default(geokrety_params.short_lived_session_token) }}"
-
-    GK_PASSWORD_HASH_ROTATION: "{{ params.password_hash_rotation | default(geokrety_params.password_hash_rotation) }}"
-    GK_PASSWORD_HASH: "{{ params.password_hash_legacy | default(geokrety_params.password_hash_legacy) }}"
-    GK_PASSWORD_SEED: "{{ params.password_seed | default(geokrety_params.password_seed) }}"
-
     GK_SESSION_IN_REDIS: "{{ params.session_in_redis | default(geokrety_params.session_in_redis) }}"
     GK_F3_CACHE: "redis=redis:6379"
 
@@ -99,17 +80,6 @@ x-variables: &variables
     GK_MAP_URL: "{{ params.geokrety_map_url | default(geokrety_params.geokrety_map_url) }}"
 
     GK_GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
-    GK_GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google.recaptcha_secret_key | default(geokrety_params.google.recaptcha_secret_key) }}"
-
-    GK_API_EXPORT_PASSWORD_BYPASS_LIMIT_DAYS: "{{ params.export_bypass_token | default(geokrety_params.export_bypass_token) }}"
-    GK_RATE_LIMITS_BYPASS: "{{ params.rate_limits_bypass | default(geokrety_params.rate_limits_bypass) }}"
-
-    GK_OKAPI_CONSUMER_KEY_OC_PL: "{{ params.OKAPI.OC_PL.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_PL.CONSUMER_KEY) }}"
-    GK_OKAPI_CONSUMER_KEY_OC_UK: "{{ params.OKAPI.OC_UK.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_UK.CONSUMER_KEY) }}"
-    GK_OKAPI_CONSUMER_KEY_OC_DE: "{{ params.OKAPI.OC_DE.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_DE.CONSUMER_KEY) }}"
-    GK_OKAPI_CONSUMER_KEY_OC_US: "{{ params.OKAPI.OC_US.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_US.CONSUMER_KEY) }}"
-    GK_OKAPI_CONSUMER_KEY_OC_NL: "{{ params.OKAPI.OC_NL.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_NL.CONSUMER_KEY) }}"
-    GK_OKAPI_CONSUMER_KEY_OC_RO: "{{ params.OKAPI.OC_RO.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_RO.CONSUMER_KEY) }}"
 
 {% if params.website.help_geokrety_exemples_ids is defined %}
 {% for gk_id in params.website.help_geokrety_exemples_ids %}
@@ -118,14 +88,11 @@ x-variables: &variables
 {% endif %}
 
 {% if params.social_auth is defined %}
-    GK_OPAUTH_SECURITY_SALT: "{{ params.social_auth.security_salt }}"
 {% if params.social_auth.google is defined %}
     GK_OPAUTH_GOOGLE_CLIENT_ID: "{{ params.social_auth.google.client_id }}"
-    GK_OPAUTH_GOOGLE_CLIENT_SECRET: "{{ params.social_auth.google.client_secret }}"
 {% endif %}
 {% if params.social_auth.facebook is defined %}
     GK_OPAUTH_FACEBOOK_CLIENT_ID: "{{ params.social_auth.facebook.client_id }}"
-    GK_OPAUTH_FACEBOOK_CLIENT_SECRET: "{{ params.social_auth.facebook.client_secret }}"
 {% endif %}
 {% endif %}
 {% if params.website.audit_logs_exclude_path_bypass is defined %}
@@ -308,6 +275,12 @@ services:
         order: start-first
       labels:
         traefik.enable: "false"
+    secrets:
+{% for secret_name in geokrety_docker_secrets %}
+{% if geokrety_docker_secrets[secret_name] %}
+      - {{ item }}__{{ secret_name }}
+{% endif %}
+{% endfor %}
     healthcheck:
       test: /usr/local/bin/php-fpm-healthcheck -v || exit 1
       interval: 30s
@@ -801,7 +774,7 @@ services:
     environment:
       GK_MINIO_PICTURES_PROCESSOR_MINIO_ACCESS_KEY: {{ params.minio.pictures_processor_downloader_access_key }}
       GK_MINIO_PICTURES_PROCESSOR_MINIO_SECRET_KEY: {{ params.minio.pictures_processor_downloader_secret_key }}
-      GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_DOWNLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_downloader }}"
+      GK_MINIO_WEBHOOK_AUTH_TOKEN_PP_DOWNLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_downloader }}"
       GK_AUTH_TOKEN_DROP_S3_FILE_UPLOAD_REQUEST: "{{ params.minio.auth_token_drop_s3_file_upload_request }}"
 {% if params.sentry.dsn is defined or geokrety_params.sentry.dsn is defined %}
       SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
@@ -824,7 +797,7 @@ services:
     environment:
       MINIO_ACCESS_KEY: {{ params.minio.access_key }}
       MINIO_SECRET_KEY: {{ params.minio.secret_key }}
-      GK_MINIO_WEBHOOK_AUTH_TOKEN_PICTURES_PROCESSOR_UPLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_uploader }}"
+      GK_MINIO_WEBHOOK_AUTH_TOKEN_PP_UPLOADER: "{{ params.minio.webhook_auth_token_pictures_processor_uploader }}"
 {% if params.sentry.dsn is defined or geokrety_params.sentry.dsn is defined %}
       SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
       SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
@@ -984,3 +957,9 @@ networks:
     attachable: true
   traefik_default:
     external: true
+
+secrets:
+{% for secret_name in geokrety_docker_secrets %}
+  {{ item }}__{{ secret_name }}:
+    external: true
+{% endfor %}
