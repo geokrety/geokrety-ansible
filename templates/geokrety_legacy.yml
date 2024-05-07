@@ -180,10 +180,6 @@ x-volumes-cdn: &volumes-cdn
     # The cdn data
     - {{ params.cdn.localdir }}/content:/usr/share/nginx/html
 {% endif %}
-    # old image dirs
-    - {{ geokrety_base_dir }}/../legacy-prod/data/cdn/obrazki/:/usr/share/nginx/html/images/obrazki/
-    - {{ geokrety_base_dir }}/../legacy-prod/data/cdn/obrazki-dowonu/:/usr/share/nginx/html/images/obrazki-dowonu/
-    - {{ geokrety_base_dir }}/../legacy-prod/data/cdn/obrazki-male/:/usr/share/nginx/html/images/obrazki-male/
     # Basex full exports
 {% if params.basex is defined %}
     - {{ geokrety_base_dir }}/BaseXExports:/usr/share/nginx/html/exports
