@@ -93,6 +93,9 @@ x-variables: &variables
 {% if params.social_auth.facebook is defined %}
     GK_OPAUTH_FACEBOOK_CLIENT_ID: "{{ params.social_auth.facebook.client_id }}"
 {% endif %}
+{% if params.social_auth.github is defined %}
+    GK_OPAUTH_GITHUB_CLIENT_ID: "{{ params.social_auth.github.client_id }}"
+{% endif %}
 {% endif %}
 {% if params.website.audit_logs_exclude_path_bypass is defined %}
     GK_AUDIT_LOGS_EXCLUDE_PATH_BYPASS: "{{ params.website.audit_logs_exclude_path_bypass }}"
