@@ -902,10 +902,9 @@ services:
         traefik.protocol: "http"
         traefik.port: 3000
         # traefik2
-        traefik.http.middlewares.geokrety-{{ item }}-grafana-stripprefix.stripprefix.prefixes: "/grafana"
         traefik.http.middlewares.geokrety-{{ item }}-grafana-remove-auth-header.headers.customrequestheaders.Authorization: ""
         traefik.http.routers.geokrety-{{ item }}-grafana.rule: "Host(`{{ params.website.uri[0] }}`) && PathPrefix(`/grafana`)"
-        traefik.http.routers.geokrety-{{ item }}-grafana.middlewares: "X-Forwarded-Https@file,geokrety-{{ item }}-grafana-stripprefix,geokrety-{{ item }}-grafana-remove-auth-header"
+        traefik.http.routers.geokrety-{{ item }}-grafana.middlewares: "X-Forwarded-Https@file,geokrety-{{ item }}-grafana-remove-auth-header"
         traefik.http.routers.geokrety-{{ item }}-grafana.priority: 10
         traefik.http.services.geokrety-{{ item }}-grafana.loadbalancer.passhostheader: "true"
         traefik.http.services.geokrety-{{ item }}-grafana.loadbalancer.server.port: 3000
