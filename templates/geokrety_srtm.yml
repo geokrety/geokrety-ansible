@@ -17,7 +17,7 @@ services:
         traefik.protocol: "http"
         traefik.port: 5000
         # traefik2
-        traefik.http.routers.geokrety-geo.rule: "Host(`geo.geokrety.org`,`geo.kumy.org`)"
+        traefik.http.routers.geokrety-geo.rule: "Host(`geo.geokrety.org`) || Host(`geo.kumy.org`)"
         traefik.http.routers.geokrety-geo.priority: 5
         traefik.http.routers.geokrety-geo.middlewares: "X-Forwarded-Https@file"
         traefik.http.services.geokrety-geo.loadbalancer.passhostheader: "true"
