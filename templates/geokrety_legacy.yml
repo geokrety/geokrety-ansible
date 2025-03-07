@@ -262,8 +262,7 @@ services:
 
   website:
     image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
-    <<: *variables
-    <<: *volumes-website
+    <<: [*variables, *volumes-website]
     deploy:
       restart_policy:
         condition: any
