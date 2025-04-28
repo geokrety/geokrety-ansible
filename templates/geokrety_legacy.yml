@@ -645,7 +645,7 @@ services:
       SMTP_SERVER: bootstrap-email
       SMTP_PORT: 25
       SERVER_HOSTNAME: smtp-relay
-      SMTP_HEADER_TAG: GK-smtp-relay
+      # SMTP_HEADER_TAG: GK-smtp-relay
     deploy:
       replicas: 1
       update_config:
