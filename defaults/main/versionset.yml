@@ -30,7 +30,7 @@ geokrety_prometheus_image:
   docker_tag: 1.0.8
 geokrety_grafana_image:
   git_url: https://github.com/geokrety/geokrety-grafana
-  docker_tag: 1.0.18
+  docker_tag: 1.0.19
 geokrety_postgres_image:
   git_url: https://github.com/geokrety/geokrety-postgres
   docker_tag: 1.1.0
