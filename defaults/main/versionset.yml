@@ -1,6 +1,6 @@
 geokrety_cdn_image:
   git_url: https://github.com/geokrety/GeoKrety-Static
-  docker_tag: 1.8.5
+  docker_tag: 1.8.6
 geokrety_nginx_image:
   git_url: https://github.com/geokrety/geokrety-nginx
   docker_tag: 1.1.2
