@@ -203,7 +203,7 @@ x-volumes-cdn: &volumes-cdn
 x-labels-website: &labels-website
   labels:
     traefik.enable: "true"
-    traefik.docker.network: "traefik_default"
+    traefik.swarm.network: "traefik_default"
     traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}"
     traefik.frontend.passHostHeader: "true"
     traefik.frontend.redirect.regex: www.{{ params.website.uri[0] }}([/](.*))*
@@ -361,7 +361,7 @@ services:
         order: start-first
       labels:
         traefik.enable: "true"
-        traefik.docker.network: "traefik_default"
+        traefik.swarm.network: "traefik_default"
         traefik.frontend.rule: "Host:{{ params.cdn.uri | default(geokrety_params.cdn_uri) }}"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
@@ -485,7 +485,7 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.docker.network: "traefik_default"
+        traefik.swarm.network: "traefik_default"
         traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefix:/adminer"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
@@ -520,7 +520,7 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.docker.network: "traefik_default"
+        traefik.swarm.network: "traefik_default"
         traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefix:/pgadmin"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
@@ -560,7 +560,7 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.docker.network: "traefik_default"
+        traefik.swarm.network: "traefik_default"
         traefik.frontend.rule: "Host:{{ params.rabbitmq.uri_external }}"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
@@ -741,7 +741,7 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.docker.network: "traefik_default"
+        traefik.swarm.network: "traefik_default"
         traefik.svc.frontend.rule: "Host:{{ params.minio.uri_external }}"
         traefik.svc.frontend.passHostHeader: "true"
         traefik.svc.protocol: "http"
@@ -849,7 +849,7 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.docker.network: "traefik_default"
+        traefik.swarm.network: "traefik_default"
         traefik.frontend.rule: "Host:{{ params.website.uri[0] }}; PathPrefix:/prometheus"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
@@ -898,7 +898,7 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.docker.network: "traefik_default"
+        traefik.swarm.network: "traefik_default"
         traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefixStrip:/grafana"
         traefik.frontend.passHostHeader: "true"
         traefik.protocol: "http"
@@ -934,7 +934,7 @@ services:
 {#        order: start-first#}
 {#      labels:#}
 {#        traefik.enable: "true"#}
-{#        traefik.docker.network: "traefik_default"#}
+{#        traefik.swarm.network: "traefik_default"#}
 {#        traefik.frontend.rule: "Host:{{ params.accounts_cleaner.uri | join(',') }}"#}
 {#        traefik.frontend.passHostHeader: "true"#}
 {#        traefik.protocol: "http"#}
