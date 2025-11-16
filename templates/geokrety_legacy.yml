@@ -671,6 +671,8 @@ services:
         traefik.enable: "false"
       restart_policy:
         condition: any
+    networks:
+      default:
 
   bootstrap-email:
     image: {{ geokrety_docker_image_bootstrap_email_image_name }}:{{ geokrety_docker_image_bootstrap_email_image_tag }}
@@ -692,16 +694,42 @@ services:
       - {{ params.bootstrap_email.localdir }}/src:/app
 {% endif %}
     environment:
+      BOOTSTRAP_EMAIL_GW_HOSTS: "0.0.0.0"
+      BOOTSTRAP_EMAIL_GW_PORTS: 25
+      BOOTSTRAP_EMAIL_GW_INTERNATIONALIZATION: "true"
+      BOOTSTRAP_EMAIL_GW_DEBUG: "true"
+{% if params.mail_mailcatcher.enabled is not defined or not params.mail_mailcatcher.enabled %}
       BOOTSTRAP_EMAIL_RELAY_HOST: "{{ params.mail_smtp_host | default(geokrety_params.mail_smtp_host) }}"
       BOOTSTRAP_EMAIL_RELAY_PORT: "{{ params.mail_smtp_port | default(geokrety_params.mail_smtp_port) }}"
       BOOTSTRAP_EMAIL_RELAY_USERNAME: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
       BOOTSTRAP_EMAIL_RELAY_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
       BOOTSTRAP_EMAIL_RELAY_TLS: "{{ params.mail_smtp_tls | default(geokrety_params.mail_smtp_tls) }}"
       BOOTSTRAP_EMAIL_RELAY_SSL: "{{ params.mail_smtp_ssl | default(geokrety_params.mail_smtp_ssl) }}"
-      BOOTSTRAP_EMAIL_GW_HOSTS: "0.0.0.0"
-      BOOTSTRAP_EMAIL_GW_PORTS: 25
-      BOOTSTRAP_EMAIL_GW_INTERNATIONALIZATION: "true"
-      BOOTSTRAP_EMAIL_GW_DEBUG: "true"
+{% else %}
+      BOOTSTRAP_EMAIL_RELAY_HOST: mailcatcher
+      BOOTSTRAP_EMAIL_RELAY_PORT: 25
+
+  mailcatcher:
+    image: geokrety/mailcatcher:latest
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+        order: start-first
+      labels:
+        traefik.enable: "true"
+        traefik.swarm.network: "traefik_default"
+        traefik.http.routers.geokrety-{{ item }}-mailcatcher.rule: "Host(`mailcatcher.{{ params.website.uri[0] }}`)"
+        traefik.http.routers.geokrety-{{ item }}-mailcatcher.priority: 10
+        traefik.http.services.geokrety-{{ item }}-mailcatcher.loadbalancer.server.port: 80
+      restart_policy:
+        condition: any
+    networks:
+      default:
+      traefik_default:
+{% endif %}
 {% endif %}
 
 {% if params.osm_static_maps is defined %}
