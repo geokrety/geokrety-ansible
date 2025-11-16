@@ -317,6 +317,20 @@ services:
       traefik_default:
 {% endif %}
 
+  notification-worker:
+    image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
+    <<: *variables
+    command: php workers/mail-notification-worker.php
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      default:
+
 {% if params.db.importer is defined and params.db.importer %}
   db-migrator:
     image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
