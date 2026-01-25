@@ -135,6 +135,7 @@ x-labels-website: &labels-website
     traefik.http.routers.geokrety-{{ item }}-nginx.middlewares: geokrety-{{ item }}-redirectregex
     traefik.http.services.geokrety-{{ item }}-nginx.loadbalancer.passhostheader: "true"
     traefik.http.services.geokrety-{{ item }}-nginx.loadbalancer.server.port: 80
+    traefik.http.services.geokrety-{{ item }}-nginx.loadbalancer.healthcheck.path: "/health"
 
 services:
 {% if params.nginx is defined %}
@@ -161,11 +162,12 @@ services:
       restart_policy:
         condition: any
     healthcheck:
-      test: curl -b /tmp/cookie.txt -c /tmp/cookie.txt --fail -v --output /dev/stderr http://localhost:80/health || exit 1
+      test: curl -b /tmp/cookie.txt -c /tmp/cookie.txt --fail -v --output /dev/stderr http://localhost || exit 1
       interval: 30s
       timeout: 5s
       retries: 3
-      # start_period: 10s
+      start_period: 10s
+      start_interval: 5s
     networks:
       default:
       traefik_default:
@@ -198,7 +200,8 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-      # start_period: 10s
+      start_period: 10s
+      start_interval: 5s
 {% else %}
       replicas: 2
       update_config:
@@ -230,6 +233,7 @@ services:
       traefik_default:
 {% endif %}
 
+{% if params.workers is defined %}
   notification-worker:
     image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
     entrypoint: /var/www/geokrety/geokrety-worker-entrypoint.sh
@@ -253,6 +257,7 @@ services:
     <<: *volumes-website
     networks:
       default:
+{% endif %}
 
 {% if params.cdn is defined %}
   cdn:
@@ -276,8 +281,16 @@ services:
         traefik.http.routers.geokrety-{{ item }}-cdn.middlewares: X-Forwarded-Https@file
         traefik.http.services.geokrety-{{ item }}-cdn.loadbalancer.passhostheader: "true"
         traefik.http.services.geokrety-{{ item }}-cdn.loadbalancer.server.port: 80
+        traefik.http.services.geokrety-{{ item }}-cdn.loadbalancer.healthcheck.path: "/"
       restart_policy:
         condition: any
+    healthcheck:
+      test: curl -b /tmp/cookie.txt -c /tmp/cookie.txt --fail -v --output /dev/stderr http://localhost || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+      start_interval: 5s
     networks:
       default:
       traefik_default:
@@ -395,7 +408,7 @@ services:
         traefik.http.routers.geokrety-{{ item }}-adminer.rule: >-
           PathPrefix(`/adminer`) && (
 {% for uri in params.website.uri %}
-            Host(`{{ uri }}`){% if not loop.last %} ||{% endif %}{{ '' }}
+          Host(`{{ uri }}`){% if not loop.last %} ||{% endif %}{{ '' }}
 {% endfor %}
           )
         traefik.http.routers.geokrety-{{ item }}-adminer.middlewares: X-Forwarded-Https@file,auth-basic-geokrey-admins
