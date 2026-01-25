@@ -1,150 +1,95 @@
 ---
 
 x-variables: &variables
-{% if params.postgres.enable is defined and params.postgres.enable or params.db.enable is defined and params.db.enable %}
-    depends_on:
-{% if params.postgres.enable is defined and params.postgres.enable %}
-      - postgres
-{% endif %}
-{% if params.db.enable is defined and params.db.enable %}
-      - db
-{% endif %}
-{% endif %}
-  environment:
-    TIMEZONE: "{{ params.tz | default(geokrety_tz) }}"
-{% if params.new_env_flag is defined and params.new_env_flag %}
-    GK_SITE_BASE_SERVER_URL: "https://{{ params.website.uri.0 }}"
-    GK_SITE_BASE_SERVER_FQDN: "{{ params.website.uri.0 }}"
-    GK_SYSTEM_PATH_ALLOWED_IPS: "127.0.0.1,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,130.180.209.67,82.66.168.93"
+  TIMEZONE: "{{ params.tz | default(geokrety_tz) }}"
+  GK_SITE_BASE_SERVER_FQDN: "{{ params.website.uri.0 }}"
+  #GK_SITE_BASE_SERVER_URL: "https://{{ params.website.uri.0 }}"
+  GK_SYSTEM_PATH_ALLOWED_IPS: "127.0.0.1,192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,130.180.209.67,82.66.168.93"
 
-    GK_MINIO_SERVER_URL_EXTERNAL: "https://{{ params.minio.uri_external }}"
-    MINIO_ACCESS_KEY: "{{ params.minio.access_key }}"
+  #GK_MINIO_SERVER_URL_EXTERNAL: "https://{{ params.minio.uri_external.0 }}"
+  MINIO_ACCESS_KEY: "{{ params.minio.access_key }}"
 {% if params.pictures_processor is defined %}
-    GK_MINIO_PICTURES_PROCESSOR_MINIO_ACCESS_KEY: "{{ params.minio.pictures_processor_downloader_access_key }}"
+  GK_MINIO_PICTURES_PROCESSOR_MINIO_ACCESS_KEY: "{{ params.minio.pictures_processor_downloader_access_key }}"
 {% endif %}
 
-    GK_DEBUG: "{{ params.debug is defined and params.debug }}"
-    GK_ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
-    GK_INSTANCE_NAME: "{{ params.name }}"
-    GK_DEPLOY_DATE: "{{ ansible_date_time.iso8601_micro }}"
+  GK_DEBUG: "{{ params.debug is defined and params.debug }}"
+  GK_ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
+  GK_INSTANCE_NAME: "{{ params.name }}"
+  GK_DEPLOY_DATE: "{{ ansible_date_time.iso8601_micro }}"
 
 {% if params.sentry.dsn is defined or geokrety_params.sentry.dsn is defined %}
-    GK_SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
-    GK_SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
+  GK_SENTRY_DSN: "{{ params.sentry.dsn | default(geokrety_params.sentry.dsn) }}"
+  GK_SENTRY_ENV: "{{ params.sentry.env | default(geokrety_params.sentry.env) }}"
 {% endif %}
 
 {% if params.piwik is defined %}
-    GK_PIWIK_URL: "{{ params.piwik.url | default(geokrety_params.piwik.url) }}"
-    GK_PIWIK_SITE_ID: "{{ params.piwik.site_id | default(geokrety_params.piwik.site_id) }}"
+  GK_PIWIK_URL: "{{ params.piwik.url | default(geokrety_params.piwik.url) }}"
+  GK_PIWIK_SITE_ID: "{{ params.piwik.site_id | default(geokrety_params.piwik.site_id) }}"
 {% endif %}
 
-    GK_DB_DRIVER: "{{ params.postgres.driver | default(geokrety_params.postgres.driver) }}"
-    GK_DB_DSN: "{{ params.postgres.dsn | default(geokrety_params.postgres.dsn) }}"
-    GK_DB_HOST: "{{ params.postgres.host | default(geokrety_params.postgres.host) }}"
-    GK_DB_NAME: "{{ params.postgres.name | default(geokrety_params.postgres.name) }}"
-    GK_DB_USER: "{{ params.postgres.user | default(geokrety_params.postgres.user) }}"
-    GK_DB_ORIG_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
-    GK_DB_ORIG_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
-    GK_DB_ORIG_DB_NAME: "{{ params.db.name | default(geokrety_params.db.name) }}"
-    GK_DB_ORIG_HOST: "{{ params.db.host | default(geokrety_params.db.host) }}"
+  GK_DB_DRIVER: "{{ params.postgres.driver | default(geokrety_params.postgres.driver) }}"
+  GK_DB_DSN: "{{ params.postgres.dsn | default(geokrety_params.postgres.dsn) }}"
+  GK_DB_HOST: "{{ params.postgres.host | default(geokrety_params.postgres.host) }}"
+  GK_DB_NAME: "{{ params.postgres.name | default(geokrety_params.postgres.name) }}"
+  GK_DB_USER: "{{ params.postgres.user | default(geokrety_params.postgres.user) }}"
+  GK_DB_ORIG_USER: "{{ params.db.user | default(geokrety_params.db.user) }}"
+  GK_DB_ORIG_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
+  GK_DB_ORIG_DB_NAME: "{{ params.db.name | default(geokrety_params.db.name) }}"
+  GK_DB_ORIG_HOST: "{{ params.db.host | default(geokrety_params.db.host) }}"
 
 {% if params.basex is defined and params.basex.host is defined %}
-    GK_BASEX_HOST: "{{ params.basex.host }}"
-    GK_BASEX_PORT: "{{ params.basex.port }}"
-    GK_BASEX_USER: "{{ params.basex.user }}"
+  GK_BASEX_HOST: "{{ params.basex.host }}"
+  GK_BASEX_PORT: "{{ params.basex.port }}"
+  GK_BASEX_USER: "{{ params.basex.user }}"
 {% endif %}
 
 {% if params.rabbitmq is defined and params.rabbitmq.host is defined %}
-    GK_RABBITMQ_HOST: "{{ params.rabbitmq.host }}"
-    GK_RABBITMQ_PORT: "{{ params.rabbitmq.port }}"
-    GK_RABBITMQ_USER: "{{ params.rabbitmq.user }}"
-    # GK_RABBITMQ_VHOST: "{{ params.rabbitmq.vhost | default('%2F') }}"
+  GK_RABBITMQ_HOST: "{{ params.rabbitmq.host }}"
+  GK_RABBITMQ_PORT: "{{ params.rabbitmq.port }}"
+  GK_RABBITMQ_USER: "{{ params.rabbitmq.user }}"
+  # GK_RABBITMQ_VHOST: "{{ params.rabbitmq.vhost | default('%2F') }}"
 {% endif %}
 
 {% if params.mail_subject_prefix is defined %}
-    GK_EMAIL_SUBJECT_PREFIX: "{{ params.mail_subject_prefix }}"
+  GK_EMAIL_SUBJECT_PREFIX: "{{ params.mail_subject_prefix }}"
 {% endif %}
 
-    GK_SITE_EMAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
-    GK_SITE_EMAIL_NOREPLY: "{{ params.mail_email.noreply | default(geokrety_params.mail_email.noreply) }}"
-    GK_SITE_EMAIL_NOTIF: "{{ params.mail_email.notif | default(geokrety_params.mail_email.notif) }}"
-    GK_SITE_EMAIL_SUPPORT: "{{ params.mail_email.support | default(geokrety_params.mail_email.support) }}"
-    GK_SITE_EMAIL_REGISTRATION: "{{ params.mail_email.registration | default(geokrety_params.mail_email.registration) }}"
-    GK_SITE_EMAIL_MESSAGE_CENTER: "{{ params.mail_email.message_center | default(geokrety_params.mail_email.message_center) }}"
+  GK_SITE_EMAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
+  GK_SITE_EMAIL_NOREPLY: "{{ params.mail_email.noreply | default(geokrety_params.mail_email.noreply) }}"
+  GK_SITE_EMAIL_NOTIF: "{{ params.mail_email.notif | default(geokrety_params.mail_email.notif) }}"
+  GK_SITE_EMAIL_SUPPORT: "{{ params.mail_email.support | default(geokrety_params.mail_email.support) }}"
+  GK_SITE_EMAIL_REGISTRATION: "{{ params.mail_email.registration | default(geokrety_params.mail_email.registration) }}"
+  GK_SITE_EMAIL_MESSAGE_CENTER: "{{ params.mail_email.message_center | default(geokrety_params.mail_email.message_center) }}"
 
-    GK_SESSION_IN_REDIS: "{{ params.session_in_redis | default(geokrety_params.session_in_redis) }}"
-    GK_F3_CACHE: "redis=redis:6379"
+  GK_SESSION_IN_REDIS: "{{ params.session_in_redis | default(geokrety_params.session_in_redis) }}"
+  GK_F3_CACHE: "redis=redis:6379"
 
-    GK_CDN_SERVER_URL: "https://{{ params.cdn.uri | default(geokrety_params.cdn_uri) }}"
-    GK_MAP_URL: "{{ params.geokrety_map_url | default(geokrety_params.geokrety_map_url) }}"
+  #GK_CDN_SERVER_URL: "https://{{ params.cdn.uri.0 | default(geokrety_params.cdn_uri) }}"
 
-    GK_GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
+  GK_GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
 
 {% if params.website.help_geokrety_exemples_ids is defined %}
 {% for gk_id in params.website.help_geokrety_exemples_ids %}
-    GK_HELP_GEOKRETY_EXAMPLE_{{ loop.index }}: "{{ gk_id }}"
+  GK_HELP_GEOKRETY_EXAMPLE_{{ loop.index }}: "{{ gk_id }}"
 {% endfor %}
 {% endif %}
 
 {% if params.social_auth is defined %}
 {% if params.social_auth.google is defined %}
-    GK_OPAUTH_GOOGLE_CLIENT_ID: "{{ params.social_auth.google.client_id }}"
+  GK_OPAUTH_GOOGLE_CLIENT_ID: "{{ params.social_auth.google.client_id }}"
 {% endif %}
 {% if params.social_auth.facebook is defined %}
-    GK_OPAUTH_FACEBOOK_CLIENT_ID: "{{ params.social_auth.facebook.client_id }}"
+  GK_OPAUTH_FACEBOOK_CLIENT_ID: "{{ params.social_auth.facebook.client_id }}"
 {% endif %}
 {% if params.social_auth.github is defined %}
-    GK_OPAUTH_GITHUB_CLIENT_ID: "{{ params.social_auth.github.client_id }}"
+  GK_OPAUTH_GITHUB_CLIENT_ID: "{{ params.social_auth.github.client_id }}"
 {% endif %}
 {% if params.social_auth.twitter is defined %}
-    GK_OPAUTH_TWITTER_CLIENT_ID: "{{ params.social_auth.twitter.client_id }}"
+  GK_OPAUTH_TWITTER_CLIENT_ID: "{{ params.social_auth.twitter.client_id }}"
 {% endif %}
 {% endif %}
 {% if params.website.audit_logs_exclude_path_bypass is defined %}
-    GK_AUDIT_LOGS_EXCLUDE_PATH_BYPASS: "{{ params.website.audit_logs_exclude_path_bypass }}"
-{% endif %}
-{% else %}
-    # OBSOLETE: Old entries that will be removed one day (Still in use by branches < new-theme/f3)
-    DB_HOSTNAME: "{{ params.db.host | default(geokrety_params.db.host) }}"
-    DB_USERNAME: "{{ params.db.user | default(geokrety_params.db.user) }}"
-    DB_PASSWORD: "{{ params.db.password | default(geokrety_params.db.password) }}"
-    DB_NAME: "{{ params.db.name | default(geokrety_params.db.name) }}"
-    DB_CHARSET: "{{ params.db.charset | default(geokrety_params.db.charset) }}"
-    PROD_SERVER_NAME: "{{ geokrety_uri }}"
-    SERVER_URL: "https://{{ params.website.uri.0 }}/"
-    CDN_SERVER_URL: "https://{{ params.cdn.uri | default(geokrety_params.cdn_uri) }}"
-    GOOGLE_MAP_KEY: "{{ params.google.map_key | default(geokrety_params.google.map_key) }}"
-    GOOGLE_RECAPTCHA_PUBLIC_KEY: "{{ params.google.recaptcha_public_key | default(geokrety_params.google.recaptcha_public_key) }}"
-    GOOGLE_RECAPTCHA_SECRET_KEY: "{{ params.google.recaptcha_secret_key | default(geokrety_params.google.recaptcha_secret_key) }}"
-    PASSWORD_HASH: "{{ params.password_hash | default(geokrety_params.password_hash) }}"
-    PASSWORD_HASH_LEGACY: "{{ params.password_hash_legacy | default(geokrety_params.password_hash_legacy) }}"
-    API2LOGIN_MD5_STR1: "{{ params.api2login_md5_str1 | default(geokrety_params.api2login_md5_str1) }}"
-    API2LOGIN_MD5_STR2: "{{ params.api2login_md5_str2 | default(geokrety_params.api2login_md5_str2) }}"
-    SWISTAK_KEY: "{{ params.swistak_key | default(geokrety_params.swistak_key) }}"
-    SWISTAK_IV32: "{{ params.swistak_iv32 | default(geokrety_params.swistak_iv32) }}"
-    NEWS_PASSWORD: "{{ params.news_password | default(geokrety_params.news_password) }}"
-    EXPORT_BYPASS_TOKEN: "{{ params.export_bypass_token | default(geokrety_params.export_bypass_token) }}"
-    JRATING_TOKEN: "{{ params.jrating_token | default(geokrety_params.jrating_token) }}"
-    POP_HOSTNAME: "{{ params.pop_hostname | default(geokrety_params.pop_hostname) }}"
-    POP_PORT: "{{ params.pop_port | default(geokrety_params.pop_port) }}"
-    POP_TLS: "{{ params.pop_tls | default(geokrety_params.pop_tls) }}"
-    POP_USERNAME: "{{ params.mail_username | default(geokrety_params.mail_username) }}"
-    POP_PASSWORD: "{{ params.mail_password | default(geokrety_params.mail_password) }}"
-    SUPPORT_MAIL: "{{ params.mail_email.main | default(geokrety_params.mail_email.main) }}"
-    PIWIK_URL: "{{ params.piwik.url | default(geokrety_params.piwik.url) }}"
-    PIWIK_SITE_ID: "{{ params.piwik.site_id | default(geokrety_params.piwik.site_id) }}"
-    PIWIK_TOKEN: "{{ params.piwik.token | default(geokrety_params.piwik.token) }}"
-    GEONAMES_ENDPOINT: "http://api.geonames.org"
-    GEONAMES_USERNAME: "{{ params.geonames_username | default(geokrety_params.geonames_username) }}"
-    GEOKRETY_MAP_URL: "{{ params.geokrety_map_url | default(geokrety_params.geokrety_map_url) }}"
-    OC_PL_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_PL.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_PL.CONSUMER_KEY) }}"
-    OC_UK_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_UK.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_UK.CONSUMER_KEY) }}"
-    OC_DE_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_DE.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_DE.CONSUMER_KEY) }}"
-    OC_US_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_US.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_US.CONSUMER_KEY) }}"
-    OC_NL_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_NL.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_NL.CONSUMER_KEY) }}"
-    OC_RO_OKAPI_CONSUMER_KEY: "{{ params.OKAPI.OC_RO.CONSUMER_KEY | default(geokrety_params.OKAPI.OC_RO.CONSUMER_KEY) }}"
-    SESSION_IN_REDIS: "{{ params.session_in_redis | default(geokrety_params.session_in_redis) }}"
-    ENVIRONMENT: "{{ params.environment | default(geokrety_params.environment) }}"
+  GK_AUDIT_LOGS_EXCLUDE_PATH_BYPASS: "{{ params.website.audit_logs_exclude_path_bypass }}"
 {% endif %}
 
 x-volumes-website: &volumes-website
@@ -160,21 +105,6 @@ x-volumes-website: &volumes-website
     # Configure mail forwarder
     - {{ geokrety_base_dir }}/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
     - {{ geokrety_base_dir }}/data/assets/:/var/www/geokrety/website/public/assets/compressed
-{% if params.new_env_flag is not defined or not params.new_env_flag %}
-    # persistent vars
-    - {{ geokrety_base_dir }}/data/cdn/obrazki/:/var/www/html/obrazki/
-    - {{ geokrety_base_dir }}/data/cdn/obrazki-dowonu/:/var/www/html/obrazki-dowonu/
-    - {{ geokrety_base_dir }}/data/cdn/obrazki-male/:/var/www/html/obrazki-male/
-    - {{ geokrety_base_dir }}/data/cdn/statpics/:/var/www/html/statpics/
-    - {{ geokrety_base_dir }}/data/cdn/mapki/:/var/www/html/mapki/
-    # generated vars
-    - {{ geokrety_base_dir }}/data/cdn/files/:/var/www/html/files/
-    - {{ geokrety_base_dir }}/data/cdn/templates/wykresy/:/var/www/html/templates/wykresy/
-    - {{ geokrety_base_dir }}/data/cdn/rzeczy/xml/:/var/www/html/rzeczy/xml/
-    - {{ geokrety_base_dir }}/data/cdn/mapa-f/:/var/www/html/rzeczy/mapa-f/out/
-    - {{ geokrety_base_dir }}/data/cdn/year-stats/:/var/www/html/templates/stats/year/
-{% endif %}
-
 
 {% if params.cdn is defined %}
 x-volumes-cdn: &volumes-cdn
@@ -187,43 +117,24 @@ x-volumes-cdn: &volumes-cdn
 {% if params.basex is defined %}
     - {{ geokrety_base_dir }}/BaseXExports:/usr/share/nginx/html/exports
 {% endif %}
-{% if params.new_env_flag is not defined or not params.new_env_flag %}
-    # persistent vars
-    - {{ geokrety_base_dir }}/data/cdn/statpics/:/usr/share/nginx/html/images/statpics/
-    - {{ geokrety_base_dir }}/data/cdn/mapki/:/usr/share/nginx/html/mapki/
-    - {{ geokrety_base_dir }}/data/cdn/templates/wykresy/:/usr/share/nginx/html/images/wykresy/
-    # generated vars
-    - {{ geokrety_base_dir }}/data/cdn/files/:/usr/share/nginx/html/files/
-    - {{ geokrety_base_dir }}/data/cdn/rzeczy/xml/:/usr/share/nginx/html/rzeczy/xml/
-    - {{ geokrety_base_dir }}/data/cdn/mapa-f/:/usr/share/nginx/html/rzeczy/mapa-f/out/
-    - {{ geokrety_base_dir }}/data/cdn/year-stats/:/usr/share/nginx/html/templates/stats/year/
-{% endif %}
 {% endif %}
 
 x-labels-website: &labels-website
   labels:
     traefik.enable: "true"
     traefik.swarm.network: "traefik_default"
-    traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}"
-    traefik.frontend.passHostHeader: "true"
-    traefik.frontend.redirect.regex: www.{{ params.website.uri[0] }}([/](.*))*
-    traefik.frontend.redirect.replacement: {{ params.website.uri[0] }}$${1}
-    traefik.frontend.redirect.permanent: "true"
-    traefik.protocol: "http"
-    traefik.port: 80
-    # traefik2
     traefik.http.middlewares.geokrety-{{ item }}-redirectregex.redirectregex.regex: "http://www.{{ params.website.uri[0] }}([/](.*))*"
     traefik.http.middlewares.geokrety-{{ item }}-redirectregex.redirectregex.replacement: "https://{{ params.website.uri[0] }}$${1}"
     traefik.http.routers.geokrety-{{ item }}-nginx.priority: 5
-    traefik.http.routers.geokrety-{{ item }}-nginx.rule: "Host(`{{ params.website.uri | join('`) || Host(`') }}`) || Host(`www.{{ params.website.uri[0] }}`)"
-    traefik.http.routers.geokrety-{{ item }}-nginx.middlewares: X-Forwarded-Https@file, geokrety-{{ item }}-redirectregex
+    traefik.http.routers.geokrety-{{ item }}-nginx.rule: >-
+{% for uri in params.website.uri %}
+      Host(`{{ uri }}`) ||
+{% endfor %}
+      Host(`www.{{ params.website.uri[0] }}`)
+    # traefik.http.routers.geokrety-{{ item }}-nginx.middlewares: X-Forwarded-Https@file, geokrety-{{ item }}-redirectregex
+    traefik.http.routers.geokrety-{{ item }}-nginx.middlewares: geokrety-{{ item }}-redirectregex
     traefik.http.services.geokrety-{{ item }}-nginx.loadbalancer.passhostheader: "true"
     traefik.http.services.geokrety-{{ item }}-nginx.loadbalancer.server.port: 80
-
-{% if params.new_env_flag is defined and params.new_env_flag %}
-    # traefik.backend.healthcheck.path: "/health"
-    # traefik.backend.loadbalancer.stickiness: "true"
-{% endif %}
 
 services:
 {% if params.nginx is defined %}
@@ -262,7 +173,8 @@ services:
 
   website:
     image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
-    <<: [*variables, *volumes-website]
+    environment:
+      <<: *variables
     deploy:
       restart_policy:
         condition: any
@@ -296,6 +208,7 @@ services:
         order: start-first
       <<: *labels-website
 {% endif %}
+    <<: *volumes-website
 {% if geokrety_dns_servers | length %}
     dns:
 {% for dns_server in geokrety_dns_servers %}
@@ -319,8 +232,8 @@ services:
 
   notification-worker:
     image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
-    <<: *variables
-    command: php workers/mail-notification-worker.php
+    entrypoint: /var/www/geokrety/geokrety-worker-entrypoint.sh
+    command: php mail-notification.php
     deploy:
       replicas: 1
       restart_policy:
@@ -328,39 +241,18 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-    networks:
-      default:
-
-{% if params.db.importer is defined and params.db.importer %}
-  db-migrator:
-    image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
-    <<: *variables
-{% if params.website.localdir is defined %}
-    volumes:
-      # Mount local dir as html root
-      - {{ params.website.localdir }}:/var/www/geokrety/
+    environment:
+      <<: *variables
+      GK_NOTIFICATION_LOG_LEVEL: "DEBUG"
+    secrets:
+{% for secret_name in geokrety_docker_secrets %}
+{% if geokrety_docker_secrets[secret_name] and secret_name in ["GK_RABBITMQ_PASSWORD", "GK_SITE_SESSION_SHORT_LIVED_TOKEN", "GK_BASEX_PASSWORD", "GK_DB_PASSWORD", "GK_DB_GPG_PASSWORD", "GK_DB_SECRET_KEY"] %}
+      - {{ item }}__{{ secret_name }}
 {% endif %}
-    command: bash -c "make composer-autoload; tail -F /dev/null"
-    deploy:
-      restart_policy:
-        condition: any
-      replicas: 1
-      update_config:
-        parallelism: 1
-        delay: 30s
-        monitor: 5s
-        order: start-first
-      labels:
-        traefik.enable: "false"
-    healthcheck:
-      disable: true
-    dns:
-{% for dns_server in geokrety_dns_servers %}
-      - {{ dns_server }}
 {% endfor %}
+    <<: *volumes-website
     networks:
       default:
-{% endif %}
 
 {% if params.cdn is defined %}
   cdn:
@@ -376,13 +268,11 @@ services:
       labels:
         traefik.enable: "true"
         traefik.swarm.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.cdn.uri | default(geokrety_params.cdn_uri) }}"
-        traefik.frontend.passHostHeader: "true"
-        traefik.protocol: "http"
-        traefik.port: 80
-        # traefik2
         traefik.http.routers.geokrety-{{ item }}-cdn.priority: 5
-        traefik.http.routers.geokrety-{{ item }}-cdn.rule: "Host(`{{ params.cdn.uri | default(geokrety_params.cdn_uri) }}`)"
+        traefik.http.routers.geokrety-{{ item }}-cdn.rule: >-
+{% for uri in params.cdn.uri %}
+          Host(`{{ uri }}`){% if not loop.last %} ||{% endif %}{{ '' }}
+{% endfor %}
         traefik.http.routers.geokrety-{{ item }}-cdn.middlewares: X-Forwarded-Https@file
         traefik.http.services.geokrety-{{ item }}-cdn.loadbalancer.passhostheader: "true"
         traefik.http.services.geokrety-{{ item }}-cdn.loadbalancer.server.port: 80
@@ -396,18 +286,15 @@ services:
 {% if params.cron is defined %}
   cron:
     image: {{ geokrety_docker_image_cron_image_name }}:{{ geokrety_docker_image_cron_image_tag }}
-{% if params.new_env_flag is defined and params.new_env_flag %}
     environment:
+      <<: *variables
       GK_SITE_BASE_SERVER_URL: "https://{{ params.website.uri.0 }}"
-{% else %}
-    <<: *variables
-    <<: *volumes-website
-{% endif %}
     deploy:
       labels:
         traefik.enable: "false"
       restart_policy:
         condition: any
+    <<: *volumes-website
     networks:
       default:
 {% endif %}
@@ -500,17 +387,17 @@ services:
       labels:
         traefik.enable: "true"
         traefik.swarm.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefix:/adminer"
-        traefik.frontend.passHostHeader: "true"
-        traefik.protocol: "http"
-        traefik.port: 8080
 {% if params.adminer.auth_enable is defined and params.adminer.auth_enable %}
         traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
 {% endif %}
-        # traefik2
         traefik.http.middlewares.auth-basic-geokrey-admins.basicauth.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
         traefik.http.routers.geokrety-{{ item }}-adminer.priority: 10
-        traefik.http.routers.geokrety-{{ item }}-adminer.rule: "Host(`{{ params.website.uri[0] }}`) && PathPrefix(`/adminer`)"
+        traefik.http.routers.geokrety-{{ item }}-adminer.rule: >-
+          PathPrefix(`/adminer`) && (
+{% for uri in params.website.uri %}
+            Host(`{{ uri }}`){% if not loop.last %} ||{% endif %}{{ '' }}
+{% endfor %}
+          )
         traefik.http.routers.geokrety-{{ item }}-adminer.middlewares: X-Forwarded-Https@file,auth-basic-geokrey-admins
         traefik.http.services.geokrety-{{ item }}-adminer.loadbalancer.passhostheader: "true"
         traefik.http.services.geokrety-{{ item }}-adminer.loadbalancer.server.port: 8080
@@ -535,12 +422,6 @@ services:
       labels:
         traefik.enable: "true"
         traefik.swarm.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefix:/pgadmin"
-        traefik.frontend.passHostHeader: "true"
-        traefik.protocol: "http"
-        traefik.port: 80
-        traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
-        # traefik2
         traefik.http.middlewares.auth-basic-geokrey-admins.basicauth.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
         traefik.http.routers.geokrety-{{ item }}-pgadmin.priority: 10
         traefik.http.routers.geokrety-{{ item }}-pgadmin.rule: "Host(`{{ params.website.uri[0] }}`) && PathPrefix(`/pgadmin`)"
@@ -575,14 +456,11 @@ services:
       labels:
         traefik.enable: "true"
         traefik.swarm.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.rabbitmq.uri_external }}"
-        traefik.frontend.passHostHeader: "true"
-        traefik.protocol: "http"
-        traefik.port: 15672
-        # traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
-        # traefik2
         # traefik.http.middlewares.auth-basic-geokrey-admins.basicauth.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
-        traefik.http.routers.geokrety-{{ item }}-rabbitmq.rule: "Host(`{{ params.rabbitmq.uri_external }}`)"
+        traefik.http.routers.geokrety-{{ item }}-rabbitmq.rule: >-
+{% for uri in params.rabbitmq.uri_external %}
+          Host(`{{ uri }}`){% if not loop.last %} || {% endif %}{{ '' }}
+{% endfor %}
         traefik.http.routers.geokrety-{{ item }}-rabbitmq.middlewares: X-Forwarded-Https@file
         # traefik.http.routers.geokrety-{{ item }}-rabbitmq.middlewares: X-Forwarded-Https@file,auth-basic-geokrey-admins
         traefik.http.services.geokrety-{{ item }}-rabbitmq.loadbalancer.passhostheader: "true"
@@ -779,26 +657,23 @@ services:
       MINIO_ROOT_USER: {{ params.minio.access_key }}
       MINIO_ROOT_PASSWORD: {{ params.minio.secret_key }}
       CONSOLE_SECURE_TLS_REDIRECT: "off"
-      MINIO_BROWSER_REDIRECT_URL: "https://console.{{ params.minio.uri_external }}"
+      MINIO_BROWSER_REDIRECT_URL: "https://console.{{ params.minio.uri_external.0 }}"
     deploy:
       labels:
         traefik.enable: "true"
         traefik.swarm.network: "traefik_default"
-        traefik.svc.frontend.rule: "Host:{{ params.minio.uri_external }}"
-        traefik.svc.frontend.passHostHeader: "true"
-        traefik.svc.protocol: "http"
-        traefik.svc.port: 9000
-        traefik.console.frontend.rule: "Host:console.{{ params.minio.uri_external }}"
-        traefik.console.frontend.passHostHeader: "true"
-        traefik.console.protocol: "http"
-        traefik.console.port: 9001
-        # traefik2
-        traefik.http.routers.geokrety-{{ item }}-minio-svc.rule: "Host(`{{ params.minio.uri_external }}`)"
+        traefik.http.routers.geokrety-{{ item }}-minio-svc.rule: >-
+{% for uri in params.minio.uri_external %}
+          Host(`{{ uri }}`){% if not loop.last %} || {% endif %}{{ '' }}
+{% endfor %}
         traefik.http.routers.geokrety-{{ item }}-minio-svc.service: geokrety-{{ item }}-minio-svc
         traefik.http.routers.geokrety-{{ item }}-minio-svc.middlewares: X-Forwarded-Https@file
         traefik.http.services.geokrety-{{ item }}-minio-svc.loadbalancer.passhostheader: "true"
         traefik.http.services.geokrety-{{ item }}-minio-svc.loadbalancer.server.port: 9000
-        traefik.http.routers.geokrety-{{ item }}-minio-console.rule: "Host(`console.{{ params.minio.uri_external }}`)"
+        traefik.http.routers.geokrety-{{ item }}-minio-console.rule: >-
+{% for uri in params.minio.uri_external %}
+          Host(`console.{{ uri }}`){% if not loop.last %} || {% endif %}{{ '' }}
+{% endfor %}
         traefik.http.routers.geokrety-{{ item }}-minio-console.service: geokrety-{{ item }}-minio-console
         traefik.http.routers.geokrety-{{ item }}-minio-console.middlewares: X-Forwarded-Https@file
         traefik.http.services.geokrety-{{ item }}-minio-console.loadbalancer.passhostheader: "true"
@@ -892,12 +767,6 @@ services:
       labels:
         traefik.enable: "true"
         traefik.swarm.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.website.uri[0] }}; PathPrefix:/prometheus"
-        traefik.frontend.passHostHeader: "true"
-        traefik.protocol: "http"
-        traefik.port: 9090
-        traefik.frontend.auth.basic.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
-        # traefik2
         traefik.http.middlewares.auth-basic-geokrey-admins.basicauth.users: "{{ geokrety_adminer_users | default([]) | join(',') }}"
         traefik.http.routers.geokrety-{{ item }}-prometheus.priority: 10
         traefik.http.routers.geokrety-{{ item }}-prometheus.rule: "Host(`{{ params.website.uri[0] }}`) && PathPrefix(`/prometheus`)"
@@ -941,13 +810,9 @@ services:
       labels:
         traefik.enable: "true"
         traefik.swarm.network: "traefik_default"
-        traefik.frontend.rule: "Host:{{ params.website.uri | join(',') }}; PathPrefixStrip:/grafana"
-        traefik.frontend.passHostHeader: "true"
-        traefik.protocol: "http"
-        traefik.port: 3000
-        # traefik2
         traefik.http.middlewares.geokrety-{{ item }}-grafana-remove-auth-header.headers.customrequestheaders.Authorization: ""
-        traefik.http.routers.geokrety-{{ item }}-grafana.rule: "Host(`{{ params.website.uri[0] }}`) && PathPrefix(`/grafana`)"
+        traefik.http.routers.geokrety-{{ item }}-grafana.rule: >-
+          Host(`{{ params.website.uri[0] }}`) && PathPrefix(`/grafana`)
         traefik.http.routers.geokrety-{{ item }}-grafana.middlewares: "X-Forwarded-Https@file,geokrety-{{ item }}-grafana-remove-auth-header"
         traefik.http.routers.geokrety-{{ item }}-grafana.priority: 10
         traefik.http.services.geokrety-{{ item }}-grafana.loadbalancer.passhostheader: "true"
@@ -977,11 +842,6 @@ services:
 {#      labels:#}
 {#        traefik.enable: "true"#}
 {#        traefik.swarm.network: "traefik_default"#}
-{#        traefik.frontend.rule: "Host:{{ params.accounts_cleaner.uri | join(',') }}"#}
-{#        traefik.frontend.passHostHeader: "true"#}
-{#        traefik.protocol: "http"#}
-{#        traefik.port: 80#}
-{#        # traefik2#}
 {#        traefik.http.routers.geokrety-{{ item }}-accounts-cleaner.rule: "Host(`{{ params.accounts_cleaner.uri | join(',') }}`)"#}
 {#        traefik.http.routers.geokrety-{{ item }}-accounts-cleaner.middlewares: X-Forwarded-Https@file#}
 {#        traefik.http.services.geokrety-{{ item }}-accounts-cleaner.loadbalancer.passhostheader: "true"#}
