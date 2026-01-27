@@ -92,6 +92,10 @@ x-variables: &variables
   GK_AUDIT_LOGS_EXCLUDE_PATH_BYPASS: "{{ params.website.audit_logs_exclude_path_bypass }}"
 {% endif %}
 
+{% if params.cap is defined and params.cap.site_id is defined %}
+  GK_CAP_SITE_ID: "{{ params.cap.site_id }}"
+{% endif %}
+
 x-volumes-website: &volumes-website
   volumes:
 {% if params.website.localdir is defined %}
