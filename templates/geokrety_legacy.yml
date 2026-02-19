@@ -267,6 +267,12 @@ services:
     <<: *volumes-website
     networks:
       default:
+{% if params.workers.mail_notification.extra_hosts is defined %}
+    extra_hosts:
+{% for item in params.workers.mail_notification.extra_hosts %}
+      - "{{ item }}"
+{% endfor %}
+{% endif %}
 {% endif %}
 
 {% if params.workers.basex_sync is defined %}
@@ -299,6 +305,12 @@ services:
     <<: *volumes-website
     networks:
       default:
+{% if params.workers.basex_sync.extra_hosts is defined %}
+    extra_hosts:
+{% for item in params.workers.basex_sync.extra_hosts %}
+      - "{{ item }}"
+{% endfor %}
+{% endif %}
 {% endif %}
 {% endif %}
 
