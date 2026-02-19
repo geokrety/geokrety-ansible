@@ -238,7 +238,8 @@ services:
 {% endif %}
 
 {% if params.workers is defined %}
-  notification-worker:
+{% if params.workers.mail_notification is defined %}
+  worker-mail-notification:
     image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
     entrypoint: /var/www/geokrety/geokrety-worker-entrypoint.sh
     command: php mail-notification.php
@@ -254,13 +255,51 @@ services:
       GK_NOTIFICATION_LOG_LEVEL: "DEBUG"
     secrets:
 {% for secret_name in geokrety_docker_secrets %}
-{% if geokrety_docker_secrets[secret_name] and secret_name in ["GK_RABBITMQ_PASSWORD", "GK_SITE_SESSION_SHORT_LIVED_TOKEN", "GK_BASEX_PASSWORD", "GK_DB_PASSWORD", "GK_DB_GPG_PASSWORD", "GK_DB_SECRET_KEY"] %}
+{% if geokrety_docker_secrets[secret_name] and secret_name in [
+  "GK_RABBITMQ_PASSWORD",
+  "GK_DB_PASSWORD",
+  "GK_DB_GPG_PASSWORD",
+  "GK_DB_SECRET_KEY",
+] %}
       - {{ item }}__{{ secret_name }}
 {% endif %}
 {% endfor %}
     <<: *volumes-website
     networks:
       default:
+{% endif %}
+
+{% if params.workers.basex_sync is defined %}
+  worker-basex-sync:
+    image: {{ geokrety_docker_image_website_image_name }}:{{ geokrety_docker_image_website_image_tag }}
+    entrypoint: /var/www/geokrety/geokrety-worker-entrypoint.sh
+    command: php basex-sync.php
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      <<: *variables
+      GK_NOTIFICATION_LOG_LEVEL: "DEBUG"
+    secrets:
+{% for secret_name in geokrety_docker_secrets %}
+{% if geokrety_docker_secrets[secret_name] and secret_name in [
+  "GK_RABBITMQ_PASSWORD",
+  "GK_DB_PASSWORD",
+  "GK_BASEX_PASSWORD",
+  "GK_SITE_SESSION_SHORT_LIVED_TOKEN",
+  "GK_RATE_LIMITS_BYPASS",
+] %}
+      - {{ item }}__{{ secret_name }}
+{% endif %}
+{% endfor %}
+    <<: *volumes-website
+    networks:
+      default:
+{% endif %}
 {% endif %}
 
 {% if params.cdn is defined %}
@@ -518,7 +557,9 @@ services:
         condition: any
     networks:
       default:
+{% endif %}
 
+{% if params.basex_amqp_sync is defined %}
   basex-amqp-sync:
     image: {{ geokrety_docker_image_basex_amqp_sync_image_name }}:{{ geokrety_docker_image_basex_amqp_sync_image_tag }}
     environment:
