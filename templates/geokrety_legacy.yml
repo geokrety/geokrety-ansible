@@ -715,7 +715,7 @@ services:
 
 {% if params.minio is defined %}
   minio:
-    image: minio/minio
+    image: reg.mini.dev/minio
     command:
       - "server"
       - "/data"
